@@ -3,6 +3,7 @@
     background-color: #1B1E20;
     display: flex;
     justify-content: space-between;
+    z-index: 1000;
 }
 
 .navlogo{

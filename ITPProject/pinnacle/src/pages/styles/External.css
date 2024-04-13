@@ -18,3 +18,7 @@
     background-clip: text;
     color: transparent;
 }
+
+.bg-blur {
+    backdrop-filter: blur(10px); /* Adjust the blur radius as needed */
+  }

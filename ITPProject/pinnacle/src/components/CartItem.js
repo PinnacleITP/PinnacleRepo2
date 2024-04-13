@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import cod2 from "../assets/games/cod2.jpg";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 export default function CartItem(props) {
   const [isChecked, setIsChecked] = useState(false);
@@ -44,9 +45,11 @@ export default function CartItem(props) {
           </div>
         </div>
         <div className="flex items-center">
+        <Link to={`/payment?planId=${props.id}&page=C`}>
           <button className=" mr-8 px-12  py-2 bg-gradient-to-r from-[#FF451D] to-[#FE7804] text-white rounded-[10px] text-md  font-semibold">
             Buy Now
           </button>
+          </Link>
           <div>
             <img
               width="28"

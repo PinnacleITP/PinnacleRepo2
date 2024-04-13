@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import CartItem from "../components/CartItem";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 export default function Cartpage() {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -90,9 +91,11 @@ export default function Cartpage() {
                 </p>
               </div>
               <div>
+              <Link to={`/payment?totalprice=${totalAmount}&page=CS`}>
                 <button className="basis-2/15 bg-gradient-to-b from-[#FF451D] to-[#FE7804] text-white w-full  py-1 rounded-[10px] text-lg font-bold mt-6">
                   Buy Now
                 </button>
+                </Link>
               </div>
             </div>
           </div>

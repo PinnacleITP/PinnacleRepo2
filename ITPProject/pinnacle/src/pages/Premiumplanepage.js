@@ -200,13 +200,7 @@ export default function Premiumplanepage() {
                   Can redeem crystals.
                 </li>
                 <li>
-                  <img
-                    className=" inline-block mr-3"
-                    width="12"
-                    height="12"
-                    src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png"
-                    alt="checkmark"
-                  />
+                  <img className=" inline-block mr-3" width="12" height="12" src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png" alt="checkmark"/>
                   Obtain 10 XP daily.
                 </li>
               </ul>
