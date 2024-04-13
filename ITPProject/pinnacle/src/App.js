@@ -11,6 +11,7 @@ import Cart from './pages/Cartpage';
 import Premiumplanes from './pages/Premiumplanepage';
 import Myaccount from './pages/Myaccount';
 import Payment from './pages/Payment';
+import GameDetailsPage from './pages/GameDetailsPage';
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route index element={<Home/>}></Route>
           <Route path='/stream' element={<Stream/>}></Route>
           <Route path='/game' element={<Game/>}></Route>
+          <Route path='/gamedetail' element={<GameDetailsPage/>}></Route>
           <Route path='/community' element={<Community/>}></Route>
           <Route path='/support' element={<Support/>}></Route>
           <Route path='/leaderboard' element={<Leaderboard/>}></Route>

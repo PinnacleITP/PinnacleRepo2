@@ -2,15 +2,19 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Bank_dtails_card from "../components/Bank_dtails_card";
 import Payment_history_card from "../components/Payment_history_card";
-
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 import { useNavigate, useLocation } from "react-router-dom";
-
 import axios from "axios";
+import PaymentForm from "../components/PaymentForm";
+
+const stripePromise = loadStripe(
+  "pk_test_51P0Ggb02NNbm5Wjc4fHJd1dFUIwq7DjCAp3uWaQi1x767CNFTxoPaRZFrGrmEXfussceVZmUHi7625wUFMp5WUbY00SEFIQUWN"
+);
 
 export default function Payment() {
   // User id
   var userid = "66118d9104fb9c92e1c7d980";
-
 
   //usestate for read card details
   const [memberID, setMemberID] = useState();
@@ -19,30 +23,29 @@ export default function Payment() {
   const [expDate, setEXPDate] = useState();
   const [cvcNumber, setCVCNumber] = useState();
 
-  // const navigate = useNavigate();
-
   //usestate for save card details
   const [creditCards, setCreditCards] = useState([]);
 
   // get details fronm url
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const planId = queryParams.get("planId");
+  const itemId = queryParams.get("planId");
+  const itemsTotalPrice = queryParams.get("totalprice");
   const page = queryParams.get("page");
   const [premiumPlan, setPremiumPlan] = useState([]);
+  const [cartItem, setCartItem] = useState([]);
 
   const [officialPrice, setOfficialPrice] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [subTotal, setSubTotal] = useState(0);
   const [crystalCount, setCrystalCount] = useState(0);
+  const [crystalDiscount, setCrystalDiscount] = useState(0);
   const [userDetails, setUserDetails] = useState([]);
-
 
   //set memberid to usestate
   useEffect(() => {
     setMemberID(userid);
   }, []);
-
 
   //read card data from db
   useEffect(() => {
@@ -56,16 +59,20 @@ export default function Payment() {
   useEffect(() => {
     if (page == "P") {
       axios
-        .get(`http://localhost:3001/getPlanById/${planId}`)
+        .get(`http://localhost:3001/getPlanById/${itemId}`)
         .then((result) => {
           setPremiumPlan(result.data);
         })
         .catch((err) => console.log(err));
     } else if (page == "C") {
+      axios
+        .get(`http://localhost:3001/getCartItemById/${itemId}`)
+        .then((result) => {
+          setCartItem(result.data);
+        })
+        .catch((err) => console.log(err));
     }
-  }, [page, planId]);
-
- 
+  }, [page, itemId]);
 
   useEffect(() => {
     axios
@@ -77,9 +84,15 @@ export default function Payment() {
   }, [memberID]);
 
   useEffect(() => {
-    setOfficialPrice(premiumPlan.price);
+    if (page === "P") {
+      setOfficialPrice(premiumPlan.price);
+    } else if (page === "C") {
+      setOfficialPrice(cartItem.price);
+    } else if (page === "CS") {
+      setOfficialPrice(parseFloat(itemsTotalPrice));
+    }
     setCrystalCount(userDetails.crystalCount);
-  }, [premiumPlan, userDetails]);
+  }, [page, premiumPlan, userDetails, itemsTotalPrice]);
 
   const calcSubTotal = () => {
     console.log("officialPrice:", officialPrice);
@@ -88,18 +101,17 @@ export default function Payment() {
     if (
       typeof officialPrice === "number" &&
       typeof discount === "number" &&
-      typeof crystalCount === "number"
+      typeof crystalCount === "number" &&
+      typeof crystalDiscount === "number"
     ) {
-      setSubTotal(officialPrice - (discount + crystalCount / 1000));
+      setSubTotal(officialPrice - (discount + crystalDiscount));
     }
   };
-  
+
   // Watch for changes in officialPrice and call calcSubTotal when it changes
   useEffect(() => {
     calcSubTotal();
-  }, [officialPrice, crystalCount, discount]);
-
-  
+  }, [officialPrice, crystalCount, discount, crystalDiscount]);
 
   //usestate for crystal discount checkbox
   const [isCheckedCrystals, setIsCheckedCrystals] = useState(false);
@@ -111,9 +123,15 @@ export default function Payment() {
   const handleCrystalCheckboxChange = () => {
     if (isCheckedCrystals == false) {
       setIsCheckedCrystals(true);
+      if (officialPrice * (60 / 100) <= crystalCount / 1000) {
+        setCrystalDiscount(officialPrice * (60 / 100));
+      } else {
+        setCrystalDiscount(crystalCount / 1000);
+      }
       calcSubTotal();
     } else {
       setIsCheckedCrystals(false);
+      setCrystalDiscount(0);
       calcSubTotal();
     }
   };
@@ -143,7 +161,6 @@ export default function Payment() {
     }
     window.location.reload();
   };
-
 
   //add card form submition
   const SubmitCard = (e) => {
@@ -234,11 +251,9 @@ export default function Payment() {
           <h1 className="text-white text-[30px] font-bold">Payment Method</h1>
 
           <form
-            onSubmit={Submit}
             className="px-10 pt-6 pb-10 bg-[#1B1E20] border-2 border-[#FE7804] rounded-3xl my-4"
             id="paymentdetailsform"
           >
-
             <div className="flex mb-4">
               <img
                 width="60"
@@ -256,89 +271,70 @@ export default function Payment() {
             <div className="mb-5 ">
               <lable
                 className="mx-1 my-2 text-lg text-white "
-                htmlFor="cardnumber"
+                htmlFor="paymentemail"
               >
-                Card Number
+                Email
               </lable>
               <br />
               <input
                 className="text-white h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50"
-                type="text"
-                name="cardnumber"
-                placeholder="1234 4567 8901 2345"
-                value={cardNumber}
-                onChange={cardNumberhandle}
-                maxLength={19}
-                minLength={19}
+                type="email"
+                name="paymentemail"
+                placeholder="abc@gmail.com"
                 required
               />
               <br />
             </div>
 
             <div className="mb-5 ">
-              <lable
-                className="mx-1 my-2 text-lg text-white"
-                htmlFor="cardname"
-              >
-                Card Name
-              </lable>
+              <span className="mx-1 my-2 text-lg text-white">Card Details</span>
               <br />
-              <input
-                className="text-white h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50"
-                type="text"
-                name="cardname"
-                placeholder="jonathan"
-                onChange={nickNamehandle}
-                value={CardName}
-                required
-              />
-              <br />
+              <div className="text-white h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50">
+                <Elements stripe={stripePromise}>
+                  <PaymentForm />
+                </Elements>
+              </div>
             </div>
 
             <div className="flex gap-5">
               <div className="flex-auto mb-5 ">
                 <lable
                   className="mx-1 my-2 text-lg text-white "
-                  htmlFor="xepdate"
+                  htmlFor="cardname"
                 >
-                  Expiry Date
+                  Name on Card
                 </lable>
                 <br />
                 <input
                   className="text-white pl-3 placeholder-[#9D9191] placeholder-opacity-50 h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px]"
                   type="text"
-                  name="xepdate"
-                  placeholder="06/24"
-                  value={expDate}
-                  onChange={expDatehandle}
-                  maxLength={5}
-                  minLength={5}
+                  name="cardname"
+                  placeholder="jonathan"
                   required
                 />
                 <br />
               </div>
 
               <div className="flex-auto mb-5 ">
-                <lable className="mx-1 my-2 text-lg text-white " htmlFor="cvc">
-                  Security Number
+                <lable
+                  className="mx-1 my-2 text-lg text-white "
+                  htmlFor="country"
+                >
+                  Country
                 </lable>
                 <br />
                 <input
                   className="text-white h-[45px] pl-3 placeholder-[#9D9191] placeholder-opacity-50 w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] "
                   type="text"
-                  name="cvc"
-                  placeholder="781"
-                  value={cvcNumber}
-                  onChange={cvcNumberHandle}
-                  maxLength={3}
-                  minLength={3}
+                  name="country"
+                  placeholder="Sri Lanka"
                   required
                 />
                 <br />
               </div>
             </div>
 
-            <div class="flex items-center">
+            {/* <div class="flex items-center">
               <input
                 class="!block mr-2 w-4 h-4 "
                 type="checkbox"
@@ -348,7 +344,7 @@ export default function Payment() {
               <label class="text-base text-white" htmlFor="savecheck">
                 Save for your next purchase
               </label>
-            </div>
+            </div> */}
 
             <div className="flex justify-center mt-10">
               <input
@@ -362,28 +358,6 @@ export default function Payment() {
 
         <div className="flex flex-col justify-between w-2/5 px-5">
           <div>
-            <h1 className="text-white text-[30px] font-bold">Saved Cards</h1>
-            <div className="bg-[#202022] rounded-xl my-4 p-5">
-              {creditCards.map((card) => {
-                return (
-                  <Bank_dtails_card
-                    id={card._id}
-                    cardnumber={card.cardNumber}
-                    nickname={card.CardName}
-                  />
-                );
-              })}
-
-              <button
-                className="bg-gradient-to-b from-[#FF451D] to-[#FE7804] text-white w-full h-10 rounded-[10px] text-lg font-bold"
-                onClick={addCardBtnCkeker}
-              >
-                Add New Card
-              </button>
-            </div>
-          </div>
-
-          <div>
             <h1 className="text-white text-[30px] font-bold">Invoice</h1>
             <div className="bg-[#202022] rounded-xl my-4 p-5">
               <div className="mb-1">
@@ -395,7 +369,6 @@ export default function Payment() {
                     ? officialPrice.toFixed(2)
                     : ""}
                 </span>
-
               </div>
               <div className="mb-1">
                 <span className="text-[#D9D9D9] text-base">Discount</span>
@@ -406,7 +379,12 @@ export default function Payment() {
                   <span className="text-[#FE7804] text-base">
                     Crystal Discount
                   </span>
-                  <span className="float-right text-[#FE7804]">$10.00</span>
+                  <span className="float-right text-[#FE7804]">
+                    ${" "}
+                    {typeof crystalDiscount === "number"
+                      ? crystalDiscount.toFixed(2)
+                      : ""}
+                  </span>
                 </div>
               )}
 
@@ -432,13 +410,32 @@ export default function Payment() {
               <div className="mb-5">
                 <span className="text-2xl font-bold text-white">Sub Total</span>
                 <span className="float-right text-2xl font-bold text-white">
-
                   $ {subTotal}
-
                 </span>
               </div>
               <button className="bg-gradient-to-b from-[#FF451D] to-[#FE7804] text-white w-full h-10 rounded-[10px] text-lg font-bold">
                 Back to Cart
+              </button>
+            </div>
+          </div>
+          <div>
+            <h1 className="text-white text-[30px] font-bold">Saved Cards</h1>
+            <div className="bg-[#202022] rounded-xl my-4 p-5">
+              {creditCards.map((card) => {
+                return (
+                  <Bank_dtails_card
+                    id={card._id}
+                    cardnumber={card.cardNumber}
+                    nickname={card.CardName}
+                  />
+                );
+              })}
+
+              <button
+                className="bg-gradient-to-b from-[#FF451D] to-[#FE7804] text-white w-full h-10 rounded-[10px] text-lg font-bold"
+                onClick={addCardBtnCkeker}
+              >
+                Add New Card
               </button>
             </div>
           </div>
