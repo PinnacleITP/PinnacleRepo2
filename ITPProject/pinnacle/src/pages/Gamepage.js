@@ -25,9 +25,7 @@ export default function Gamepage() {
   );
 
   const actionGames = gameDetails.filter((game) => game.type === "action");
-  const adventureGames = gameDetails.filter(
-    (game) => game.type === "adventure"
-  );
+  const adventureGames = gameDetails.filter((game) => game.type === "adventure");
   const racingGames = gameDetails.filter((game) => game.type === "racing");
   const shooterGames = gameDetails.filter((game) => game.type === "shooter");
   const sportsGames = gameDetails.filter((game) => game.type === "sports");

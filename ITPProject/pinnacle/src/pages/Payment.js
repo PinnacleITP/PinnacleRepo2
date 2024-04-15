@@ -8,6 +8,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import PaymentForm from "../components/PaymentForm";
 
+
 const stripePromise = loadStripe(
   "pk_test_51P0Ggb02NNbm5Wjc4fHJd1dFUIwq7DjCAp3uWaQi1x767CNFTxoPaRZFrGrmEXfussceVZmUHi7625wUFMp5WUbY00SEFIQUWN"
 );
@@ -137,30 +138,30 @@ export default function Payment() {
   };
 
   //post card data for index.js to create
-  const handleSubmitAndResetForm = () => {
-    axios
-      .post("http://localhost:3001/createBankCard", {
-        memberID,
-        cardNumber,
-        CardName,
-        expDate,
-        cvcNumber,
-      })
-      .then((result) => {
-        console.log(result);
-        document.getElementById("paymentdetailsform").reset();
-      })
-      .catch((err) => console.log(err));
-  };
+  // const handleSubmitAndResetForm = () => {
+  //   axios
+  //     .post("http://localhost:3001/createBankCard", {
+  //       memberID,
+  //       cardNumber,
+  //       CardName,
+  //       expDate,
+  //       cvcNumber,
+  //     })
+  //     .then((result) => {
+  //       console.log(result);
+  //       document.getElementById("paymentdetailsform").reset();
+  //     })
+  //     .catch((err) => console.log(err));
+  // };
 
   //submit function for add card form
-  const Submit = (e) => {
-    e.preventDefault();
-    if (document.getElementById("savecheck").checked) {
-      handleSubmitAndResetForm();
-    }
-    window.location.reload();
-  };
+  // const Submit = (e) => {
+  //   e.preventDefault();
+  //   if (document.getElementById("savecheck").checked) {
+  //     handleSubmitAndResetForm();
+  //   }
+  //   window.location.reload();
+  // };
 
   //add card form submition
   const SubmitCard = (e) => {
@@ -243,6 +244,19 @@ export default function Payment() {
     setEXPDate(formattedExpiryDate);
   };
 
+  const [submitHandler, setSubmitHandler] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handlePaymentProcess = (handleSubmit) => {
+    setSubmitHandler(() => handleSubmit);
+  };
+
+  const handleSubmit = async (stripe) => {
+    setLoading(true);
+    submitHandler && submitHandler();
+    setLoading(false);
+  };
+
   return (
     <div>
       <Header navid="home" />
@@ -291,7 +305,7 @@ export default function Payment() {
               <br />
               <div className="text-white h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50">
                 <Elements stripe={stripePromise}>
-                  <PaymentForm />
+                  <PaymentForm subTotal={subTotal} handlePaymentProcess={handlePaymentProcess}/>
                 </Elements>
               </div>
             </div>
@@ -346,13 +360,13 @@ export default function Payment() {
               </label>
             </div> */}
 
-            <div className="flex justify-center mt-10">
+            {/* <div className="flex justify-center mt-10">
               <input
                 type="submit"
                 className="bg-gradient-to-b from-[#FF451D] to-[#FE7804] text-white w-full h-10 rounded-[10px] text-xl font-bold"
                 value="Pay now"
               ></input>
-            </div>
+            </div> */}
           </form>
         </div>
 
@@ -413,8 +427,8 @@ export default function Payment() {
                   $ {subTotal}
                 </span>
               </div>
-              <button className="bg-gradient-to-b from-[#FF451D] to-[#FE7804] text-white w-full h-10 rounded-[10px] text-lg font-bold">
-                Back to Cart
+              <button onClick={handleSubmit} className="bg-gradient-to-b from-[#FF451D] to-[#FE7804] text-white w-full h-10 rounded-[10px] text-lg font-bold">
+              Make Payment
               </button>
             </div>
           </div>
