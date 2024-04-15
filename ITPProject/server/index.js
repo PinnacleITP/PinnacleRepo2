@@ -176,12 +176,12 @@ app.get("/getMemberById/:id", (req, res) => {
 
 app.post('/api/payment', async (req, res) => {
   try {
-    const { payment_method_id } = req.body;
+    const { payment_method_id, subTotal } = req.body;
 
     // Create a PaymentIntent on the server using the Stripe API
     const paymentIntent = await stripe.paymentIntents.create({
       payment_method: payment_method_id,
-      amount: 1000, // Amount in cents
+      amount: subTotal*100, // Amount in cents
       currency: 'usd',
       description: 'Example payment',
       confirm: true,
@@ -218,7 +218,36 @@ app.get("/getGamebyID/:id", (req, res) => {
     .catch((err) => res.status(500).json({ message: "Internal Server Error" }));
 });
 
+//update game by id
+app.put("/updateGame/:id", (req, res) => {
+  const id = req.params.id;
+  GameModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      name: req.body.itemname,
+      image: req.body.itemgameImageUrl,
+      configurations: req.body.itemconfigurations,
+      description: req.body.itemdescription,
+      price: req.body.itemprice,
+      downloadCount: req.body.itemdownloadCount,
+      type: req.body.itemtype,
+      developer: req.body.itemdeveloper,
+      publisher: req.body.itempublisher,
+      releasdate: req.body.itemreleasdate
+    }
+  )
+    .then((game) => res.json(game))
+    .catch((err) => res.json(err));
+});
 
+
+//delete game by id
+app.delete("/deleteGame/:id", (req, res) => {
+  const id = req.params.id;
+  GameModel.findByIdAndDelete({ _id: id })
+    .then((game) => res.json(game))
+    .catch((err) => res.json(err));
+});
 
 app.listen(3001, () => {
   console.log("Server is Running");
