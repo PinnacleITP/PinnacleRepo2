@@ -3,10 +3,10 @@ import Header from "../components/Header";
 import cod2 from "../assets/games/cod2.jpg";
 import Footer from "../components/Footer";
 import Game_Edition_Card from "../components/Game_Edition_Card";
-import polygon from "../assets/games/Rectangle115.png"
-import './styles/External.css';
-import { useNavigate, useLocation } from "react-router-dom";
-import axios from 'axios'
+import polygon from "../assets/games/Rectangle115.png";
+import "./styles/External.css";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import axios from "axios";
 
 export default function GameDetailsPage() {
   const location = useLocation();
@@ -24,37 +24,107 @@ export default function GameDetailsPage() {
   return (
     <div className="text-white">
       <Header navid="games" />
-      <div className="bg-red-500 w-full -z-10 relative h-[600px]" style={{backgroundImage: `url(${gamedetail.gameImageUrl})`}}>
-
+      <div
+        className="bg-red-500 w-full -z-10 relative h-[600px]"
+        style={{ backgroundImage: `url(${gamedetail.gameImageUrl})` }}
+      >
         {/* <img className="w-full absolute bottom-[-5px]" src={polygon} /> */}
-        <div className="flex justify-around z-10 absolute bottom-4">
-            <div className=" w-[40%] z-10">
-                <img src={gamedetail.gameImageUrl} className=" w-full rounded-lg"/>
+        {/* <div className="flex justify-around absolute bottom-4">
+          <div className=" w-[40%] z-10">
+            <img src={gamedetail.gameImageUrl} className=" w-full rounded-lg" />
+          </div>
+          <div className="w-[40%] bg-white bg-opacity-10 bg-blur rounded-lg p-8 z-[500]">
+            <h1 className="text-center text-[32px] font-bold mb-2 text-[#FE7804]">
+              {gamedetail.name}
+            </h1>
+            <p className="text-[#ffffff73] text-[16px] text-center">
+              <img
+                className=" inline-block mr-2"
+                width="25"
+                height="25"
+                src="https://img.icons8.com/glyph-neue/64/40C057/download--v1.png"
+                alt="download--v1"
+              />
+              {gamedetail.downloadCount} Downloads
+            </p>
+            <div className=" bg-transparent flex items-center justify-center mb-2 mt-1">
+              <select className=" bg-[#000000] bg-opacity-20 py-2 px-10 rounded-md">
+                <option>Windows</option>
+                <option>Linux</option>
+              </select>
             </div>
-            <div className="w-[40%] bg-white bg-opacity-10 bg-blur rounded-lg p-8 z-20">
-                <h1 className="text-center text-[32px] font-bold mb-2 text-[#FE7804]">{gamedetail.name}</h1>
-                <p className="text-[#ffffff73] text-[16px] text-center"><img className=" inline-block mr-2" width="25" height="25" src="https://img.icons8.com/glyph-neue/64/40C057/download--v1.png" alt="download--v1"/>{gamedetail.downloadCount} Downloads</p>
-                <div className=" bg-transparent flex items-center justify-center mb-2 mt-1">
-                    <select className=" bg-[#000000] bg-opacity-20 py-2 px-10  rounded-md">
-                        <option>Windows</option>
-                        <option>Linux</option>
-                    </select>
-                </div>
-                <p className="text-[#ffffff73] text-[16px] line-through text-center">{typeof gamedetail.price === "number"
-              ? `$${(gamedetail.price + 5).toFixed(2)}`
-              : ""}</p>
-                <p className="text-[#FE7804] font-bold text-[25px] text-center">{typeof gamedetail.price === "number"
-              ? `$${gamedetail.price.toFixed(2)}`
-              : ""}</p>
-                <div className="my-4 mx-auto flex justify-around">
-                    <div className=" bg-[#FE7804] py-2 px-10 rounded-md mx-4 w-2/5 text-center font-semibold">Add to Cart</div>
-                    <div className=" bg-[#FF451D] py-2 px-10 rounded-md mx-4 w-2/5 text-center font-semibold">Buy now</div>
+            <p className="text-[#ffffff73] text-[16px] line-through text-center">
+              {typeof gamedetail.price === "number"
+                ? `$${(gamedetail.price + 5).toFixed(2)}`
+                : ""}
+            </p>
+            <p className="text-[#FE7804] font-bold text-[25px] text-center">
+              {typeof gamedetail.price === "number"
+                ? `$${gamedetail.price.toFixed(2)}`
+                : ""}
+            </p>
+            <div className="my-4 mx-auto flex justify-around">
+              <div className=" bg-[#FE7804] py-2 px-10 rounded-md mx-4 w-2/5 text-center font-semibold">
+                Add to Cart
+              </div>
+                <div className=" bg-[#FF451D] py-2 px-10 rounded-md mx-4 w-2/5 text-center z-50 font-semibold">
+              <Link to={`/payment?planId=${gamedetail._id}&page=G`}>
+                  Buy now
+              </Link>
                 </div>
             </div>
-        </div>
+          </div>
+        </div> */}
         <img className="w-full absolute bottom-[-5px]" src={polygon} />
-
       </div>
+      <div className=" z-50 absolute top-[40%] w-full flex justify-around">
+      {/* <div className="flex justify-around absolute bottom-4"> */}
+          <div className=" w-[40%] z-10">
+            <img src={gamedetail.gameImageUrl} className=" w-full rounded-lg" />
+          </div>
+          <div className="w-[40%] bg-white bg-opacity-10 bg-blur rounded-lg p-8 z-[500]">
+            <h1 className="text-center text-[32px] font-bold mb-2 text-[#FE7804]">
+              {gamedetail.name}
+            </h1>
+            <p className="text-[#ffffff73] text-[16px] text-center">
+              <img
+                className=" inline-block mr-2"
+                width="25"
+                height="25"
+                src="https://img.icons8.com/glyph-neue/64/40C057/download--v1.png"
+                alt="download--v1"
+              />
+              {gamedetail.downloadCount} Downloads
+            </p>
+            <div className=" bg-transparent flex items-center justify-center mb-2 mt-1">
+              <select className=" bg-[#000000] bg-opacity-20 py-2 px-10 rounded-md">
+                <option>Windows</option>
+                <option>Linux</option>
+              </select>
+            </div>
+            <p className="text-[#ffffff73] text-[16px] line-through text-center">
+              {typeof gamedetail.price === "number"
+                ? `$${(gamedetail.price + 5).toFixed(2)}`
+                : ""}
+            </p>
+            <p className="text-[#FE7804] font-bold text-[25px] text-center">
+              {typeof gamedetail.price === "number"
+                ? `$${gamedetail.price.toFixed(2)}`
+                : ""}
+            </p>
+            <div className="my-4 mx-auto flex justify-around">
+              <div className=" bg-[#FE7804] py-2 px-10 rounded-md mx-4 w-2/5 text-center font-semibold">
+                Add to Cart
+              </div>
+                <div className=" bg-[#FF451D] py-2 px-10 rounded-md mx-4 w-2/5 text-center z-50 font-semibold">
+              <Link to={`/payment?planId=${gamedetail._id}&page=G`}>
+                  Buy now
+              </Link>
+                </div>
+            </div>
+          </div>
+        </div>
+      {/* </div> */}
 
       <div className="flex justify-between w-11/12 mx-auto py-10">
         <div className=" w-[60%]">
@@ -328,13 +398,28 @@ export default function GameDetailsPage() {
       <div className=" w-11/12 mx-auto my-10">
         <h1 className=" font-bold text-[28px]">Editions</h1>
         <div className="flex justify-around my-4">
-            <div className="w-[25%]"><Game_Edition_Card name="Call of Duty - Modern Warefire I" price={10}/></div>
-            <div className="w-[25%]"><Game_Edition_Card name="Call of Duty - Modern Warefire II" price={20}/></div>
-            <div className="w-[25%]"><Game_Edition_Card name="Call of Duty - Modern Warefire III" price={30}/></div>
+          <div className="w-[25%]">
+            <Game_Edition_Card
+              name="Call of Duty - Modern Warefire I"
+              price={10}
+            />
+          </div>
+          <div className="w-[25%]">
+            <Game_Edition_Card
+              name="Call of Duty - Modern Warefire II"
+              price={20}
+            />
+          </div>
+          <div className="w-[25%]">
+            <Game_Edition_Card
+              name="Call of Duty - Modern Warefire III"
+              price={30}
+            />
+          </div>
         </div>
       </div>
 
-      <Footer/>
+      <Footer />
     </div>
   );
 }

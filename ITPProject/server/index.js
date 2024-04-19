@@ -11,6 +11,7 @@ const CartModel = require("./models/Cart");
 const MemberModel = require("./models/Member");
 const LeaderBoardModel = require("./models/LeaderBoard");
 const GameModel = require("./models/Game");
+const PaymentModel = require("./models/Payment");
 
 const app = express();
 app.use(cors());
@@ -176,16 +177,16 @@ app.get("/getMemberById/:id", (req, res) => {
 
 app.post('/api/payment', async (req, res) => {
   try {
-    const { payment_method_id, subTotal } = req.body;
+    const { payment_method_id, subtotal, description } = req.body;
 
     // Create a PaymentIntent on the server using the Stripe API
     const paymentIntent = await stripe.paymentIntents.create({
       payment_method: payment_method_id,
-      amount: subTotal*100, // Amount in cents
+      amount: subtotal*100, // Amount in cents
       currency: 'usd',
-      description: 'Example payment',
+      description: description,
       confirm: true,
-      return_url: 'http://localhost:3000/success', // Set your actual success URL here
+      return_url: 'http://localhost:3000/account',
     });
 
     // PaymentIntent was successful
@@ -247,6 +248,40 @@ app.delete("/deleteGame/:id", (req, res) => {
   GameModel.findByIdAndDelete({ _id: id })
     .then((game) => res.json(game))
     .catch((err) => res.json(err));
+});
+
+app.post("/createPaymnetRecod", (req, res) => {
+  PaymentModel.create(req.body)
+    .then((payment) => res.json(payment))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+//get payment details related to member
+app.get("/getPaymentRecodsByMemberID/:id", (req, res) => {
+  const id = req.params.id;
+  PaymentModel.find({ memberid: id })
+    .then((payment) => {
+      if (payment.length > 0) {
+        res.json(payment);
+      }
+    })
+    .catch((err) => res.json(err));
+});
+
+//delete Payment history by id
+app.delete("/deletePaymentHistory/:id", (req, res) => {
+  const id = req.params.id;
+  PaymentModel.findByIdAndDelete({ _id: id })
+    .then((payment) => res.json(payment))
+    .catch((err) => res.json(err));
+});
+
+//delete all the record related to the member id
+app.delete("/deletePaymentHistoryRelatedToMember/:id", (req, res) => {
+  const memberId = req.params.id;
+  PaymentModel.deleteMany({ memberid: memberId })
+    .then(() => res.json({ message: "All payment records deleted successfully." }))
+    .catch((err) => res.status(500).json({ error: err.message }));
 });
 
 app.listen(3001, () => {

@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import DeleteWorning from "../assets/payment/deleteanimation.webm";
+import SearchError from "../assets/payment/searchnotfound.webm";
 import Header from "../components/Header";
 import RankIcon from "../assets/myAccount/rankicon.png";
 import XPIcon from "../assets/myAccount/xpicon.png";
@@ -9,8 +12,10 @@ import Mastre3Icon from "../assets/myAccount/master3.png";
 import LegendIcon from "../assets/myAccount/legend.png";
 import Payment_history_card from "../components/Payment_history_card";
 import Game_download_card from "../components/Game_download_card";
+import Footer from "../components/Footer";
 
 export default function Myaccount() {
+  var memberID = "66118d9104fb9c92e1c7d980";
   const [selectedDiv, setSelectedDiv] = useState("Dashboard");
   const [channelDiv, setChannelDiv] = useState("MyChannels");
 
@@ -23,6 +28,64 @@ export default function Myaccount() {
   };
 
   var xpPoints = 40;
+
+  {
+    /* ################################# Payment management ######################################*/
+  }
+  const [purchaseHistory, setPurchaseHistory] = useState([]);
+  const [searchedPayments, setSearchedPayments] = useState([]);
+  const [isFilterDivCkecked, setIsFilterDivCkecked] = useState(false);
+  const [isPaymentSearchCkecked, setIsPaymentSearchCkecked] = useState(false);
+  const [isNewastPaymentCkecked, setIsNewastPaymentCkecked] = useState(true);
+  const [isOldeststPaymentCkecked, setIsOldeststPaymentCkecked] = useState(false);
+  const [isLargAmountCkecked, setIsLargAmountCkecked] = useState(false);
+  const [isLowestAmountCkecked, setIsLowestAmountCkecked] = useState(false);
+  const [AllDeleteConfirmMessage, setAllDeleteConfirmMessage] = useState(false);
+
+  const sortedPaymentsDateAsc = purchaseHistory
+    .slice()
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
+  const sortedPaymentsDateDesc = purchaseHistory
+    .slice()
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  const sortedPaymentsAmountAsc = purchaseHistory
+    .slice()
+    .sort((a, b) => a.officialprice - b.officialprice);
+  const sortedPaymentsAmountDesc = purchaseHistory
+    .slice()
+    .sort((a, b) => b.officialprice - a.officialprice);
+
+  const searchPayment = () => {
+    setIsPaymentSearchCkecked(true);
+    setIsLargAmountCkecked(false);
+    setIsLowestAmountCkecked(false);
+    setIsNewastPaymentCkecked(false);
+    setIsOldeststPaymentCkecked(false);
+    const inputpaymentsearch =
+      document.getElementById("SearchPaymentInput").value;
+    const searchedGames = purchaseHistory.filter(
+      (game) =>
+        game.description &&
+        game.description
+          .toLowerCase()
+          .includes(inputpaymentsearch.toLowerCase())
+    );
+    setSearchedPayments(searchedGames);
+  };
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:3001/getPaymentRecodsByMemberID/${memberID}`)
+      .then((result) => setPurchaseHistory(result.data))
+      .catch((err) => console.log(err));
+  }, [memberID]);
+
+  const handleAllPaymentHistoryDelete = (id) => {
+    axios
+      .delete("http://localhost:3001/deletePaymentHistoryRelatedToMember/" + id)
+      .then((res) => console.log(res))
+      .catch((errr) => console.log(errr));
+  };
 
   return (
     <div>
@@ -331,47 +394,220 @@ export default function Myaccount() {
       {selectedDiv === "Purchase" && (
         <div className="w-11/12 mx-auto mt-5">
           <h1 className="text-white text-2xl font-bold mb-6">
-          Purchase History
+            Purchase History
           </h1>
           <div className="flex ">
             <div className=" w-1/2 p-[2px] bg-gradient-to-l from-[#FE7804] to-[#FF451D] rounded-lg">
               <input
                 className=" bg-[#2A2B2F] text-[#FE7804] rounded-lg w-full  px-3 py-2 placeholder-[#FE7804]"
                 type="search"
+                id="SearchPaymentInput"
                 placeholder="Search Payment"
+                onKeyUp={searchPayment}
               />
             </div>
             <div className="w-1/2 flex justify-between px-3">
-              <span className="h-full bg-gradient-to-r from-[#FE7804] to-[#FF451D] rounded-lg flex items-center px-8 text-white font-semibold">
-                Search
-              </span>
-              <span className="h-full bg-transparent border-2 border-[#FE7804] rounded-lg flex items-center px-8 text-[#FE7804] font-semibold">
+              <div className="flex justify-end relative">
+                <span className="h-full bg-gradient-to-r from-[#FE7804] to-[#FF451D] rounded-lg flex items-center px-8 text-white font-semibold">
+                  Search
+                </span>
+                {isFilterDivCkecked && (
+                  <div className=" absolute -right-[95%] top-0 z-10 bg-black bg-opacity-50 text-white py-3 px-5 rounded-lg leading-8">
+                    <p
+                      onClick={() => {
+                        setIsLargAmountCkecked(false);
+                        setIsLowestAmountCkecked(false);
+                        setIsNewastPaymentCkecked(true);
+                        setIsOldeststPaymentCkecked(false);
+                        setIsPaymentSearchCkecked(false);
+                        setIsFilterDivCkecked(false);
+                      }}
+                      className=" cursor-pointer font-semibold hover:text-[#FF451D]"
+                    >
+                      Latest
+                    </p>
+                    <p
+                      onClick={() => {
+                        setIsLargAmountCkecked(false);
+                        setIsLowestAmountCkecked(false);
+                        setIsNewastPaymentCkecked(false);
+                        setIsOldeststPaymentCkecked(true);
+                        setIsPaymentSearchCkecked(false);
+                        setIsFilterDivCkecked(false);
+                      }}
+                      className=" cursor-pointer font-semibold hover:text-[#FF451D]"
+                    >
+                      Oldest
+                    </p>
+                    <p
+                      onClick={() => {
+                        setIsLargAmountCkecked(true);
+                        setIsLowestAmountCkecked(false);
+                        setIsNewastPaymentCkecked(false);
+                        setIsOldeststPaymentCkecked(false);
+                        setIsPaymentSearchCkecked(false);
+                        setIsFilterDivCkecked(false);
+                      }}
+                      className=" cursor-pointer font-semibold hover:text-[#FF451D]"
+                    >
+                      Descending Price
+                    </p>
+                    <p
+                      onClick={() => {
+                        setIsLargAmountCkecked(false);
+                        setIsLowestAmountCkecked(true);
+                        setIsNewastPaymentCkecked(false);
+                        setIsOldeststPaymentCkecked(false);
+                        setIsPaymentSearchCkecked(false);
+                        setIsFilterDivCkecked(false);
+                      }}
+                      className=" cursor-pointer font-semibold hover:text-[#FF451D]"
+                    >
+                      Ascending Price
+                    </p>
+                  </div>
+                )}
+                <img
+                  onClick={() => setIsFilterDivCkecked(true)}
+                  className="ml-5"
+                  width="40"
+                  height="40"
+                  src="https://img.icons8.com/external-creatype-glyph-colourcreatype/64/FD7E14/external-descending-miscellaneous-user-interface-v1-creatype-glyph-colourcreatype-2.png"
+                  alt="external-descending-miscellaneous-user-interface-v1-creatype-glyph-colourcreatype-2"
+                />
+              </div>
+              <span onClick={() => setAllDeleteConfirmMessage(true)} className=" cursor-pointer h-full bg-transparent border-2 border-[#FE7804] rounded-lg flex items-center px-8 text-[#FE7804] font-semibold">
                 Clear All
               </span>
             </div>
           </div>
 
           <br />
-          <Payment_history_card
-            reason="Gold Plan"
-            amount="10.00"
-            date="10/02/2024"
-          />
-          <Payment_history_card
-            reason="Call of Duty - Modern warefire III "
-            amount="18.00"
-            date="08/01/2024"
-          />
-          <Payment_history_card
-            reason="Mobile legends"
-            amount="20.00"
-            date="19/12/2023"
-          />
-          <Payment_history_card
-            reason="Asphalt 8"
-            amount="22.00"
-            date="10/02/2023"
-          />
+          {isPaymentSearchCkecked && (
+            <div className=" w-full mb-14 mt-8">
+              {searchedPayments.length > 0 ? (
+                <div>
+                  {searchedPayments.map((item) => (
+                    <Payment_history_card
+                      id={item._id}
+                      reason={item.description}
+                      amount={item.officialprice}
+                      date={item.date}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className=" w-full p-7 flex flex-col justify-center items-center mb-9">
+                  <video autoPlay loop className="w-[200px] h-auto">
+                    <source src={SearchError} type="video/webm" />
+                    Your browser does not support the video tag.
+                  </video>
+                  <p className=" text-[#ffffffa0] text-[18px]">
+                    No results found
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {isNewastPaymentCkecked && (
+            <div className=" w-full mb-14 mt-8">
+              {sortedPaymentsDateDesc.map((item) => {
+                return (
+                  <Payment_history_card
+                    id={item._id}
+                    reason={item.description}
+                    amount={item.officialprice}
+                    date={item.date}
+                  />
+                );
+              })}
+            </div>
+          )}
+
+          {isOldeststPaymentCkecked && (
+            <div className=" w-full mb-14 mt-8">
+              {sortedPaymentsDateAsc.map((item) => {
+                return (
+                  <Payment_history_card
+                    id={item._id}
+                    reason={item.description}
+                    amount={item.officialprice}
+                    date={item.date}
+                  />
+                );
+              })}
+            </div>
+          )}
+
+          {isLargAmountCkecked && (
+            <div className=" w-full mb-14 mt-8">
+              {sortedPaymentsAmountDesc.map((item) => {
+                return (
+                  <Payment_history_card
+                    id={item._id}
+                    reason={item.description}
+                    amount={item.officialprice}
+                    date={item.date}
+                  />
+                );
+              })}
+            </div>
+          )}
+
+          {isLowestAmountCkecked && (
+            <div className=" w-full mb-14 mt-8">
+              {sortedPaymentsAmountAsc.map((item) => {
+                return (
+                  <Payment_history_card
+                    id={item._id}
+                    reason={item.description}
+                    amount={item.officialprice}
+                    date={item.date}
+                  />
+                );
+              })}
+            </div>
+          )}
+
+          {AllDeleteConfirmMessage && (
+            <div className=" z-50 fixed top-0 left-0 w-full h-screen flex justify-center bg-black bg-opacity-80 items-center">
+              <div className=" flex flex-col justify-center items-center w-[28%] border-2 border-[#FE7804] border-opacity-50 rounded-lg bg-[#1B1E20]">
+                <div className="mt-6">
+                  <video autoPlay loop className="w-[150px] h-auto">
+                    <source src={DeleteWorning} type="video/webm" />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+                <h1 className=" text-[#FE7804] text-[32px] font-bold">
+                  Warning!
+                </h1>
+                <p className=" mt-5 text-center text-[#b6b6b6] text-base">
+                  Once you delete record, thre's no getting it back.
+                  <br />
+                  Make suer you want to do this.
+                </p>
+                <div className=" w-full mt-12 mb-5 flex justify-end px-8">
+                  <button
+                    onClick={() => setAllDeleteConfirmMessage(false)}
+                    className=" bg-transparent border-2 border-[#FE7804] text-[#FE7804] hover:bg-[#FE7804] hover:text-white rounded-lg py-2 px-5 mr-4 font-semibold"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      handleAllPaymentHistoryDelete(memberID);
+                      setAllDeleteConfirmMessage(false);
+                      window.location.reload();
+                    }}
+                    className=" bg-[#FE7804] border-2 border-[#FE7804] hover:bg-[#FF451D] hover:border-[#FF451D] rounded-lg py-2 px-5 text-white font-semibold"
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -388,9 +624,9 @@ export default function Myaccount() {
               />
             </div>
             <div className="px-3">
-            <span className="h-full bg-gradient-to-r from-[#FE7804] to-[#FF451D] rounded-lg flex items-center px-8 text-white font-semibold">
-              Search
-            </span>
+              <span className="h-full bg-gradient-to-r from-[#FE7804] to-[#FF451D] rounded-lg flex items-center px-8 text-white font-semibold">
+                Search
+              </span>
             </div>
           </div>
           <Game_download_card
@@ -422,6 +658,8 @@ export default function Myaccount() {
           <h1>Settings</h1>
         </div>
       )}
+
+      <Footer />
     </div>
   );
 }

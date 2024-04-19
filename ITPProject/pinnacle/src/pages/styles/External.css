@@ -22,3 +22,7 @@
 .bg-blur {
     backdrop-filter: blur(10px); /* Adjust the blur radius as needed */
   }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
