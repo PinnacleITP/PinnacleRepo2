@@ -7,7 +7,7 @@ export default function Homepage() {
     <div>
       <Header navid='home'/>
       <h1>Home Page</h1>
-      <Link to='/payment'>payment page</Link>
+      
     </div>
   )
 }

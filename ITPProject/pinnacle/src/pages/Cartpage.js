@@ -8,7 +8,21 @@ export default function Cartpage() {
   const [selectedItems, setSelectedItems] = useState([]);
   const [ItemDetails, setItemDetails] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
+  let selecteditemsdescription = ""; 
+ 
   var memberID = "66118d9104fb9c92e1c7d980";
+
+  const itemseter = () =>{
+    
+    selectedItems.forEach((item, index) => {
+      
+      selecteditemsdescription += `${item.game} - ${item.price}`;
+      if (index < selectedItems.length - 1) {
+        selecteditemsdescription += ", ";
+      }
+    });
+  }
+  
 
   useEffect(() => {
     axios
@@ -24,11 +38,14 @@ export default function Cartpage() {
         ...selectedItems,
         { id: itemId, price: price, game: game },
       ]);
-      setTotalAmount(totalAmount + price); // Update total amount
+      setTotalAmount(totalAmount + price);
+       // Update total amount
     } else {
       setSelectedItems(selectedItems.filter((item) => item.id !== itemId));
-      setTotalAmount(totalAmount - price); // Update total amount
+      setTotalAmount(totalAmount - price);
+       // Update total amount
     }
+    
   };
 
   return (
@@ -91,7 +108,8 @@ export default function Cartpage() {
                 </p>
               </div>
               <div>
-              <Link to={`/payment?totalprice=${totalAmount}&page=CS`}>
+        
+              <Link to={`/payment?totalprice=${totalAmount}&sitems=${selecteditemsdescription}&page=CS`}>
                 <button className="basis-2/15 bg-gradient-to-b from-[#FF451D] to-[#FE7804] text-white w-full  py-1 rounded-[10px] text-lg font-bold mt-6">
                   Buy Now
                 </button>
