@@ -705,8 +705,7 @@ export default function GameManagement() {
                 <textarea
                   className="rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 w-full mt-2"
                   type="text"
-                  onChange={(e) => setConfiguration(e.target.value)}
-                >
+                  onChange={(e) => setConfiguration(e.target.value)}                >
                   {itemconfigurations}
                 </textarea>
               </div>
