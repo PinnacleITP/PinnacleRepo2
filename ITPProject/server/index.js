@@ -12,6 +12,8 @@ const MemberModel = require("./models/Member");
 const LeaderBoardModel = require("./models/LeaderBoard");
 const GameModel = require("./models/Game");
 const PaymentModel = require("./models/Payment");
+const CommunityModel = require("./models/Community");
+
 
 const app = express();
 app.use(cors());
@@ -158,6 +160,12 @@ app.get("/:id", (req, res) => {
       .then((game) => res.json(game))
       .catch((err) => res.json(err));
   }
+  //get all the premium plan details
+  else if (id === "Community") {
+    CommunityModel.find({})
+      .then((community) => res.json(community))
+      .catch((err) => res.json(err));
+  }
 });
 
 
@@ -283,6 +291,37 @@ app.delete("/deletePaymentHistoryRelatedToMember/:id", (req, res) => {
     .then(() => res.json({ message: "All payment records deleted successfully." }))
     .catch((err) => res.status(500).json({ error: err.message }));
 });
+
+app.post("/createCommunityPost", (req, res) => {
+  CommunityModel.create(req.body)
+    .then((community) => res.json(community))
+    .catch((err) => res.json(err));
+});
+
+app.put("/updateCommunityPost/:id", (req, res) => {
+  const id = req.params.id;
+  CommunityModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      postUrl: req.body.postUrl,
+      description: req.body.description,
+      name: req.body.name,
+      releasedate: req.body.releasedate,
+      type: req.body.type
+    }
+  )
+    .then((community) => res.json(community))
+    .catch((err) => res.json(err));
+});
+
+//delete game by id
+app.delete("/deleteCommunityPost/:id", (req, res) => {
+  const id = req.params.id;
+  CommunityModel.findByIdAndDelete({ _id: id })
+    .then((game) => res.json(game))
+    .catch((err) => res.json(err));
+});
+
 
 app.listen(3001, () => {
   console.log("Server is Running");
