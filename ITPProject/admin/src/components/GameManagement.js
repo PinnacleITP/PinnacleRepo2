@@ -42,9 +42,7 @@ export default function GameManagement() {
   const [gameDetails, setGameDetails] = useState([]);
 
   const actionGames = gameDetails.filter((game) => game.type === "action");
-  const adventureGames = gameDetails.filter(
-    (game) => game.type === "adventure"
-  );
+  const adventureGames = gameDetails.filter((game) => game.type === "adventure");
   const racingGames = gameDetails.filter((game) => game.type === "racing");
   const shooterGames = gameDetails.filter((game) => game.type === "shooter");
   const sportsGames = gameDetails.filter((game) => game.type === "sports");
@@ -444,7 +442,7 @@ export default function GameManagement() {
       </div>
 
       {isGameAddFormChecked && (
-        <div className=" absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
+        <div className=" fixed top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
           <form
             onSubmit={createGame}
             className="bg-[#1B1E20] rounded-2xl border-2 w-[70%] border-[#FE7804] px-10 py-8"

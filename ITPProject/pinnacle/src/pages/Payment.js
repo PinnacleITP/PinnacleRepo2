@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import Bank_dtails_card from "../components/Bank_dtails_card";
-import Payment_history_card from "../components/Payment_history_card";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -327,6 +327,8 @@ export default function Payment() {
                     crystaldiscount={crystalDiscount}
                     description={paymentDescription}
                     memberid={memberID}
+                    pageid={page}
+                    itemid={itemId}
                     handlePaymentProcess={handlePaymentProcess}
                   />
                 </Elements>
@@ -493,33 +495,6 @@ export default function Payment() {
         </div>
       </div>
 
-      <div className="px-10 py-11">
-        <h1 className="text-white text-[30px] font-bold">Payment History</h1>
-        <div className="bg-[#202022] rounded-xl my-4 p-4 ">
-          <Payment_history_card
-            reason="Pubg Mobile"
-            amount="20.00"
-            date="10/03/2024"
-          />
-          <Payment_history_card
-            reason="Against the Storm"
-            amount="12.00"
-            date="10/03/2024"
-          />
-          <Payment_history_card
-            reason="Silver Plan"
-            amount="5.00"
-            date="10/03/2024"
-          />
-          <Payment_history_card
-            reason="Call of Duty Modern Warfare II"
-            amount="22.00"
-            date="10/03/2024"
-          />
-          {/* <Button value='View more'/> */}
-        </div>
-      </div>
-
       {showForm && (
         <div className="absolute top-0 left-0 z-40 flex items-center justify-center w-full h-full backdrop-blur-lg">
           <form
@@ -629,6 +604,8 @@ export default function Payment() {
           </form>
         </div>
       )}
+
+      <Footer/>
     </div>
   );
 }

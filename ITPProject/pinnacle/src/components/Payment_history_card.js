@@ -1,17 +1,30 @@
 import React, {useState} from "react";
 import axios from "axios";
 import DeleteWorning from "../assets/payment/deleteanimation.webm";
+import SuccessPopup from "../components/SuccessPopup";
+import { HashLoader } from "react-spinners";
 
 
 export default function Payment_history_card(props) {
   var id = props.id;
   const [deleteConfirmMessage, setDeleteConfirmMessage] = useState(false);
+  const [deleteSuccessMessagechecked, setDeleteSuccessMessagechecked] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handlePaymentHistoryDelete = (id) =>{
+    setLoading(true);
     axios.delete('http://localhost:3001/deletePaymentHistory/'+id)
-    .then(res => console.log(res))
+    .then(res => {
+      console.log(res);
+      setLoading(false);
+    setDeleteSuccessMessagechecked(true);
+  })
     .catch(errr => console.log(errr))
   }
+
+  const handleDeleteCloseSuccessPopup = () => {
+    setDeleteSuccessMessagechecked(false);
+  };
 
   return (
     <div className="py-5 px-10 my-3 bg-[#1B1E20] rounded-lg items-center flex justify-between shadow-lg shadow-[#ffffff1a]">
@@ -60,8 +73,7 @@ export default function Payment_history_card(props) {
               </button>
               <button
                 onClick={(e) => {handlePaymentHistoryDelete(props.id);
-                setDeleteConfirmMessage(false);
-                window.location.reload();}}
+                setDeleteConfirmMessage(false);}}
                 className=" bg-[#FE7804] border-2 border-[#FE7804] hover:bg-[#FF451D] hover:border-[#FF451D] rounded-lg py-2 px-5 text-white font-semibold"
               >
                 Confirm
@@ -70,6 +82,17 @@ export default function Payment_history_card(props) {
           </div>
         </div>
       )}
+
+{loading && (
+        <div className=" z-50 fixed top-0 left-0 w-full h-screen flex justify-center bg-black bg-opacity-50 items-center">
+          <HashLoader size="75" color="#FE7804" />
+        </div>
+      )}
+
+
+{deleteSuccessMessagechecked && (
+  <SuccessPopup  type="Delete" item="Community post" onClose={handleDeleteCloseSuccessPopup} /> 
+)}
     </div>
   );
 }
