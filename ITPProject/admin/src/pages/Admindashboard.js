@@ -146,14 +146,14 @@ export default function Admindashboard() {
           <img src={Pinnaclelogo} className="w-[45px] h-[45px] inline-block " />
           <span className="text-[23px] font-bold">PINNACLE ADMIN</span>
           <div className=" mt-9 pl-5 h-screen text-[18px] font-semibold" >
-            <p onClick={membershipManagementHandler} className="py-3 hover:text-[#FF451D] hover:pl-1">Membership Management</p>
-            <p onClick={streamManagementHandler} className="py-3 hover:text-[#FF451D] hover:pl-1">Stream Management</p>
-            <p onClick={gameManagementHandler} className="py-3 hover:text-[#FF451D] hover:pl-1">Game Management</p>
-            <p onClick={cartManagementHandler} className="py-3 hover:text-[#FF451D] hover:pl-1">Cart Management</p>
-            <p onClick={paymentManagementHandler} className="py-3 hover:text-[#FF451D] hover:pl-1">Payment Management</p>
-            <p onClick={communityManagementHandler} className="py-3 hover:text-[#FF451D] hover:pl-1">Community Management</p>
-            <p onClick={feedbackManagementHandler} className="py-3 hover:text-[#FF451D] hover:pl-1">Feedback Management</p>
-            <p onClick={leaderboardManagementHandler} className="py-3 hover:text-[#FF451D] hover:pl-1">Leaderboard Management</p>
+            <p onClick={membershipManagementHandler} className=" cursor-pointer py-3 hover:text-[#FF451D] hover:pl-1">Membership Management</p>
+            <p onClick={streamManagementHandler} className=" cursor-pointer py-3 hover:text-[#FF451D] hover:pl-1">Stream Management</p>
+            <p onClick={gameManagementHandler} className=" cursor-pointer py-3 hover:text-[#FF451D] hover:pl-1">Game Management</p>
+            <p onClick={cartManagementHandler} className=" cursor-pointer py-3 hover:text-[#FF451D] hover:pl-1">Cart Management</p>
+            <p onClick={paymentManagementHandler} className=" cursor-pointer py-3 hover:text-[#FF451D] hover:pl-1">Payment Management</p>
+            <p onClick={communityManagementHandler} className=" cursor-pointer py-3 hover:text-[#FF451D] hover:pl-1">Community Management</p>
+            <p onClick={feedbackManagementHandler} className=" cursor-pointer py-3 hover:text-[#FF451D] hover:pl-1">Feedback Management</p>
+            <p onClick={leaderboardManagementHandler} className=" cursor-pointer py-3 hover:text-[#FF451D] hover:pl-1">Leaderboard Management</p>
           </div>
         </div>
 

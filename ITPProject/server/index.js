@@ -12,8 +12,8 @@ const MemberModel = require("./models/Member");
 const LeaderBoardModel = require("./models/LeaderBoard");
 const GameModel = require("./models/Game");
 const PaymentModel = require("./models/Payment");
+const DownloadModel = require("./models/Downloads");
 const CommunityModel = require("./models/Community");
-
 
 const app = express();
 app.use(cors());
@@ -216,7 +216,7 @@ app.post("/createGame", (req, res) => {
 // get game details using id
 app.get("/getGamebyID/:id", (req, res) => {
   const id = req.params.id;
-  GameModel.findById(id)
+  GameModel.findById({_id : id})
     .then((game) => {
       if (game) {
         res.json(game);
@@ -276,6 +276,21 @@ app.get("/getPaymentRecodsByMemberID/:id", (req, res) => {
     .catch((err) => res.json(err));
 });
 
+app.get("/getlatestPayment/:id", (req, res) => {
+  const id = req.params.id;
+  PaymentModel.find({ memberid: id })
+    .sort({ date: -1 })
+    .limit(1)
+    .then((payment) => {
+      if (payment.length > 0) {
+        res.json(payment);
+      } else {
+        res.json({ message: "No payment records found for this member ID" });
+      }
+    })
+    .catch((err) => res.json(err));
+});
+
 //delete Payment history by id
 app.delete("/deletePaymentHistory/:id", (req, res) => {
   const id = req.params.id;
@@ -290,6 +305,26 @@ app.delete("/deletePaymentHistoryRelatedToMember/:id", (req, res) => {
   PaymentModel.deleteMany({ memberid: memberId })
     .then(() => res.json({ message: "All payment records deleted successfully." }))
     .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+
+app.post("/createdounloadRecod", (req, res) => {
+  DownloadModel.create(req.body)
+    .then((download) => res.json(download))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+app.get("/getDownloadbyMemberid/:id", (req, res) => {
+  const id = req.params.id;
+  DownloadModel.find({ memberid: id })
+    .then((download) => {
+      if (download.length > 0) {
+        res.json(download);
+      } else {
+        res.json({ message: "No payment records found for this member ID" });
+      }
+    })
+    .catch((err) => res.json(err));
 });
 
 app.post("/createCommunityPost", (req, res) => {
@@ -321,7 +356,6 @@ app.delete("/deleteCommunityPost/:id", (req, res) => {
     .then((game) => res.json(game))
     .catch((err) => res.json(err));
 });
-
 
 app.listen(3001, () => {
   console.log("Server is Running");
