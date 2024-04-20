@@ -12,11 +12,8 @@ const MemberModel = require("./models/Member");
 const LeaderBoardModel = require("./models/LeaderBoard");
 const GameModel = require("./models/Game");
 const PaymentModel = require("./models/Payment");
-<<<<<<< Updated upstream
-=======
 const DownloadModel = require("./models/Downloads");
 const CommunityModel = require("./models/Community");
->>>>>>> Stashed changes
 
 const app = express();
 app.use(cors());
@@ -163,6 +160,12 @@ app.get("/:id", (req, res) => {
       .then((game) => res.json(game))
       .catch((err) => res.json(err));
   }
+  //get all the premium plan details
+  else if (id === "Community") {
+    CommunityModel.find({})
+      .then((community) => res.json(community))
+      .catch((err) => res.json(err));
+  }
 });
 
 
@@ -304,8 +307,7 @@ app.delete("/deletePaymentHistoryRelatedToMember/:id", (req, res) => {
     .catch((err) => res.status(500).json({ error: err.message }));
 });
 
-<<<<<<< Updated upstream
-=======
+
 app.post("/createdounloadRecod", (req, res) => {
   DownloadModel.create(req.body)
     .then((download) => res.json(download))
@@ -355,8 +357,6 @@ app.delete("/deleteCommunityPost/:id", (req, res) => {
     .catch((err) => res.json(err));
 });
 
-
->>>>>>> Stashed changes
 app.listen(3001, () => {
   console.log("Server is Running");
 });
