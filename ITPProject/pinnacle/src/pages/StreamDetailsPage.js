@@ -57,8 +57,8 @@ export default function StreamDetailsPage() {
             </div>
         </div>
       </div>
-
       <Footer />
     </div>
   );
+
 }
