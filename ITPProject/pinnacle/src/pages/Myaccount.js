@@ -13,10 +13,13 @@ import Mastre3Icon from "../assets/myAccount/master3.png";
 import LegendIcon from "../assets/myAccount/legend.png";
 import Payment_history_card from "../components/Payment_history_card";
 import Game_download_card from "../components/Game_download_card";
+import Channel from "../components/Channel";
 import Footer from "../components/Footer";
 
 export default function Myaccount() {
-  var memberID = "66118d9104fb9c92e1c7d980";
+  var memberID ="66118d9104fb9c92e1c7d980";
+  // var memberID ="66202ae130ee8bb8602d92b6";
+
   const [selectedDiv, setSelectedDiv] = useState("Dashboard");
   const [channelDiv, setChannelDiv] = useState("MyChannels");
   const [loading, setLoading] = useState(false);
@@ -435,7 +438,8 @@ export default function Myaccount() {
             {/* ######################### MyChannels ########################   */}
             {channelDiv === "MyChannels" && (
               <div className="text-white px-5 mt-3">
-                <h1>MyChannels</h1>
+                <Channel memberID={memberID}/>
+
               </div>
             )}
 
