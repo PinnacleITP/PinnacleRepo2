@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import GameDetailcard from "./GameDetailcard";
 import SearchError from "../assets/animations/searchnotfound.webm";
+import "../pages/styles/extarnal.css";
 
 export default function GameManagement() {
   var pageid = "game";
@@ -44,6 +45,17 @@ export default function GameManagement() {
   const [gameSearch, setGameSearch] = useState(false);
   const [gameSearchResultArr, setGameSearchResultArr] = useState([]);
 
+  const [nameError, setNameError] = useState("");
+  const [typeError, setTypeError] = useState("");
+  const [priceError, setPriceError] = useState("");
+  const [developerError, setDeveloperError] = useState("");
+  const [publisherError, setPublisherError] = useState("");
+  const [releaseDateError, setReleaseDateError] = useState("");
+  const [descriptionError, setDescriptionError] = useState("");
+  const [configurationsError, setConfigurationsError] = useState("");
+  const [imageError, setImageError] = useState("");
+
+  const [submitButtonEnable, setSubmitButtonEnable] = useState(false);
 
   const actionGames = gameDetails.filter((game) => game.type === "action");
   const adventureGames = gameDetails.filter(
@@ -247,9 +259,145 @@ export default function GameManagement() {
   const gamesSearch = () => {
     setGameSearch(true);
     const gameSearchInput = document.getElementById("gameSearchbar").value;
-    const gameSearchResult = gameDetails.filter((item) => item.name && item.name.toLowerCase().includes(gameSearchInput.toLowerCase()));
+    const gameSearchResult = gameDetails.filter(
+      (item) =>
+        item.name &&
+        item.name.toLowerCase().includes(gameSearchInput.toLowerCase())
+    );
     setGameSearchResultArr(gameSearchResult);
-  }
+  };
+
+  const handlePriceChange = (e) => {
+    const enteredPrice = e.target.value;
+    const isValid = /^\d*\.?\d*$/.test(enteredPrice); // Check if input contains only numbers
+
+    if (!isValid) {
+      setSubmitButtonEnable(false);
+      setPriceError("Price cannot contain letters");
+      document.getElementById("gameAddSubmit").disabled = true;
+  
+    } else {
+      setPriceError("");
+      document.getElementById("gameAddSubmit").disabled = false;
+      setSubmitButtonEnable(true);
+    }
+
+    setPrice(enteredPrice);
+  };
+
+  const handleUpdatePriceChange = (e) => {
+    const enteredPrice = e.target.value;
+    const isValid = /^\d*\.?\d*$/.test(enteredPrice); // Check if input contains only numbers
+
+    if (!isValid) {
+      setSubmitButtonEnable(false);
+      setPriceError("Price cannot contain letters");
+      document.getElementById("gameUpdateSubmit").disabled = true;
+    } else {
+      setSubmitButtonEnable(true);
+      setPriceError("");
+      document.getElementById("gameUpdateSubmit").disabled = false;
+    }
+
+    setitemPrice(enteredPrice);
+  };
+
+  const handleDeveloperChange = (e) => {
+    const enteredDeveloper = e.target.value;
+
+    // Check if the entered developer name exceeds the maximum limit of 10 characters
+    if (enteredDeveloper.length > 25) {
+      setDeveloperError("Maximum size limit should be 25 characters");
+      setSubmitButtonEnable(false);
+      document.getElementById("gameAddSubmit").disabled = true;
+    } else {
+      setDeveloperError("");
+      setDeveloper(enteredDeveloper);
+      document.getElementById("gameAddSubmit").disabled = false;
+      setSubmitButtonEnable(true);
+    }
+  };
+
+  const handleUpdateDeveloperChange = (e) => {
+    const enteredDeveloper = e.target.value;
+
+    // Check if the entered developer name exceeds the maximum limit of 10 characters
+    if (enteredDeveloper.length > 25) {
+      setDeveloperError("Maximum size limit should be 25 characters");
+      setSubmitButtonEnable(false);
+      document.getElementById("gameUpdateSubmit").disabled = true;
+
+    } else {
+      setDeveloperError("");
+      setitemDeveloper(enteredDeveloper);
+      setSubmitButtonEnable(true);
+      document.getElementById("gameUpdateSubmit").disabled = false;
+    }
+  };
+
+  const handlePublisherChange = (e) => {
+    const enteredPublisher = e.target.value;
+
+    // Check if the entered publisher name exceeds the maximum limit of 10 characters
+    if (enteredPublisher.length > 10) {
+      setPublisherError("Maximum size limit is 10 characters");
+      setSubmitButtonEnable(false);
+      document.getElementById("gameAddSubmit").disabled = true;
+    } else {
+      setPublisherError("");
+      setPublisher(enteredPublisher);
+      setSubmitButtonEnable(true);
+      document.getElementById("gameAddSubmit").disabled = false;
+    }
+  };
+
+  const handleUpdatePublisherChange = (e) => {
+    const enteredPublisher = e.target.value;
+
+    // Check if the entered publisher name exceeds the maximum limit of 10 characters
+    if (enteredPublisher.length > 10) {
+      setPublisherError("Maximum size limit is 10 characters");
+      setSubmitButtonEnable(false);
+      document.getElementById("gameUpdateSubmit").disabled = true;
+    } else {
+      setPublisherError("");
+      setitemPublisher(enteredPublisher);
+      setSubmitButtonEnable(true);
+      document.getElementById("gameUpdateSubmit").disabled = false;
+    }
+  };
+
+  const handleReleaseDateChange = (e) => {
+    const selectedDate = e.target.value;
+    const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+
+    if (selectedDate > today) {
+      setReleaseDateError("Select a previous day from today");
+      setSubmitButtonEnable(false);
+      document.getElementById("gameAddSubmit").disabled = true;
+    } else {
+      setReleaseDateError("");
+      setReleasDate(selectedDate);
+      setSubmitButtonEnable(true);
+      document.getElementById("gameAddSubmit").disabled = false;
+    }
+  };
+
+  const handleUpdateReleaseDateChange = (e) => {
+    const selectedDate = e.target.value;
+    const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+
+    if (selectedDate > today) {
+      setReleaseDateError("Select a previous day from today");
+      setSubmitButtonEnable(false);
+      document.getElementById("gameUpdateSubmit").disabled = true;
+    } else {
+      setReleaseDateError("");
+      setitemReleasDate(selectedDate);
+      setSubmitButtonEnable(true);
+      document.getElementById("gameUpdateSubmit").disabled = false;
+    }
+  };
 
   return (
     <div className="py-5 px-7 text-white ">
@@ -262,7 +410,8 @@ export default function GameManagement() {
       </button>
       <div className="flex justify-start">
         <div className=" w-1/2 p-[2px] bg-gradient-to-l from-[#FE7804] to-[#FF451D] rounded-2xl">
-          <input id="gameSearchbar"
+          <input
+            id="gameSearchbar"
             className=" bg-[#262628] text-[#FE7804] rounded-2xl w-full  px-3 py-2 placeholder-[#FE7804]"
             type="search"
             placeholder="Search Games...."
@@ -328,159 +477,164 @@ export default function GameManagement() {
       </div>
 
       {gameSearch && (
-      <div className="mt-9">
-        <h1 className="text-[18px] font-bold mb-5">Searched Results</h1>
-        {gameSearchResultArr.length > 0 ? (
-        <div className="flex justify-between flex-wrap">
-          {gameSearchResultArr.map((item) => (
-            <div
-              onClick={() => gameDeyailcardHandle(item._id)}
-              className="p-0 m-0 w-[22%]"
-            >
-              <GameDetailcard
-              image={item.gameImageUrl}
-              name={item.name}
-              id={item._id}
-            />
-            </div>
-        ))}</div>):(<div className=" w-full p-7 flex flex-col justify-center items-center mb-9">
-        <video autoPlay loop className="w-[200px] h-auto">
-          <source src={SearchError} type="video/webm" />
-          Your browser does not support the video tag.
-        </video>
-        <p className=" text-[#ffffffa0] text-[18px]">
-          No results found
-        </p>
-      </div>)}
-      </div>)}
-      {!gameSearch && (<div className="mt-9">
-        {isAllChecked && (
-          <div>
-            <h1 className=" text-[18px] font-bold mb-5">All games</h1>
+        <div className="mt-9">
+          <h1 className="text-[18px] font-bold mb-5">Searched Results</h1>
+          {gameSearchResultArr.length > 0 ? (
             <div className="flex justify-between flex-wrap">
-              {gameDetails.map((item) => {
-                return (
-                  <div
-                    onClick={() => gameDeyailcardHandle(item._id)}
-                    className="p-0 m-0 w-[22%]"
-                  >
-                    <GameDetailcard
-                      image={item.gameImageUrl}
-                      name={item.name}
-                      id={item._id}
-                    />
-                  </div>
-                );
-              })}
+              {gameSearchResultArr.map((item) => (
+                <div
+                  onClick={() => gameDeyailcardHandle(item._id)}
+                  className="p-0 m-0 w-[22%]"
+                >
+                  <GameDetailcard
+                    image={item.gameImageUrl}
+                    name={item.name}
+                    id={item._id}
+                  />
+                </div>
+              ))}
             </div>
-          </div>
-        )}
-        {isActionChecked && (
-          <div>
-            <h1 className=" text-[18px] font-bold mb-5">Action games</h1>
-            <div className="flex justify-between flex-wrap">
-              {actionGames.map((item) => {
-                return (
-                  <div
-                    onClick={() => gameDeyailcardHandle(item._id)}
-                    className="p-0 m-0 w-[22%]"
-                  >
-                    <GameDetailcard
-                      image={item.gameImageUrl}
-                      name={item.name}
-                      id={item._id}
-                    />
-                  </div>
-                );
-              })}
+          ) : (
+            <div className=" w-full p-7 flex flex-col justify-center items-center mb-9">
+              <video autoPlay loop className="w-[200px] h-auto">
+                <source src={SearchError} type="video/webm" />
+                Your browser does not support the video tag.
+              </video>
+              <p className=" text-[#ffffffa0] text-[18px]">No results found</p>
             </div>
-          </div>
-        )}
-        {isAdventureChecked && (
-          <div>
-            <h1 className=" text-[18px] font-bold mb-5">Adventure games</h1>
-            <div className="flex justify-between flex-wrap">
-              {adventureGames.map((item) => {
-                return (
-                  <div
-                    onClick={() => gameDeyailcardHandle(item._id)}
-                    className="p-0 m-0 w-[22%]"
-                  >
-                    <GameDetailcard
-                      image={item.gameImageUrl}
-                      name={item.name}
-                      id={item._id}
-                    />
-                  </div>
-                );
-              })}
+          )}
+        </div>
+      )}
+      {!gameSearch && (
+        <div className="mt-9">
+          {isAllChecked && (
+            <div>
+              <h1 className=" text-[18px] font-bold mb-5">All games</h1>
+              <div className="flex justify-between flex-wrap">
+                {gameDetails.map((item) => {
+                  return (
+                    <div
+                      onClick={() => gameDeyailcardHandle(item._id)}
+                      className="p-0 m-0 w-[22%]"
+                    >
+                      <GameDetailcard
+                        image={item.gameImageUrl}
+                        name={item.name}
+                        id={item._id}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        )}
-        {isRacingChecked && (
-          <div>
-            <h1 className=" text-[18px] font-bold mb-5">Racing games</h1>
-            <div className="flex justify-between flex-wrap">
-              {racingGames.map((item) => {
-                return (
-                  <div
-                    onClick={() => gameDeyailcardHandle(item._id)}
-                    className="p-0 m-0 w-[22%]"
-                  >
-                    <GameDetailcard
-                      image={item.gameImageUrl}
-                      name={item.name}
-                      id={item._id}
-                    />
-                  </div>
-                );
-              })}
+          )}
+          {isActionChecked && (
+            <div>
+              <h1 className=" text-[18px] font-bold mb-5">Action games</h1>
+              <div className="flex justify-between flex-wrap">
+                {actionGames.map((item) => {
+                  return (
+                    <div
+                      onClick={() => gameDeyailcardHandle(item._id)}
+                      className="p-0 m-0 w-[22%]"
+                    >
+                      <GameDetailcard
+                        image={item.gameImageUrl}
+                        name={item.name}
+                        id={item._id}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        )}
-        {isShootingChecked && (
-          <div>
-            <h1 className=" text-[18px] font-bold mb-5">Shooter games</h1>
-            <div className="flex justify-between flex-wrap">
-              {shooterGames.map((item) => {
-                return (
-                  <div
-                    onClick={() => gameDeyailcardHandle(item._id)}
-                    className="p-0 m-0 w-[22%]"
-                  >
-                    <GameDetailcard
-                      image={item.gameImageUrl}
-                      name={item.name}
-                      id={item._id}
-                    />
-                  </div>
-                );
-              })}
+          )}
+          {isAdventureChecked && (
+            <div>
+              <h1 className=" text-[18px] font-bold mb-5">Adventure games</h1>
+              <div className="flex justify-between flex-wrap">
+                {adventureGames.map((item) => {
+                  return (
+                    <div
+                      onClick={() => gameDeyailcardHandle(item._id)}
+                      className="p-0 m-0 w-[22%]"
+                    >
+                      <GameDetailcard
+                        image={item.gameImageUrl}
+                        name={item.name}
+                        id={item._id}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        )}
-        {isSportChecked && (
-          <div>
-            <h1 className=" text-[18px] font-bold mb-5">Sport games</h1>
-            <div className="flex justify-between flex-wrap">
-              {sportsGames.map((item) => {
-                return (
-                  <div
-                    onClick={() => gameDeyailcardHandle(item._id)}
-                    className="p-0 m-0 w-[22%]"
-                  >
-                    <GameDetailcard
-                      image={item.gameImageUrl}
-                      name={item.name}
-                      id={item._id}
-                    />
-                  </div>
-                );
-              })}
+          )}
+          {isRacingChecked && (
+            <div>
+              <h1 className=" text-[18px] font-bold mb-5">Racing games</h1>
+              <div className="flex justify-between flex-wrap">
+                {racingGames.map((item) => {
+                  return (
+                    <div
+                      onClick={() => gameDeyailcardHandle(item._id)}
+                      className="p-0 m-0 w-[22%]"
+                    >
+                      <GameDetailcard
+                        image={item.gameImageUrl}
+                        name={item.name}
+                        id={item._id}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        )}
-      </div>)}
+          )}
+          {isShootingChecked && (
+            <div>
+              <h1 className=" text-[18px] font-bold mb-5">Shooter games</h1>
+              <div className="flex justify-between flex-wrap">
+                {shooterGames.map((item) => {
+                  return (
+                    <div
+                      onClick={() => gameDeyailcardHandle(item._id)}
+                      className="p-0 m-0 w-[22%]"
+                    >
+                      <GameDetailcard
+                        image={item.gameImageUrl}
+                        name={item.name}
+                        id={item._id}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          {isSportChecked && (
+            <div>
+              <h1 className=" text-[18px] font-bold mb-5">Sport games</h1>
+              <div className="flex justify-between flex-wrap">
+                {sportsGames.map((item) => {
+                  return (
+                    <div
+                      onClick={() => gameDeyailcardHandle(item._id)}
+                      className="p-0 m-0 w-[22%]"
+                    >
+                      <GameDetailcard
+                        image={item.gameImageUrl}
+                        name={item.name}
+                        id={item._id}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Add new game */}
       {isGameAddFormChecked && (
@@ -509,12 +663,14 @@ export default function GameManagement() {
                 <label>Game Name</label>
                 <br />
                 <input
-                  className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
+                  className={`w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 ${
+                    nameError ? "border-red-500" : "border-[#D8DAE3]"
+                  } border-opacity-20 mt-2`}
                   type="text"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
                   required
                 />
+                {nameError && <span className="text-red-500">{nameError}</span>}
               </div>
 
               <div className="w-[30%]">
@@ -538,13 +694,17 @@ export default function GameManagement() {
                 <label>Price</label>
                 <br />
                 <input
-                  className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
-                  type="number"
+                  className={`w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 ${
+                    priceError ? "border-red-500" : "border-[#D8DAE3]"
+                  } border-opacity-20 mt-2`}
+                  type="text"
                   value={price}
-                  onChange={(e) => setPrice(parseFloat(e.target.value))}
-                  min="0"
+                  onChange={handlePriceChange}
                   required
                 />
+                {priceError && (
+                  <span className="text-red-500">{priceError}</span>
+                )}
               </div>
             </div>
 
@@ -553,34 +713,49 @@ export default function GameManagement() {
                 <label>Developer</label>
                 <br />
                 <input
-                  className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
+                  className={`w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 ${
+                    developerError ? "border-red-500" : "border-[#D8DAE3]"
+                  } border-opacity-20 mt-2`}
                   type="text"
                   value={developer}
-                  onChange={(e) => setDeveloper(e.target.value)}
+                  onChange={handleDeveloperChange}
                   required
                 />
+                {developerError && (
+                  <span className="text-red-500">{developerError}</span>
+                )}
               </div>
 
               <div className="w-[30%]">
                 <label>Publisher</label>
                 <input
-                  className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
+                  className={`w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 ${
+                    publisherError ? "border-red-500" : "border-[#D8DAE3]"
+                  } border-opacity-20 mt-2`}
                   type="text"
                   value={publisher}
-                  onChange={(e) => setPublisher(e.target.value)}
+                  onChange={handlePublisherChange}
                   required
                 />
+                {publisherError && (
+                  <span className="text-red-500">{publisherError}</span>
+                )}
               </div>
 
               <div className="w-[30%]">
-              <label>Release date</label>
+                <label>Release date</label>
                 <input
-                  className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
+                  className={`w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 ${
+                    releaseDateError ? "border-red-500" : "border-[#D8DAE3]"
+                  } border-opacity-20 mt-2`}
                   type="date"
                   value={releasdate}
-                  onChange={(e) => setReleasDate(e.target.value)}
+                  onChange={handleReleaseDateChange}
                   required
                 />
+                {releaseDateError && (
+                  <span className="text-red-500">{releaseDateError}</span>
+                )}
               </div>
             </div>
 
@@ -620,8 +795,11 @@ export default function GameManagement() {
               </div>
             </div>
             <button
+              id="gameAddSubmit"
               type="submit"
-              className=" float-right bg-transparent text-[#FE7804] border-2 border-[#FE7804] hover:bg-[#FE7804] hover:text-white rounded-lg px-5 py-2 text-[16px] font-bold"
+              className={`float-right bg-transparent rounded-lg px-5 py-2 text-[16px] font-bold ${
+                !submitButtonEnable ? "btndisabled" : "btnenable"
+              }`}
             >
               Submit
             </button>
@@ -656,12 +834,14 @@ export default function GameManagement() {
                 <label>Game Name</label>
                 <br />
                 <input
-                  className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
+                  className={`w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 ${
+                    nameError ? "border-red-500" : "border-[#D8DAE3]"
+                  } border-opacity-20 mt-2`}
                   type="text"
                   value={itemname}
-                  onChange={(e) => setitemName(e.target.value)}
                   required
                 />
+                {nameError && <span className="text-red-500">{nameError}</span>}
               </div>
 
               <div className="w-[30%]">
@@ -685,13 +865,17 @@ export default function GameManagement() {
                 <label>Price</label>
                 <br />
                 <input
-                  className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
-                  type="number"
+                  className={`w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 ${
+                    priceError ? "border-red-500" : "border-[#D8DAE3]"
+                  } border-opacity-20 mt-2`}
+                  type="text"
                   value={itemprice}
-                  onChange={(e) => setitemPrice(parseFloat(e.target.value))}
-                  min="0"
+                  onChange={handleUpdatePriceChange}
                   required
                 />
+                {priceError && (
+                  <span className="text-red-500">{priceError}</span>
+                )}
               </div>
             </div>
 
@@ -700,34 +884,49 @@ export default function GameManagement() {
                 <label>Developer</label>
                 <br />
                 <input
-                  className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
+                  className={`w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 ${
+                    developerError ? "border-red-500" : "border-[#D8DAE3]"
+                  } border-opacity-20 mt-2`}
                   type="text"
                   value={itemdeveloper}
-                  onChange={(e) => setitemDeveloper(e.target.value)}
+                  onChange={handleUpdateDeveloperChange}
                   required
                 />
+                {developerError && (
+                  <span className="text-red-500">{developerError}</span>
+                )}
               </div>
 
               <div className="w-[30%]">
                 <label>Publisher</label>
                 <input
-                  className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
+                  className={`w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 ${
+                    publisherError ? "border-red-500" : "border-[#D8DAE3]"
+                  } border-opacity-20 mt-2`}
                   type="text"
                   value={itempublisher}
-                  onChange={(e) => setitemPublisher(e.target.value)}
+                  onChange={handleUpdatePublisherChange}
                   required
                 />
+                {publisherError && (
+                  <span className="text-red-500">{publisherError}</span>
+                )}
               </div>
 
               <div className="w-[30%]">
-                <label>Releas date</label>
+                <label>Release date</label>
                 <input
-                  className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
+                  className={`w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 ${
+                    releaseDateError ? "border-red-500" : "border-[#D8DAE3]"
+                  } border-opacity-20 mt-2`}
                   type="date"
                   value={itemreleasdate}
-                  onChange={(e) => setitemReleasDate(e.target.value)}
+                  onChange={handleUpdateReleaseDateChange}
                   required
                 />
+                {releaseDateError && (
+                  <span className="text-red-500">{releaseDateError}</span>
+                )}
               </div>
             </div>
 
@@ -765,14 +964,18 @@ export default function GameManagement() {
                   className="rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 w-full mt-2"
                   type="text"
                   onChange={(e) => setitemConfiguration(e.target.value)}
-                  required                >
+                  required
+                >
                   {itemconfigurations}
                 </textarea>
               </div>
             </div>
             <button
+              id="gameUpdateSubmit"
               type="submit"
-              className=" float-right bg-transparent text-[#FE7804] border-2 border-[#FE7804] hover:bg-[#FE7804] hover:text-white rounded-lg px-5 py-2 text-[16px] font-bold"
+              className={`float-right bg-transparent rounded-lg px-5 py-2 text-[16px] font-bold ${
+                !submitButtonEnable ? "btndisabled" : "btnenable"
+              }`}
             >
               Update
             </button>
@@ -902,7 +1105,10 @@ export default function GameManagement() {
             </div>
             <div className="flex justify-end">
               <button
-                onClick={() => {setIsGameUpdateFormCheked(true); setIsGameDetailCardCheked(false);}}
+                onClick={() => {
+                  setIsGameUpdateFormCheked(true);
+                  setIsGameDetailCardCheked(false);
+                }}
                 className=" bg-transparent text-[#FE7804] border-2 border-[#FE7804] hover:bg-[#FE7804] hover:text-white rounded-lg px-5 py-2 text-[16px] font-bold"
               >
                 Upgrade
