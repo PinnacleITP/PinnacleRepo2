@@ -13,6 +13,7 @@ import Footer from "../components/Footer";
 import Stream_Display_Card from "../components/Stream_Display_Card";
 
 export default function Streampage() {
+
   var pageid = "stream";
   const [streamDetailsCard, setStreamDetailsCard] = useState([]);
   const [streamFilterResuls, setStreamFilterResuls] = useState([]);
@@ -22,10 +23,8 @@ export default function Streampage() {
   const [isRacingChecked, setIsRacingCkecked] = useState(false);
   const [isShootingChecked, setIsShootingCkecked] = useState(false);
   const [isSportChecked, setIsSportCkecked] = useState(false);
-  
   const [isGameFilterChecked, setIisGameFilterChecked] = useState(false);
-
-
+  
   const actionStreams = streamDetailsCard.filter((stream) => stream.type === "action");
   const adventureStreams = streamDetailsCard.filter((stream) => stream.type === "adventure");
   const racingStreams = streamDetailsCard.filter((stream) => stream.type === "racing");
@@ -48,6 +47,7 @@ export default function Streampage() {
   };
 
   const actionGameHandler = () => {
+
     setIisGameFilterChecked(false);
     setIsAllCkecked(false);
     setIsActionCkecked(true);
@@ -78,6 +78,7 @@ export default function Streampage() {
   };
 
   const shootingGameHandler = () => {
+
     setIisGameFilterChecked(false);
     setIsAllCkecked(false);
     setIsActionCkecked(false);
@@ -96,7 +97,6 @@ export default function Streampage() {
     setIsShootingCkecked(false);
     setIsSportCkecked(true);
   };
-  
 
   //read all stream details
   useEffect(() => {
@@ -145,6 +145,7 @@ export default function Streampage() {
             <p className=" font-semibold text-center mt-3">Roblox</p>
           </div>
           <div onClick={() => {setIisGameFilterChecked(true); filterByGameName("othet")}} className=" w-[11%]">
+
             <img className=" w-full h-[250px]" src={CallofDuty} />
             <p className=" font-semibold text-center mt-3">Other</p>
           </div>
@@ -217,6 +218,7 @@ export default function Streampage() {
         </div>
       </div>
 {!isGameFilterChecked && (
+
       <div className=" w-11/12 mx-auto">
         {isAllChecked && (
           <div>
@@ -242,6 +244,7 @@ export default function Streampage() {
                   </div>
                 );
               })}
+
             </div>
           </div>
         )}

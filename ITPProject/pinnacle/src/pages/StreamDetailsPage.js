@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import cod from "../assets/games/cod2.jpg";
 import Header from "../components/Header";
@@ -45,7 +46,7 @@ export default function StreamDetailsPage() {
               {/* <img className=" w-full" src={streamMoreDetails.videoUrl} /> */}
               <video controls className="w-full h-full"
                 src={streamMoreDetails.videoUrl} type="video/mp4" />
-              
+
             </div>
             <div className="py-4 px-7 flex justify-start relative items-center">
               <div>
@@ -59,6 +60,7 @@ export default function StreamDetailsPage() {
                   {streamMoreDetails.name}
                 </p>
                 <p className="text-[18px] text-[#ffffff9a]">{channelName}</p>
+
               </div>
               <div className=" ml-5">
                 <div className=" p-[2px] bg-gradient-to-t from-[#FF451D] to-[#FE7804] relative rounded-3xl cursor-pointer">
@@ -119,8 +121,8 @@ export default function StreamDetailsPage() {
           </div>
         </div>
       </div>
-
       <Footer />
     </div>
   );
+
 }

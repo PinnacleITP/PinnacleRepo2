@@ -1,0 +1,4 @@
+.superbtn:hover ~ .bgdivbtn {
+    margin-right: 0px;
+    background-color: blue;
+}

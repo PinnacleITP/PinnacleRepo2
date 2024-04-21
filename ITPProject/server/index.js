@@ -17,6 +17,7 @@ const CommunityModel = require("./models/Community");
 const StreamModel = require("./models/Stream");
 const ChannelModel = require("./models/Channel");
 
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -438,6 +439,7 @@ app.get("/getChannelByStreamID/:channelid", (req, res) => {
     .then((channel) => res.json(channel))
     .catch((err) => res.json(err));
 });
+
 
 app.listen(3001, () => {
   console.log("Server is Running");

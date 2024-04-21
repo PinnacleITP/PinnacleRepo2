@@ -20,6 +20,7 @@ export default function successpopup(props) {
             </h1>
             <p className=" text-[#ffffff90] mt-5 text-center text-base">
               {props.item} {props.type}d successfully from<br/> the Pinnacle Database.
+
             </p>
             <div className=" w-full mt-12 mb-5 flex justify-end px-8">
               <button
