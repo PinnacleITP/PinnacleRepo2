@@ -397,7 +397,6 @@ export default function GameManagement() {
     }
   };
 
-
   const handleNameChange = (event) => {
     const newName = event.target.value;
     setName(newName);
@@ -423,7 +422,6 @@ export default function GameManagement() {
       setNameError(""); // Clear the error if the name is not empty
     }
   };
-
 
   return (
     <div className="py-5 text-white px-7 ">
@@ -460,7 +458,7 @@ export default function GameManagement() {
             />
           </button>
           {isFilterBtnChecked && (
-            <div className="absolute z-10 py-3 pl-5 pr-10 leading-7 bg-black bg-opacity-85">
+            <div className="absolute z-10 py-3 pl-5 pr-10 leading-7 bg-black  bg-opacity-85">
               <p
                 onClick={allGameHandler}
                 className=" hover:text-[#FE7804] cursor-pointer"
@@ -521,7 +519,7 @@ export default function GameManagement() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center w-full p-7 mb-9">
+            <div className="flex flex-col items-center justify-center w-full  p-7 mb-9">
               <video autoPlay loop className="w-[200px] h-auto">
                 <source src={SearchError} type="video/webm" />
                 Your browser does not support the video tag.
@@ -664,11 +662,7 @@ export default function GameManagement() {
 
       {/* Add new game */}
       {isGameAddFormChecked && (
-
-        <div className="absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
-
-        <div className="fixed top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
-
+        <div className="fixed top-0 left-0 z-10 flex items-center justify-center w-full h-full  backdrop-blur-lg">
           <form
             onSubmit={createGame}
             className="bg-[#1B1E20] rounded-2xl border-2 w-[70%] border-[#FE7804] px-10 py-8"
@@ -699,7 +693,6 @@ export default function GameManagement() {
                   type="text"
                   value={name}
                   onChange={handleNameChange}
-
                   required
                 />
                 {nameError && <span className="text-red-500">{nameError}</span>}
@@ -841,7 +834,7 @@ export default function GameManagement() {
 
       {/* update Game */}
       {isGameUpdateFormCheked && (
-        <div className="absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
+        <div className="absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full  backdrop-blur-lg">
           <form
             onSubmit={gameUpdate}
             className="bg-[#1B1E20] rounded-2xl border-2 w-[70%] border-[#FE7804] px-10 py-8"
@@ -1017,7 +1010,7 @@ export default function GameManagement() {
       )}
 
       {isGameDetailCardCheked && (
-        <div className="absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
+        <div className="absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full  backdrop-blur-lg">
           <div className="bg-[#1B1E20] rounded-2xl border-2 w-[70%] border-[#FE7804] px-10 py-8">
             <div>
               <h1 className=" inline-block text-[25px] font-bold mb-6">
