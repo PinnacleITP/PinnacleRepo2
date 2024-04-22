@@ -21,6 +21,7 @@ export default function Channel(props) {
   const [channelName, setChannelName] = useState("");
   const [channelDescription, setChannelDescription] = useState("");
   const [channelDp, setChannelDp] = useState(null);
+  const [channelViewCount, setChannelViewCount] = useState(0);
 
   const navigate = useNavigate();
   const [streamDetails, setStreamDetails] = useState([]);
@@ -46,6 +47,7 @@ export default function Channel(props) {
 
   // Read all stream details
   useEffect(() => {
+    const fetchstreamData = () => {
     // Check if channelDetails is not null before accessing its _id property
     if (channelDetails && channelDetails._id) {
       axios
@@ -53,6 +55,10 @@ export default function Channel(props) {
         .then((result) => setStreamDetails(result.data))
         .catch((err) => console.log(err));
     }
+  };
+  fetchstreamData();
+    const intervalId = setInterval(fetchstreamData, 5000);
+    return () => clearInterval(intervalId);
   }, [channelDetails?._id]); // Using optional chaining to access _id property
 
   // Function to upload file to Cloudinary
@@ -120,6 +126,7 @@ export default function Channel(props) {
       // window.location.reload();
       setLoading(false);
       setCreateSuccessMessagechecked(true);
+      handleChannelfunction("channelVideos");
       setName("");
       setVideo("");
       setThumbnail("");
@@ -148,9 +155,11 @@ export default function Channel(props) {
         channelDescription,
         channelDp: dpUrl,
         memberID: props.memberID,
+        viewCount:channelViewCount,
       });
       console.log("Channel created successfully:", response.data);
       setCreateSuccessMessagechecked(true);
+      handleChannelfunction("channelVideos");
       setLoading(false);
       // window.location.reload();
     } catch (error) {
@@ -174,7 +183,9 @@ export default function Channel(props) {
             >
               <h1>Create Channel</h1>
             </div>
-            <h1 className="text-[#ffffff9d] opa">
+
+            <h1 className="text-[#ffffff9d]">
+
               Stream your videos on Pinnacle by creating your own channel.
             </h1>
           </div>
@@ -203,9 +214,8 @@ export default function Channel(props) {
               </h1>
             </div>
             <div
-              className="absolute right-0 bottom-0 my-5 mr-5 bg-gradient-to-tr from-[#FF451D] to-[#FE7804] px-4 py-2 text-[18px] font-semibold rounded-lg"
+              className=" cursor-pointer absolute right-0 bottom-0 my-5 mr-5 bg-gradient-to-tr from-[#FF451D] to-[#FE7804] px-4 py-2 text-[18px] font-semibold rounded-lg"
               onClick={() => handleChannelfunction("addStream")}
-              style={{ cursor: "pointer" }}
             >
               <h1>Add new Stream</h1>
             </div>

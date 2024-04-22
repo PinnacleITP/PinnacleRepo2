@@ -402,10 +402,7 @@ export default function Payment() {
               <div className="mb-1 text-[18px] font-semibold text-[#D9D9D9]">
                 <span>Official Price</span>
                 <span className="float-right">
-                  ${" "}
-                  {typeof officialPrice === "number"
-                    ? officialPrice.toFixed(2)
-                    : ""}
+                  ${" "}{typeof officialPrice === "number" ? officialPrice.toFixed(2) : ""}
                 </span>
               </div>
               <div className="px-4 mb-3">

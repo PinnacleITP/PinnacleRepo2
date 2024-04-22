@@ -9,10 +9,14 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import axios from "axios";
 
 export default function GameDetailsPage() {
+  var memberID = "66118d9104fb9c92e1c7d980";
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const gameId = queryParams.get("gameid");
   const [gamedetail, setGameDetail] = useState([]);
+  const [downloads, setDownloads] = useState([]);
+  const [buyBtnEnable, setBuyBtnEnable] = useState(true);
+  const [payError, setPayError] = useState(false);
 
   useEffect(() => {
     axios
@@ -21,109 +25,114 @@ export default function GameDetailsPage() {
       .catch((err) => console.log(err));
   }, [gameId]);
 
+  useEffect(() => {
+    const fetchDownloadData = () => {
+      axios
+        .get(`http://localhost:3001/getDownloadbyMemberid/${memberID}`)
+        .then((result) => {
+          const data = result.data;
+          if (Array.isArray(data)) {
+            setDownloads(data);
+          } else {
+            setDownloads([]);
+            console.log("Download data is not an array:", data);
+          }
+        })
+        .catch((err) => console.log(err));
+    };
+    fetchDownloadData();
+    const intervalId = setInterval(fetchDownloadData, 5000);
+    return () => clearInterval(intervalId);
+  }, [memberID]);
+
+  useEffect(() => {
+    downloads.forEach((item) => {
+      if (item.gameid == gameId) {
+        setBuyBtnEnable(false);
+      }
+    });
+  }, [gameId, downloads]);
+
+  const paymentValidationMessage = () => {
+    setPayError(true);
+
+    setTimeout(() => {
+      setPayError(false);
+    }, 5000);
+  };
+
   return (
     <div className="text-white">
       <Header navid="games" />
       <div
-        className="bg-red-500 w-full -z-10 relative h-[600px]"
+        className=" w-full -z-10 relative h-[600px]"
         style={{ backgroundImage: `url(${gamedetail.gameImageUrl})` }}
       >
-        {/* <img className="w-full absolute bottom-[-5px]" src={polygon} /> */}
-        {/* <div className="flex justify-around absolute bottom-4">
-          <div className=" w-[40%] z-10">
-            <img src={gamedetail.gameImageUrl} className=" w-full rounded-lg" />
-          </div>
-          <div className="w-[40%] bg-white bg-opacity-10 bg-blur rounded-lg p-8 z-[500]">
-            <h1 className="text-center text-[32px] font-bold mb-2 text-[#FE7804]">
-              {gamedetail.name}
-            </h1>
-            <p className="text-[#ffffff73] text-[16px] text-center">
-              <img
-                className=" inline-block mr-2"
-                width="25"
-                height="25"
-                src="https://img.icons8.com/glyph-neue/64/40C057/download--v1.png"
-                alt="download--v1"
-              />
-              {gamedetail.downloadCount} Downloads
-            </p>
-            <div className=" bg-transparent flex items-center justify-center mb-2 mt-1">
-              <select className=" bg-[#000000] bg-opacity-20 py-2 px-10 rounded-md">
-                <option>Windows</option>
-                <option>Linux</option>
-              </select>
-            </div>
-            <p className="text-[#ffffff73] text-[16px] line-through text-center">
-              {typeof gamedetail.price === "number"
-                ? `$${(gamedetail.price + 5).toFixed(2)}`
-                : ""}
-            </p>
-            <p className="text-[#FE7804] font-bold text-[25px] text-center">
-              {typeof gamedetail.price === "number"
-                ? `$${gamedetail.price.toFixed(2)}`
-                : ""}
-            </p>
-            <div className="my-4 mx-auto flex justify-around">
-              <div className=" bg-[#FE7804] py-2 px-10 rounded-md mx-4 w-2/5 text-center font-semibold">
-                Add to Cart
-              </div>
-                <div className=" bg-[#FF451D] py-2 px-10 rounded-md mx-4 w-2/5 text-center z-50 font-semibold">
-              <Link to={`/payment?planId=${gamedetail._id}&page=G`}>
-                  Buy now
-              </Link>
-                </div>
-            </div>
-          </div>
-        </div> */}
         <img className="w-full absolute bottom-[-5px]" src={polygon} />
       </div>
       <div className=" z-50 absolute top-[40%] w-full flex justify-around">
-      {/* <div className="flex justify-around absolute bottom-4"> */}
-          <div className=" w-[40%] z-10">
-            <img src={gamedetail.gameImageUrl} className=" w-full rounded-lg" />
-          </div>
-          <div className="w-[40%] bg-white bg-opacity-10 bg-blur rounded-lg p-8 z-[500]">
-            <h1 className="text-center text-[32px] font-bold mb-2 text-[#FE7804]">
-              {gamedetail.name}
-            </h1>
-            <p className="text-[#ffffff73] text-[16px] text-center">
-              <img
-                className=" inline-block mr-2"
-                width="25"
-                height="25"
-                src="https://img.icons8.com/glyph-neue/64/40C057/download--v1.png"
-                alt="download--v1"
-              />
-              {gamedetail.downloadCount} Downloads
-            </p>
-            <div className=" bg-transparent flex items-center justify-center mb-2 mt-1">
-              <select className=" bg-[#000000] bg-opacity-20 py-2 px-10 rounded-md">
-                <option>Windows</option>
-                <option>Linux</option>
-              </select>
-            </div>
-            <p className="text-[#ffffff73] text-[16px] line-through text-center">
-              {typeof gamedetail.price === "number"
-                ? `$${(gamedetail.price + 5).toFixed(2)}`
-                : ""}
-            </p>
-            <p className="text-[#FE7804] font-bold text-[25px] text-center">
-              {typeof gamedetail.price === "number"
-                ? `$${gamedetail.price.toFixed(2)}`
-                : ""}
-            </p>
-            <div className="my-4 mx-auto flex justify-around">
-              <div className=" bg-[#FE7804] py-2 px-10 rounded-md mx-4 w-2/5 text-center font-semibold">
-                Add to Cart
-              </div>
-                <div className=" bg-[#FF451D] py-2 px-10 rounded-md mx-4 w-2/5 text-center z-50 font-semibold">
-              <Link to={`/payment?planId=${gamedetail._id}&page=G`}>
-                  Buy now
-              </Link>
-                </div>
-            </div>
-          </div>
+        <div className=" w-[40%] z-10">
+          <img src={gamedetail.gameImageUrl} className=" w-full rounded-lg" />
         </div>
+        <div className="w-[40%] bg-white bg-opacity-10 bg-blur rounded-lg p-8 z-[500]">
+          <h1 className="text-center text-[32px] font-bold mb-2 text-[#FE7804]">
+            {gamedetail.name}
+          </h1>
+          <p className="text-[#ffffff73] text-[16px] text-center">
+            <img
+              className=" inline-block mr-2"
+              width="25"
+              height="25"
+              src="https://img.icons8.com/glyph-neue/64/40C057/download--v1.png"
+              alt="download--v1"
+            />
+            {gamedetail.downloadCount} Downloads
+          </p>
+          <div className=" bg-transparent flex items-center justify-center mb-2 mt-1">
+            <select className=" bg-[#000000] bg-opacity-20 py-2 px-10 rounded-md">
+              <option>Windows</option>
+              <option>Linux</option>
+            </select>
+          </div>
+          <p className="text-[#ffffff73] text-[16px] line-through text-center">
+            {typeof gamedetail.price === "number"
+              ? `$${(gamedetail.price + 5).toFixed(2)}`
+              : ""}
+          </p>
+          <p className="text-[#FE7804] font-bold text-[25px] text-center">
+            {typeof gamedetail.price === "number"
+              ? `$${gamedetail.price.toFixed(2)}`
+              : ""}
+          </p>
+          <div className="my-4 mx-auto flex justify-around">
+            <div className=" bg-[#FE7804] py-2 px-10 rounded-md mx-4 w-2/5 text-center font-semibold cursor-pointer">
+              Add to Cart
+            </div>
+            {!buyBtnEnable && (
+              <div
+                onClick={paymentValidationMessage}
+                className=" bg-[#858282] py-2 px-10 rounded-md mx-4 w-2/5 text-center z-50 font-semibold cursor-pointer"
+              >
+                Buy now
+              </div>
+            )}
+            {buyBtnEnable && (
+              <div className=" bg-[#FF451D] py-2 px-10 rounded-md mx-4 w-2/5 text-center z-50 font-semibold cursor-pointer">
+                <Link to={`/payment?planId=${gamedetail._id}&page=G`}>
+                  Buy now
+                </Link>
+              </div>
+            )}
+          </div>
+          {payError && (
+            <div className=" w-full">
+              <p className=" text-center text-[15px] text-red-600 font-semibold">
+                This game is already downloaded to your account
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
       {/* </div> */}
 
       <div className="flex justify-between w-11/12 mx-auto py-10">

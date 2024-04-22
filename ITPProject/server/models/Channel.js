@@ -4,7 +4,8 @@ const ChannelSchema = new mongoose.Schema({
     channelName: String,
     channelDescription: String, 
     channelDp: String,
-    memberID: String
+    memberID: String,
+    viewCount: Number,
 })
 
 const ChannelModel = mongoose.model("channel", ChannelSchema)

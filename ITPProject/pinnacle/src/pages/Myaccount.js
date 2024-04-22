@@ -15,6 +15,7 @@ import Payment_history_card from "../components/Payment_history_card";
 import Game_download_card from "../components/Game_download_card";
 import Channel from "../components/Channel";
 import Footer from "../components/Footer";
+import SuccessPopup from "../components/SuccessPopup";
 
 export default function Myaccount() {
   var memberID ="66118d9104fb9c92e1c7d980";
@@ -85,14 +86,14 @@ export default function Myaccount() {
   };
 
   useEffect(() => {
-    const fetchData = () => {
+    const fetchPaymentData = () => {
       axios
         .get(`http://localhost:3001/getPaymentRecodsByMemberID/${memberID}`)
         .then((result) => setPurchaseHistory(result.data))
         .catch((err) => console.log(err));
     };
-    fetchData();
-    const intervalId = setInterval(fetchData, 5000);
+    fetchPaymentData();
+    const intervalId = setInterval(fetchPaymentData, 5000);
     return () => clearInterval(intervalId);
   }, [memberID]);
   
@@ -104,9 +105,9 @@ export default function Myaccount() {
       .then((res) => {
         console.log(res);
         setLoading(false);
-        setDeleteSuccessMessagechecked(true);
       })
       .catch((errr) => console.log(errr));
+      setDeleteSuccessMessagechecked(true);
   };
 
   {
@@ -114,15 +115,27 @@ export default function Myaccount() {
   }
 
   const [downloads, setDownloads] = useState([]);
-  const [downloadGames, setDownloadGames] = useState([]);
   const [myGameSearchResult, setMyGameSearchResult] = useState([]);
   const [myGameSearchDivCheck, setMyGameSearchDivCheck] = useState(false);
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:3001/getDownloadbyMemberid/${memberID}`)
-      .then((result) => setDownloads(result.data))
-      .catch((err) => console.log(err));
+    const fetchDownloadData = () => {
+      axios
+        .get(`http://localhost:3001/getDownloadbyMemberid/${memberID}`)
+        .then((result) => {
+          const data = result.data;
+          if (Array.isArray(data)) {
+            setDownloads(data);
+          } else {
+            setDownloads([]);
+            console.log("Download data is not an array:", data);
+          }
+        })
+        .catch((err) => console.log(err));
+    };
+    fetchDownloadData();
+    const intervalId = setInterval(fetchDownloadData, 5000);
+    return () => clearInterval(intervalId);
   }, [memberID]);
 
   const handleMyDownloadSearch = () => {
@@ -559,6 +572,9 @@ export default function Myaccount() {
                       reason={item.description}
                       amount={item.officialprice}
                       date={item.date}
+                      crystaldiscount={item.crystaldiscount}
+                      discount={item.discount}
+                      paidamount={item.paidamount}
                     />
                   ))}
                 </div>
@@ -585,6 +601,9 @@ export default function Myaccount() {
                     reason={item.description}
                     amount={item.officialprice}
                     date={item.date}
+                    crystaldiscount={item.crystaldiscount}
+                      discount={item.discount}
+                      paidamount={item.paidamount}
                   />
                 );
               })}
@@ -600,6 +619,9 @@ export default function Myaccount() {
                     reason={item.description}
                     amount={item.officialprice}
                     date={item.date}
+                    crystaldiscount={item.crystaldiscount}
+                      discount={item.discount}
+                      paidamount={item.paidamount}
                   />
                 );
               })}
@@ -615,6 +637,9 @@ export default function Myaccount() {
                     reason={item.description}
                     amount={item.officialprice}
                     date={item.date}
+                    crystaldiscount={item.crystaldiscount}
+                      discount={item.discount}
+                      paidamount={item.paidamount}
                   />
                 );
               })}
@@ -630,6 +655,9 @@ export default function Myaccount() {
                     reason={item.description}
                     amount={item.officialprice}
                     date={item.date}
+                    crystaldiscount={item.crystaldiscount}
+                      discount={item.discount}
+                      paidamount={item.paidamount}
                   />
                 );
               })}
@@ -761,6 +789,12 @@ export default function Myaccount() {
           <HashLoader size="75" color="#FE7804" />
         </div>
       )}
+
+{deleteSuccessMessagechecked && (
+  <SuccessPopup  type="Delete" item="Community post" onClose={handleDeleteCloseSuccessPopup} /> 
+)}
     </div>
+
+
   );
 }

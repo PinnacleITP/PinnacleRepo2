@@ -8,7 +8,7 @@ import SuccessPopup from "./SuccessPopup";
 
 export default function StreamEditBlock(props) {
   const [formHandle, setFormHandle] = useState(false);
-  const [streamDetails, setstreamDetails] = useState(false);
+  const [streamDetailBox, setStreamDetailBox] = useState(false);
   const [streamItemDetails, setstreamItemDetails] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isDeleteWarning, setIsDeleteWarning] = useState(false);
@@ -59,7 +59,7 @@ export default function StreamEditBlock(props) {
       })
       .catch((errr) => console.log(errr));
     setDeleteSuccessMessagechecked(true);
-    window.location.reload();
+    setStreamDetailBox(false);
   };
   // Function to upload file to Cloudinary
   const uploadFile = async (type, file, ftype) => {
@@ -128,6 +128,7 @@ export default function StreamEditBlock(props) {
       // window.location.reload();
       setLoading(false);
       setFormHandle(false);
+      setStreamDetailBox(false);
       setUpdateSuccessMessagechecked(true);
       
       // navigate("/stream");
@@ -145,14 +146,9 @@ export default function StreamEditBlock(props) {
   };
 
   return (
-    <div
-      className=" bg-black"
-      onClick={() => {
-        setstreamDetails(true);
-      }}
-    >
+    <div className=" bg-black">
       {/* Display stream details */}
-      <div className="">
+      <div  onClick={() => setStreamDetailBox(true)}>
         <div className=" ">
           <div className="relative w-full h-full overflow-hidden group">
             <img
@@ -175,21 +171,25 @@ export default function StreamEditBlock(props) {
       </div>
 
       {/* disolay more details of stream  */}
-      {streamDetails && (
+
+      {streamDetailBox && (
         <div className=" fixed top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
           <div className="bg-[#1B1E20] rounded-2xl border-2 w-[70%] border-[#FE7804] px-10 py-8">
             <div>
               <h1 className=" inline-block text-[25px] font-bold mb-6">
                 {streamItemDetails.name}
               </h1>
+              <div className=" float-right cursor-pointer" >
               <img
-                onClick={() => setstreamDetails(false)}
-                className=" float-right z-50"
+              onClick={() => setStreamDetailBox(false)}
+
                 width="25"
                 height="25"
                 src="https://img.icons8.com/ios-filled/50/FFFFFF/multiply.png"
                 alt="multiply"
               />
+              </div>
+
             </div>
             <div className=" flex justify-between">
               <div className="relative w-1/2 h-full p-2 overflow-hidden group">
@@ -282,7 +282,7 @@ export default function StreamEditBlock(props) {
               <button
                 onClick={() => {
                   setFormHandle(true);
-                  setstreamDetails(false);
+                  setStreamDetailBox(false);
                   setName(streamItemDetails.name);
                   setVideo(streamItemDetails.videoUrl);
                   setThumbnail(streamItemDetails.thumbnailUrl);
