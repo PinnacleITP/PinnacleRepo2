@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import CallofDuty from "../assets/streams/cod.jpg";
@@ -13,19 +14,32 @@ import Stream_Display_Card from "../components/Stream_Display_Card";
 import SearchError from "../assets/payment/searchnotfound.webm";
 
 export default function Streampage() {
+
+  var pageid = "stream";
+  const [streamDetailsCard, setStreamDetailsCard] = useState([]);
+  const [streamFilterResuls, setStreamFilterResuls] = useState([]);
   const [isAllChecked, setIsAllCkecked] = useState(true);
   const [isActionChecked, setIsActionCkecked] = useState(false);
   const [isAdventureChecked, setIsAdventureCkecked] = useState(false);
   const [isRacingChecked, setIsRacingCkecked] = useState(false);
   const [isShootingChecked, setIsShootingCkecked] = useState(false);
   const [isSportChecked, setIsSportCkecked] = useState(false);
+  const [isGameFilterChecked, setIisGameFilterChecked] = useState(false);
+  
+  const actionStreams = streamDetailsCard.filter((stream) => stream.type === "action");
+  const adventureStreams = streamDetailsCard.filter((stream) => stream.type === "adventure");
+  const racingStreams = streamDetailsCard.filter((stream) => stream.type === "racing");
+  const shooterStreams = streamDetailsCard.filter((stream) => stream.type === "shooter");
+  const sportsStreams = streamDetailsCard.filter((stream) => stream.type === "sports");
 
+  const filterByGameName = (gname) => {
+      const filteredStreams = streamDetailsCard.filter((stream) => stream.gameType === gname);
+      setStreamFilterResuls(filteredStreams);
+  }
+//to filter by type
   const allGameHandler = () => {
-<<<<<<< Updated upstream
-=======
     setEnableSearchDiv(false);
     setIisGameFilterChecked(false);
->>>>>>> Stashed changes
     setIsAllCkecked(true);
     setIsActionCkecked(false);
     setIsAdventureCkecked(false);
@@ -35,11 +49,8 @@ export default function Streampage() {
   };
 
   const actionGameHandler = () => {
-<<<<<<< Updated upstream
-=======
     setEnableSearchDiv(false);
     setIisGameFilterChecked(false);
->>>>>>> Stashed changes
     setIsAllCkecked(false);
     setIsActionCkecked(true);
     setIsAdventureCkecked(false);
@@ -49,11 +60,8 @@ export default function Streampage() {
   };
 
   const adventureGameHandler = () => {
-<<<<<<< Updated upstream
-=======
     setEnableSearchDiv(false);
     setIisGameFilterChecked(false);
->>>>>>> Stashed changes
     setIsAllCkecked(false);
     setIsActionCkecked(false);
     setIsAdventureCkecked(true);
@@ -63,11 +71,8 @@ export default function Streampage() {
   };
 
   const racingGameHandler = () => {
-<<<<<<< Updated upstream
-=======
     setEnableSearchDiv(false);
     setIisGameFilterChecked(false);
->>>>>>> Stashed changes
     setIsAllCkecked(false);
     setIsActionCkecked(false);
     setIsAdventureCkecked(false);
@@ -77,11 +82,8 @@ export default function Streampage() {
   };
 
   const shootingGameHandler = () => {
-<<<<<<< Updated upstream
-=======
     setEnableSearchDiv(false);
     setIisGameFilterChecked(false);
->>>>>>> Stashed changes
     setIsAllCkecked(false);
     setIsActionCkecked(false);
     setIsAdventureCkecked(false);
@@ -91,11 +93,8 @@ export default function Streampage() {
   };
 
   const sportGameHandler = () => {
-<<<<<<< Updated upstream
-=======
     setEnableSearchDiv(false);
     setIisGameFilterChecked(false);
->>>>>>> Stashed changes
     setIsAllCkecked(false);
     setIsActionCkecked(false);
     setIsAdventureCkecked(false);
@@ -104,8 +103,6 @@ export default function Streampage() {
     setIsSportCkecked(true);
   };
 
-<<<<<<< Updated upstream
-=======
   //read all stream details
   useEffect(() => {
     axios
@@ -132,45 +129,44 @@ export default function Streampage() {
     setSearchResultArr(searchedResult);
   }
 
-
->>>>>>> Stashed changes
   return (
     <div className="text-white">
       <Header navid="streams" />
       <div className=" w-11/12 mx-auto mt-7">
-        <h1 className=" text-[28px] font-bold">
+        {/* <h1 className=" text-[28px] font-bold">
           MOST POPULAR STREAMS ON PINNACLE
-        </h1>
+        </h1> */}
         <div className=" flex justify-between mt-4">
-          <div className=" w-[11%]">
+          <div onClick={() => {setIisGameFilterChecked(true); filterByGameName("CallOfDuty")}} className=" w-[11%]">
             <img className=" w-full h-[250px]" src={CallofDuty} />
             <p className=" font-semibold text-center mt-3">Call of Duty</p>
           </div>
-          <div className=" w-[11%]">
+          <div onClick={() => {setIisGameFilterChecked(true); filterByGameName("MobileLegends")}} className=" w-[11%]">
             <img className=" w-full h-[250px]" src={MobileLegends} />
             <p className=" font-semibold text-center mt-3">Mobile Legends</p>
           </div>
-          <div className=" w-[11%]">
+          <div onClick={() => {setIisGameFilterChecked(true); filterByGameName("GtaTV")}} className=" w-[11%]">
             <img className=" w-full h-[250px]" src={Gtav} />
             <p className=" font-semibold text-center mt-3">Gta v</p>
           </div>
-          <div className=" w-[11%]">
+          <div onClick={() => {setIisGameFilterChecked(true); filterByGameName("Asphault8")}} className=" w-[11%]">
             <img className=" w-full h-[250px]" src={Asphalt8} />
             <p className=" font-semibold text-center mt-3">Asphalt 8</p>
           </div>
-          <div className=" w-[11%]">
+          <div onClick={() => {setIisGameFilterChecked(true); filterByGameName("PUBG")}} className=" w-[11%]">
             <img className=" w-full h-[250px]" src={PUBGMobile} />
             <p className=" font-semibold text-center mt-3">PUBG Mobile</p>
           </div>
-          <div className=" w-[11%]">
+          <div onClick={() => {setIisGameFilterChecked(true); filterByGameName("Warzone")}} className=" w-[11%]">
             <img className=" w-full h-[250px]" src={Warzone} />
             <p className=" font-semibold text-center mt-3">Warzone</p>
           </div>
-          <div className=" w-[11%]">
+          <div onClick={() => {setIisGameFilterChecked(true); filterByGameName("Roblox")}} className=" w-[11%]">
             <img className=" w-full h-[250px]" src={Roblox} />
             <p className=" font-semibold text-center mt-3">Roblox</p>
           </div>
-          <div className=" w-[11%]">
+          <div onClick={() => {setIisGameFilterChecked(true); filterByGameName("othet")}} className=" w-[11%]">
+
             <img className=" w-full h-[250px]" src={CallofDuty} />
             <p className=" font-semibold text-center mt-3">Other</p>
           </div>
@@ -243,41 +239,172 @@ export default function Streampage() {
           </div>
         </div>
       </div>
-<<<<<<< Updated upstream
-=======
 
       {!enableSearchDiv && (<div>
 {!isGameFilterChecked && (
->>>>>>> Stashed changes
 
       <div className=" w-11/12 mx-auto">
         {isAllChecked && (
           <div>
             <h1 className=" font-bold text-[22px] mb-5">Pinnacle Streams</h1>
             <div className="flex flex-wrap justify-between">
-              <div className=" w-[30%]"><Stream_Display_Card /></div>
-              <div className=" w-[30%]"><Stream_Display_Card /></div>
-              <div className=" w-[30%]"><Stream_Display_Card /></div>
-              <div className=" w-[30%]"><Stream_Display_Card /></div>
-              <div className=" w-[30%]"><Stream_Display_Card /></div>
-              <div className=" w-[30%]"><Stream_Display_Card /></div>
+              {streamDetailsCard.map((item) => {
+                return (
+                  <div className="w-[30%] ">
+                    <Link
+                      to={`/streamdetail?streamid=${item._id}&channel=${item.channel_ID}`}
+                    >
+                      <Stream_Display_Card
+                        name={item.name}
+                        videoUrl={item.videoUrl}
+                        thumbnailUrl={item.thumbnailUrl}
+                        description={item.description}
+                        viewCount={item.viewCount}
+                        type={item.type}
+                        channel_ID={item.channel_ID}
+                        secretVideoCode={item.secretVideoCode}
+                      />
+                    </Link>
+                  </div>
+                );
+              })}
+
             </div>
           </div>
         )}
 
-        {isActionChecked && <div></div>}
+        {isActionChecked && (<div>
+            <h1 className=" font-bold text-[22px] mb-5">Pinnacle Streams</h1>
+            <div className="flex flex-wrap justify-between">
+              {actionStreams.map((item) => {
+                return (
+                  <div className="w-[30%] ">
+                    <Link
+                      to={`/streamdetail?streamid=${item._id}&channel=${item.channel_ID}`}
+                    >
+                      <Stream_Display_Card
+                        name={item.name}
+                        videoUrl={item.videoUrl}
+                        thumbnailUrl={item.thumbnailUrl}
+                        description={item.description}
+                        viewCount={item.viewCount}
+                        type={item.type}
+                        channel_ID={item.channel_ID}
+                        secretVideoCode={item.secretVideoCode}
+                      />
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          </div>)}
 
-        {isAdventureChecked && <div></div>}
+        {isAdventureChecked && (<div>
+            <h1 className=" font-bold text-[22px] mb-5">Pinnacle Streams</h1>
+            <div className="flex flex-wrap justify-between">
+              {adventureStreams.map((item) => {
+                return (
+                  <div className="w-[30%] ">
+                    <Link
+                      to={`/streamdetail?streamid=${item._id}&channel=${item.channel_ID}`}
+                    >
+                      <Stream_Display_Card
+                        name={item.name}
+                        videoUrl={item.videoUrl}
+                        thumbnailUrl={item.thumbnailUrl}
+                        description={item.description}
+                        viewCount={item.viewCount}
+                        type={item.type}
+                        channel_ID={item.channel_ID}
+                        secretVideoCode={item.secretVideoCode}
+                      />
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          </div>)}
 
-        {isRacingChecked && <div></div>}
+        {isRacingChecked && (<div>
+            <h1 className=" font-bold text-[22px] mb-5">Pinnacle Streams</h1>
+            <div className="flex flex-wrap justify-between">
+              {racingStreams.map((item) => {
+                return (
+                  <div className="w-[30%] ">
+                    <Link
+                      to={`/streamdetail?streamid=${item._id}&channel=${item.channel_ID}`}
+                    >
+                      <Stream_Display_Card
+                        name={item.name}
+                        videoUrl={item.videoUrl}
+                        thumbnailUrl={item.thumbnailUrl}
+                        description={item.description}
+                        viewCount={item.viewCount}
+                        type={item.type}
+                        channel_ID={item.channel_ID}
+                        secretVideoCode={item.secretVideoCode}
+                      />
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          </div>)}
 
-        {isShootingChecked && <div></div>}
+        {isShootingChecked && (<div>
+            <h1 className=" font-bold text-[22px] mb-5">Pinnacle Streams</h1>
+            <div className="flex flex-wrap justify-between">
+              {shooterStreams.map((item) => {
+                return (
+                  <div className="w-[30%] ">
+                    <Link
+                      to={`/streamdetail?streamid=${item._id}&channel=${item.channel_ID}`}
+                    >
+                      <Stream_Display_Card
+                        name={item.name}
+                        videoUrl={item.videoUrl}
+                        thumbnailUrl={item.thumbnailUrl}
+                        description={item.description}
+                        viewCount={item.viewCount}
+                        type={item.type}
+                        channel_ID={item.channel_ID}
+                        secretVideoCode={item.secretVideoCode}
+                      />
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          </div>)}
 
-        {isSportChecked && <div></div>}
+        {isSportChecked && (<div>
+            <h1 className=" font-bold text-[22px] mb-5">Pinnacle Streams</h1>
+            <div className="flex flex-wrap justify-between">
+              {sportsStreams.map((item) => {
+                return (
+                  <div className="w-[30%] ">
+                    <Link
+                      to={`/streamdetail?streamid=${item._id}&channel=${item.channel_ID}`}
+                    >
+                      <Stream_Display_Card
+                        name={item.name}
+                        videoUrl={item.videoUrl}
+                        thumbnailUrl={item.thumbnailUrl}
+                        description={item.description}
+                        viewCount={item.viewCount}
+                        type={item.type}
+                        channel_ID={item.channel_ID}
+                        secretVideoCode={item.secretVideoCode}
+                      />
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          </div>)}
       </div>
+    )}
 
-<<<<<<< Updated upstream
-=======
     {isGameFilterChecked && (
       <div className=" w-11/12 mx-auto">
           <div>
@@ -306,6 +433,7 @@ export default function Streampage() {
             </div>
           </div>
         </div>)}
+
         </div>)}
         {enableSearchDiv && (<div>
           {searchResultArr.length > 0 ? (<div className=" w-11/12 mx-auto">
@@ -344,7 +472,7 @@ export default function Streampage() {
                   </p>
                 </div>)}
         </div>)}
->>>>>>> Stashed changes
+
       <Footer />
     </div>
   );

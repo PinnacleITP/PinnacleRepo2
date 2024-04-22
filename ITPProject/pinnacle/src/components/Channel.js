@@ -183,7 +183,9 @@ export default function Channel(props) {
             >
               <h1>Create Channel</h1>
             </div>
+
             <h1 className="text-[#ffffff9d]">
+
               Stream your videos on Pinnacle by creating your own channel.
             </h1>
           </div>

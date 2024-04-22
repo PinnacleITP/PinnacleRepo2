@@ -14,11 +14,8 @@ const GameModel = require("./models/Game");
 const PaymentModel = require("./models/Payment");
 const DownloadModel = require("./models/Downloads");
 const CommunityModel = require("./models/Community");
-<<<<<<< Updated upstream
-=======
 const StreamModel = require("./models/Stream");
 const ChannelModel = require("./models/Channel");
->>>>>>> Stashed changes
 
 const app = express();
 app.use(cors());
@@ -169,6 +166,12 @@ app.get("/:id", (req, res) => {
   else if (id === "Community") {
     CommunityModel.find({})
       .then((community) => res.json(community))
+      .catch((err) => res.json(err));
+  }
+  //get all the stream details
+  else if (id === "stream") {
+    StreamModel.find({})
+      .then((stream) => res.json(stream))
       .catch((err) => res.json(err));
   }
 });
@@ -380,6 +383,81 @@ app.delete("/deleteCommunityPost/:id", (req, res) => {
     .then((game) => res.json(game))
     .catch((err) => res.json(err));
 });
+// create new stream
+app.post("/createStream", (req, res) => {
+  StreamModel.create(req.body)
+    .then((stream) => res.json(stream))
+    .catch((err) => res.status(500).json({ error: err.message }));
+
+});
+
+//delete stream by id
+app.delete("/deleteStream/:id", (req, res) => {
+  const id = req.params.id;
+  StreamModel.findByIdAndDelete({ _id: id })
+    .then((stream) => res.json(stream))
+    .catch((err) => res.json(err));
+});
+
+//update stream by id
+app.put("/updateStream/:id", (req, res) => {
+  const id = req.params.id;
+  StreamModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      name: req.body.name,
+      videoUrl: req.body.videoUrl,
+      thumbnailUrl: req.body.thumbnailUrl,
+      description: req.body.description,
+      viewCount: req.body.viewCount,
+      type: req.body.type,
+      channel_ID: req.body.channel_ID,
+      secretVideoCode: req.body.secretVideoCode,
+      gameType: req.body.gameType
+    }
+  )
+    .then((stream) => res.json(stream))
+    .catch((err) => res.json(err));
+});
+
+// get game details using id
+app.get("/getStream/:id", (req, res) => {
+  const id = req.params.id;
+  StreamModel.findById({ _id: id })
+    .then((stream) => res.json(stream))
+    .catch((err) => res.json(err));
+});
+
+app.get("/getStreamByChannelID/:channelID", (req, res) => {
+  const channelID = req.params.channelID;
+  StreamModel.find({ channel_ID: channelID }) 
+    .then((stream) => res.json(stream))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+// create new stream
+app.post("/createChannel", (req, res) => {
+  ChannelModel.create(req.body)
+    .then((stream) => res.json(stream))
+    .catch((err) => res.status(500).json({ error: err.message }));
+
+});
+
+app.get("/getChannelByMemberID/:memberID", (req, res) => {
+  const memberId = req.params.memberID;
+  ChannelModel.findOne({ memberID: memberId }) 
+    .then((channel) => res.json(channel))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+// get channel details using stream id
+app.get("/getChannelByStreamID/:channelid", (req, res) => {
+  const channelid = req.params.channelid;
+  ChannelModel.findById(channelid)
+    .then((channel) => res.json(channel))
+    .catch((err) => res.json(err));
+});
+
 
 app.listen(3001, () => {
   console.log("Server is Running");

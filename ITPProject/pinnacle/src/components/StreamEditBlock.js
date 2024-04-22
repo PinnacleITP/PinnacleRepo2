@@ -60,7 +60,6 @@ export default function StreamEditBlock(props) {
       .catch((errr) => console.log(errr));
     setDeleteSuccessMessagechecked(true);
     setStreamDetailBox(false);
-
   };
   // Function to upload file to Cloudinary
   const uploadFile = async (type, file, ftype) => {
@@ -147,8 +146,7 @@ export default function StreamEditBlock(props) {
   };
 
   return (
-    <div
-      className=" bg-black">
+    <div className=" bg-black">
       {/* Display stream details */}
       <div  onClick={() => setStreamDetailBox(true)}>
         <div className=" ">
@@ -173,6 +171,7 @@ export default function StreamEditBlock(props) {
       </div>
 
       {/* disolay more details of stream  */}
+
       {streamDetailBox && (
         <div className=" fixed top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
           <div className="bg-[#1B1E20] rounded-2xl border-2 w-[70%] border-[#FE7804] px-10 py-8">
@@ -183,12 +182,14 @@ export default function StreamEditBlock(props) {
               <div className=" float-right cursor-pointer" >
               <img
               onClick={() => setStreamDetailBox(false)}
+
                 width="25"
                 height="25"
                 src="https://img.icons8.com/ios-filled/50/FFFFFF/multiply.png"
                 alt="multiply"
               />
               </div>
+
             </div>
             <div className=" flex justify-between">
               <div className="relative w-1/2 h-full p-2 overflow-hidden group">

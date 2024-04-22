@@ -16,10 +16,11 @@ export default function successpopup(props) {
               </video>
             </div>
             <h1 className=" text-[#39E75F] text-[32px] font-bold">
-              {props.type} Successfully!
+              {props.type}d Successfully!
             </h1>
             <p className=" text-[#ffffff90] mt-5 text-center text-base">
-              {props.item} {props.type}ed successfully from<br/> the Pinnacle Database.
+              {props.item} {props.type}d successfully from<br/> the Pinnacle Database.
+
             </p>
             <div className=" w-full mt-12 mb-5 flex justify-end px-8">
               <button
