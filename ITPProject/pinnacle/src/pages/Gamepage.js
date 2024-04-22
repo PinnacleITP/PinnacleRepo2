@@ -120,7 +120,7 @@ export default function Gamepage() {
       <Header navid="games" />
       <div className="relative">
         <div
-          className="flex flex-col justify-center items-center -z-10  h-2/5 "
+          className="flex flex-col items-center justify-center -z-10 h-2/5 "
           style={{
             backgroundImage: `url(${require("../assets/games/mobilelegends.jpg")})`,
           }}
@@ -140,6 +140,32 @@ export default function Gamepage() {
               placeholder="Search Games...."
               onKeyUp={gamesSearch}
             />
+
+      <div className="relative ">
+      <div
+        className="flex flex-col items-center justify-center -z-10 h-2/5 "
+        style={{
+          backgroundImage: `url(${require("../assets/games/mobilelegends.jpg")})`,
+        }}
+      >
+        <div className="bg-[rgba(0,0,0,0.9)] absolute top-0 left-0 h-full w-full"></div>
+        <h1 className="text-white text-center text-[40px] font-semibold z-10 mt-14">
+          Explore the <span className="text-[#FF451D] font-bold">PINNACLE</span>{" "}
+          world <br />
+          for your taste of games.
+        </h1>
+        <div className=" w-1/2 p-[2px] bg-gradient-to-l relative from-[#FE7804] to-[#FF451D] rounded-2xl z-50 my-10">
+          <input
+            className=" bg-[#262628] text-[#FE7804] rounded-2xl w-full  px-3 py-2 z-50 placeholder-[#FE7804]"
+            type="search"
+            placeholder="Search Games...."
+            
+          />
+        </div>
+        <div className="z-10 mb-14">
+          <div className="bg-[#FF451D] px-12 py-3 text-[#FF451D] font-semibold bg-opacity-20 text-opacity-20 mr-8">
+            Explore
+
           </div>
           <div className="z-10 mb-14" onClick={gamesSearch}>
             <div className="bg-[#FF451D] px-12 py-3 text-[#FF451D] font-semibold bg-opacity-20 text-opacity-20 mr-8">
@@ -150,7 +176,7 @@ export default function Gamepage() {
             </div>
           </div>
         </div>
-      </div>
+      </div></div>
 
       <div className="flex w-11/12 mx-auto my-8">
         <div
@@ -223,7 +249,7 @@ export default function Gamepage() {
                 );
               })}
             </div>
-            <div className="flex justify-between flex-wrap">
+            <div className="flex flex-wrap justify-between">
               {gameSearchResultArr.slice(3).map((item) => {
                 return (
                   <div className="p-0 m-0 w-[22%]">
@@ -239,7 +265,7 @@ export default function Gamepage() {
               })}
             </div>
           </div>
-        </div>) : (<div className=" w-full p-7 flex flex-col justify-center items-center mb-9">
+        </div>) : (<div className="flex flex-col items-center justify-center w-full p-7 mb-9">
               <video autoPlay loop className="w-[200px] h-auto">
                 <source src={SearchError} type="video/webm" />
                 Your browser does not support the video tag.
@@ -268,7 +294,7 @@ export default function Gamepage() {
                 );
               })}
             </div>
-            <div className="flex justify-between flex-wrap">
+            <div className="flex flex-wrap justify-between">
               {gameDetails.slice(3).map((item) => {
                 return (
                   <div className="p-0 m-0 w-[22%]">
@@ -304,7 +330,7 @@ export default function Gamepage() {
                 );
               })}
             </div>
-            <div className="flex justify-between flex-wrap">
+            <div className="flex flex-wrap justify-between">
               {actionGames.slice(3).map((item) => {
                 return (
                   <div className="p-0 m-0 w-[22%]">
@@ -340,7 +366,7 @@ export default function Gamepage() {
                 );
               })}
             </div>
-            <div className="flex justify-between flex-wrap">
+            <div className="flex flex-wrap justify-between">
               {adventureGames.slice(3).map((item) => {
                 return (
                   <div className="p-0 m-0 w-[22%]">
@@ -376,7 +402,7 @@ export default function Gamepage() {
                 );
               })}
             </div>
-            <div className="flex justify-between flex-wrap">
+            <div className="flex flex-wrap justify-between">
               {racingGames.slice(3).map((item) => {
                 return (
                   <div className="p-0 m-0 w-[22%]">
@@ -412,7 +438,7 @@ export default function Gamepage() {
                 );
               })}
             </div>
-            <div className="flex justify-between flex-wrap">
+            <div className="flex flex-wrap justify-between">
               {shooterGames.slice(3).map((item) => {
                 return (
                   <div className="p-0 m-0 w-[22%]">
@@ -448,7 +474,7 @@ export default function Gamepage() {
                 );
               })}
             </div>
-            <div className="flex justify-between flex-wrap">
+            <div className="flex flex-wrap justify-between">
               {sportsGames.slice(3).map((item) => {
                 return (
                   <div className="p-0 m-0 w-[22%]">
@@ -468,7 +494,7 @@ export default function Gamepage() {
       </div>)}
 
       <div
-        className="w-11/12 mx-auto my-14 flex justify-between"
+        className="flex justify-between w-11/12 mx-auto my-14"
         style={{
           backgroundImage: `url(${require("../assets/games/section3bg.png")})`,
         }}
@@ -494,10 +520,10 @@ export default function Gamepage() {
             {" "}
             Purchase your favorite streamed game for
           </span>
-          <ul className=" leading-10">
+          <ul className="leading-10 ">
             <li>
               <img
-                className=" inline-block mr-3"
+                className="inline-block mr-3 "
                 width="12"
                 height="12"
                 src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png"
@@ -507,7 +533,7 @@ export default function Gamepage() {
             </li>
             <li>
               <img
-                className=" inline-block mr-3"
+                className="inline-block mr-3 "
                 width="12"
                 height="12"
                 src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png"
@@ -517,7 +543,7 @@ export default function Gamepage() {
             </li>
             <li>
               <img
-                className=" inline-block mr-3"
+                className="inline-block mr-3 "
                 width="12"
                 height="12"
                 src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png"
@@ -527,7 +553,7 @@ export default function Gamepage() {
             </li>
             <li>
               <img
-                className=" inline-block mr-3"
+                className="inline-block mr-3 "
                 width="12"
                 height="12"
                 src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png"
@@ -558,7 +584,7 @@ export default function Gamepage() {
         </div>
       </div>
 
-      <div className="bg-black py-4">
+      <div className="py-4 bg-black">
         <div className="w-11/12 mx-auto mt-9">
           <h1 className="text-[28px] font-bold">POPULAR GAMES</h1>
           <div className="flex justify-between mt-7">

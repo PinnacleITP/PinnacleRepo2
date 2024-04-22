@@ -12,8 +12,10 @@ const MemberModel = require("./models/Member");
 const LeaderBoardModel = require("./models/LeaderBoard");
 const GameModel = require("./models/Game");
 const PaymentModel = require("./models/Payment");
+const DownloadModel = require("./models/Downloads");
 const CommunityModel = require("./models/Community");
-
+const StreamModel = require("./models/Stream");
+const ChannelModel = require("./models/Channel");
 
 const app = express();
 app.use(cors());
@@ -166,6 +168,23 @@ app.get("/:id", (req, res) => {
       .then((community) => res.json(community))
       .catch((err) => res.json(err));
   }
+  //get all the stream details
+  else if (id === "stream") {
+    StreamModel.find({})
+      .then((stream) => res.json(stream))
+      .catch((err) => res.json(err));
+  }
+});
+
+app.put("/updateViewCount/:id", (req, res) => {
+  const id = req.params.id;
+  StreamModel.findByIdAndUpdate({ _id: id },
+    {
+      viewCount: req.body.viewCount,
+    }
+  )
+    .then((stream) => res.json(stream))
+    .catch((err) => res.json(err));
 });
 
 
@@ -216,7 +235,7 @@ app.post("/createGame", (req, res) => {
 // get game details using id
 app.get("/getGamebyID/:id", (req, res) => {
   const id = req.params.id;
-  GameModel.findById(id)
+  GameModel.findById({_id : id})
     .then((game) => {
       if (game) {
         res.json(game);
@@ -276,6 +295,21 @@ app.get("/getPaymentRecodsByMemberID/:id", (req, res) => {
     .catch((err) => res.json(err));
 });
 
+app.get("/getlatestPayment/:id", (req, res) => {
+  const id = req.params.id;
+  PaymentModel.find({ memberid: id })
+    .sort({ date: -1 })
+    .limit(1)
+    .then((payment) => {
+      if (payment.length > 0) {
+        res.json(payment);
+      } else {
+        res.json({ message: "No payment records found for this member ID" });
+      }
+    })
+    .catch((err) => res.json(err));
+});
+
 //delete Payment history by id
 app.delete("/deletePaymentHistory/:id", (req, res) => {
   const id = req.params.id;
@@ -291,6 +325,34 @@ app.delete("/deletePaymentHistoryRelatedToMember/:id", (req, res) => {
     .then(() => res.json({ message: "All payment records deleted successfully." }))
     .catch((err) => res.status(500).json({ error: err.message }));
 });
+
+
+app.post("/createdounloadRecod", (req, res) => {
+  DownloadModel.create(req.body)
+    .then((download) => res.json(download))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+app.get("/getDownloadbyMemberid/:id", (req, res) => {
+  const id = req.params.id;
+  DownloadModel.find({ memberid: id })
+    .then((downloads) => {
+      if (downloads.length > 0) {
+        res.json(downloads);
+      } else {
+        res.json({ message: "No download records found for this member ID" });
+      }
+    })
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+app.delete("/deleteDownloadGame/:id", (req, res) => {
+  const id = req.params.id;
+  DownloadModel.findByIdAndDelete({ _id: id })
+    .then((downloads) => res.json(downloads))
+    .catch((err) => res.json(err));
+});
+
 
 app.post("/createCommunityPost", (req, res) => {
   CommunityModel.create(req.body)
@@ -319,6 +381,80 @@ app.delete("/deleteCommunityPost/:id", (req, res) => {
   const id = req.params.id;
   CommunityModel.findByIdAndDelete({ _id: id })
     .then((game) => res.json(game))
+    .catch((err) => res.json(err));
+});
+// create new stream
+app.post("/createStream", (req, res) => {
+  StreamModel.create(req.body)
+    .then((stream) => res.json(stream))
+    .catch((err) => res.status(500).json({ error: err.message }));
+
+});
+
+//delete stream by id
+app.delete("/deleteStream/:id", (req, res) => {
+  const id = req.params.id;
+  StreamModel.findByIdAndDelete({ _id: id })
+    .then((stream) => res.json(stream))
+    .catch((err) => res.json(err));
+});
+
+//update stream by id
+app.put("/updateStream/:id", (req, res) => {
+  const id = req.params.id;
+  StreamModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      name: req.body.name,
+      videoUrl: req.body.videoUrl,
+      thumbnailUrl: req.body.thumbnailUrl,
+      description: req.body.description,
+      viewCount: req.body.viewCount,
+      type: req.body.type,
+      channel_ID: req.body.channel_ID,
+      secretVideoCode: req.body.secretVideoCode,
+      gameType: req.body.gameType
+    }
+  )
+    .then((stream) => res.json(stream))
+    .catch((err) => res.json(err));
+});
+
+// get game details using id
+app.get("/getStream/:id", (req, res) => {
+  const id = req.params.id;
+  StreamModel.findById({ _id: id })
+    .then((stream) => res.json(stream))
+    .catch((err) => res.json(err));
+});
+
+app.get("/getStreamByChannelID/:channelID", (req, res) => {
+  const channelID = req.params.channelID;
+  StreamModel.find({ channel_ID: channelID }) 
+    .then((stream) => res.json(stream))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+// create new stream
+app.post("/createChannel", (req, res) => {
+  ChannelModel.create(req.body)
+    .then((stream) => res.json(stream))
+    .catch((err) => res.status(500).json({ error: err.message }));
+
+});
+
+app.get("/getChannelByMemberID/:memberID", (req, res) => {
+  const memberId = req.params.memberID;
+  ChannelModel.findOne({ memberID: memberId }) 
+    .then((channel) => res.json(channel))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+// get channel details using stream id
+app.get("/getChannelByStreamID/:channelid", (req, res) => {
+  const channelid = req.params.channelid;
+  ChannelModel.findById(channelid)
+    .then((channel) => res.json(channel))
     .catch((err) => res.json(err));
 });
 
