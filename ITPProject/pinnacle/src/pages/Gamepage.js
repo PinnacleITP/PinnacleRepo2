@@ -95,8 +95,9 @@ export default function Gamepage() {
   return (
     <div className="text-white">
       <Header navid="games" />
+      <div className=" relative">
       <div
-        className="flex flex-col justify-center items-center -z-10 relative h-2/5 "
+        className="flex flex-col justify-center items-center -z-10  h-2/5 "
         style={{
           backgroundImage: `url(${require("../assets/games/mobilelegends.jpg")})`,
         }}
@@ -107,11 +108,12 @@ export default function Gamepage() {
           world <br />
           for your taste of games.
         </h1>
-        <div className=" w-1/2 p-[2px] bg-gradient-to-l from-[#FE7804] to-[#FF451D] rounded-2xl z-10 my-10">
+        <div className=" w-1/2 p-[2px] bg-gradient-to-l relative from-[#FE7804] to-[#FF451D] rounded-2xl z-50 my-10">
           <input
-            className=" bg-[#262628] text-[#FE7804] rounded-2xl w-full  px-3 py-2 placeholder-[#FE7804]"
+            className=" bg-[#262628] text-[#FE7804] rounded-2xl w-full  px-3 py-2 z-50 placeholder-[#FE7804]"
             type="search"
             placeholder="Search Games...."
+            
           />
         </div>
         <div className="z-10 mb-14">
@@ -122,7 +124,7 @@ export default function Gamepage() {
             Explore
           </div>
         </div>
-      </div>
+      </div></div>
 
       <div className="flex w-11/12 mx-auto my-8">
         <div

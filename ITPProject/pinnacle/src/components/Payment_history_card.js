@@ -10,6 +10,7 @@ export default function Payment_history_card(props) {
   const [deleteConfirmMessage, setDeleteConfirmMessage] = useState(false);
   const [deleteSuccessMessagechecked, setDeleteSuccessMessagechecked] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [expanDivTage, setExpanDivTage] = useState(false);
 
   const handlePaymentHistoryDelete = (id) =>{
     setLoading(true);
@@ -27,7 +28,8 @@ export default function Payment_history_card(props) {
   };
 
   return (
-    <div className="py-5 px-10 my-3 bg-[#1B1E20] rounded-lg items-center flex justify-between shadow-lg shadow-[#ffffff1a]">
+    <div className="shadow-lg shadow-[#ffffff1a] my-3">
+    <div className="py-5 px-10 bg-[#1B1E20] rounded-lg items-center flex justify-between ">
       <div className="">
         <span className="font-semibold text-[#FE7804] text-xl ">
           {props.reason}
@@ -38,17 +40,30 @@ export default function Payment_history_card(props) {
       </div>
       <div className="flex">
         <h1 className="font-semibold text-[#D9D9D9] text-xl">
-          $ {props.amount}
+        ${" "}{typeof props.amount === "number" ? props.amount.toFixed(2) : ""}
         </h1>
         <img
         onClick={() => setDeleteConfirmMessage(true)}
-          className=" ml-9 cursor-pointer"
+          className=" ml-9 mr-4 cursor-pointer"
           width="24"
           height="24"
           src="https://img.icons8.com/material-outlined/24/FFFFFF/trash--v1.png"
           alt="trash--v1"
         />
+        {expanDivTage && (<img onClick={() => setExpanDivTage(!expanDivTage)} width="26" height="26" src="https://img.icons8.com/sf-black-filled/64/FD7E14/collapse-arrow.png" alt="collapse-arrow"/>)}
+        {!expanDivTage && (<img onClick={() => setExpanDivTage(!expanDivTage)} width="26" height="26" src="https://img.icons8.com/ios-glyphs/90/FD7E14/chevron-down.png" alt="chevron-down"/>)}
       </div>
+      </div>
+      
+
+      {expanDivTage && (<div className="py-5 px-10 bg-[#0000001c] rounded-b-xl text-white leading-7">
+        <p className=" font-bold"><img className=" inline-block mr-3" width="12" height="12" src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png" alt="checkmark" /><span className=" font-normal mr-2">Transaction no:</span>pi_{props.id}</p>
+        <p className=" font-bold"><img className=" inline-block mr-3" width="12" height="12" src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png" alt="checkmark" /><span className=" font-normal mr-2">Official Price:</span>${" "}{typeof props.amount === "number" ? props.amount.toFixed(2) : ""}</p>
+        <p className=" font-bold"><img className=" inline-block mr-3" width="12" height="12" src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png" alt="checkmark" /><span className=" font-normal mr-2">Discount:</span>${" "}{typeof props.discount === "number" ? props.discount.toFixed(2) : ""}</p>
+        <p className=" font-bold"><img className=" inline-block mr-3" width="12" height="12" src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png" alt="checkmark" /><span className=" font-normal mr-2">Crystal Discount:</span>${" "}{typeof props.crystaldiscount === "number" ? props.crystaldiscount.toFixed(2) : ""}</p>
+        <p className=" font-bold"><img className=" inline-block mr-3" width="12" height="12" src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png" alt="checkmark" /><span className=" font-normal mr-2">Paid Amount:</span>${" "}{typeof props.paidamount === "number" ? props.paidamount.toFixed(2) : ""}</p>
+      </div>)}
+      
 
       {deleteConfirmMessage && (
         <div className=" z-50 fixed top-0 left-0 w-full h-screen flex justify-center bg-black bg-opacity-80 items-center">

@@ -14,6 +14,11 @@ const GameModel = require("./models/Game");
 const PaymentModel = require("./models/Payment");
 const DownloadModel = require("./models/Downloads");
 const CommunityModel = require("./models/Community");
+<<<<<<< Updated upstream
+=======
+const StreamModel = require("./models/Stream");
+const ChannelModel = require("./models/Channel");
+>>>>>>> Stashed changes
 
 const app = express();
 app.use(cors());
@@ -168,6 +173,17 @@ app.get("/:id", (req, res) => {
   }
 });
 
+app.put("/updateViewCount/:id", (req, res) => {
+  const id = req.params.id;
+  StreamModel.findByIdAndUpdate({ _id: id },
+    {
+      viewCount: req.body.viewCount,
+    }
+  )
+    .then((stream) => res.json(stream))
+    .catch((err) => res.json(err));
+});
+
 
 //get member details using member id
 app.get("/getMemberById/:id", (req, res) => {
@@ -317,15 +333,23 @@ app.post("/createdounloadRecod", (req, res) => {
 app.get("/getDownloadbyMemberid/:id", (req, res) => {
   const id = req.params.id;
   DownloadModel.find({ memberid: id })
-    .then((download) => {
-      if (download.length > 0) {
-        res.json(download);
+    .then((downloads) => {
+      if (downloads.length > 0) {
+        res.json(downloads);
       } else {
-        res.json({ message: "No payment records found for this member ID" });
+        res.json({ message: "No download records found for this member ID" });
       }
     })
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+app.delete("/deleteDownloadGame/:id", (req, res) => {
+  const id = req.params.id;
+  DownloadModel.findByIdAndDelete({ _id: id })
+    .then((downloads) => res.json(downloads))
     .catch((err) => res.json(err));
 });
+
 
 app.post("/createCommunityPost", (req, res) => {
   CommunityModel.create(req.body)
