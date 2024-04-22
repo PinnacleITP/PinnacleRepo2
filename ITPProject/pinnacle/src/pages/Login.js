@@ -32,7 +32,11 @@ export default function Login() {
         }
       );
       console.log('Response:', response.data);
+<<<<<<< Updated upstream
       navigate('/account'); // Navigate to the account page upon successful login
+=======
+      navigate('/'); // Navigate to the account page upon successful login
+>>>>>>> Stashed changes
     } catch (error) {
       alert(error.response?.data?.error || "An error occurred during login.");
       console.error('Error:', error);

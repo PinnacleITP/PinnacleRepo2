@@ -15,7 +15,10 @@ import GameDetailsPage from './pages/GameDetailsPage';
 import StreamDetailsPage from './pages/StreamDetailsPage';
 import Register from './pages/Register';
 import Login from './pages/Login';
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 
 function App() {
   return (
