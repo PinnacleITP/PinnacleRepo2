@@ -99,6 +99,10 @@ export default function Channel(props) {
 
   const createStream = async (e) => {
     e.preventDefault();
+<<<<<<< Updated upstream
+=======
+    
+>>>>>>> Stashed changes
     if (!name.trim()) {
       alert("Name is required");
       return;
@@ -334,8 +338,12 @@ export default function Channel(props) {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+<<<<<<< Updated upstream
            required
 
+=======
+                required
+>>>>>>> Stashed changes
                 className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
               />
 
@@ -344,8 +352,12 @@ export default function Channel(props) {
                 type="text"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+<<<<<<< Updated upstream
            required
 
+=======
+                required
+>>>>>>> Stashed changes
                 className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
               />
               <div className="flex">
@@ -356,8 +368,12 @@ export default function Channel(props) {
                     accept="video/*"
                     id="video"
                     onChange={(e) => setVideo(e.target.files[0])}
+<<<<<<< Updated upstream
            required
 
+=======
+                    required
+>>>>>>> Stashed changes
                     className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
                   />
                 </div>
@@ -368,8 +384,12 @@ export default function Channel(props) {
                     accept="image/*"
                     id="thumbnail"
                     onChange={(e) => setThumbnail(e.target.files[0])}
+<<<<<<< Updated upstream
            required
 
+=======
+                    required
+>>>>>>> Stashed changes
                     className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
                   />
                 </div>
@@ -380,8 +400,12 @@ export default function Channel(props) {
                   <select
                     value={type}
                     onChange={(e) => setType(e.target.value)}
+<<<<<<< Updated upstream
            required
 
+=======
+                    required
+>>>>>>> Stashed changes
                     className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
                   >
                     <option value="action">Action</option>
@@ -396,8 +420,12 @@ export default function Channel(props) {
                   <select
                     value={gameType}
                     onChange={(e) => setGameType(e.target.value)}
+<<<<<<< Updated upstream
            required
 
+=======
+                    required
+>>>>>>> Stashed changes
                     className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
                   >
                     <option value="other">Other</option>

@@ -418,6 +418,56 @@ app.get("/getChannelByStreamID/:channelid", (req, res) => {
     .catch((err) => res.json(err));
 });
 
+app.get('/api/streams', async (req, res) => {
+  try {
+    const streams = await StreamModel.find().populate('channel_ID', 'channelName'); // Populating channel name
+    res.json(streams);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/streams/count-by-type', async (req, res) => {
+  try {
+      const countByType = await StreamModel.aggregate([
+          {
+              $group: {
+                  _id: '$type', // Group by the 'type' field
+                  count: { $sum: 1 } // Count the number of occurrences
+              }
+          },
+          {
+              $project: {
+                  _id: 0, // Exclude this field
+                  type: '$_id', // Rename '_id' to 'type'
+                  count: 1 // Include the count
+              }
+          }
+      ]);
+
+      const formattedCountByType = countByType.reduce((acc, curr) => {
+          acc[curr.type] = curr.count;
+          return acc;
+      }, {});
+
+      res.json(formattedCountByType);
+  } catch (err) {
+      res.status(500).json({ error: err.message });
+  }
+});
+
+
+
+app.get('/api/channels', async (req, res) => {
+  try {
+    const channels = await ChannelModel.find();
+    res.json(channels);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 
 app.get('/api/streams', async (req, res) => {
   try {

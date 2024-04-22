@@ -8,7 +8,11 @@ const StreamSchema = new mongoose.Schema({
     viewCount: Number,
     type: String, 
     channel_ID: {
+<<<<<<< Updated upstream
         type: mongoose.Schema.Types.ObjectId, // Define as ObjectId
+=======
+        type: mongoose.Schema.Types.Mixed, // Define as ObjectId
+>>>>>>> Stashed changes
         ref: 'channel' // Reference to the Channel model
     },
     secretVideoCode: String,
