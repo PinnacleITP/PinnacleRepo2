@@ -399,8 +399,36 @@ export default function GameManagement() {
     }
   };
 
+
+  const handleNameChange = (event) => {
+    const newName = event.target.value;
+    setName(newName);
+
+    // You can add your validation logic here
+    // For example, check if the name is empty
+    if (newName.trim() === "") {
+      setNameError("Name is required");
+    } else {
+      setNameError(""); // Clear the error if the name is not empty
+    }
+  };
+
+  const handleUpdateNameChange = (event) => {
+    const newName = event.target.value;
+    setitemName(newName);
+
+    // You can add your validation logic here
+    // For example, check if the name is empty
+    if (newName.trim() === "") {
+      setNameError("Name is required");
+    } else {
+      setNameError(""); // Clear the error if the name is not empty
+    }
+  };
+
+
   return (
-    <div className="py-5 px-7 text-white ">
+    <div className="py-5 text-white px-7 ">
       <h1 className=" text-[25px] font-bold mb-3">Game Management</h1>
       <button
         onClick={() => setIsGameAddFormChecked(true)}
@@ -421,7 +449,7 @@ export default function GameManagement() {
         <button className=" bg-gradient-to-tr from-[#FF451D] to-[#FE7804] px-4 py-2 text-[18px] font-semibold rounded-lg ml-3">
           Search
         </button>
-        <div className=" relative ml-3">
+        <div className="relative ml-3 ">
           <button
             onClick={filterBtnHandler}
             className=" bg-gradient-to-tr from-[#FF451D] to-[#FE7804] h-full px-2 text-[18px] font-semibold rounded-lg "
@@ -434,7 +462,7 @@ export default function GameManagement() {
             />
           </button>
           {isFilterBtnChecked && (
-            <div className=" absolute z-10 bg-black bg-opacity-85 pl-5 pr-10 py-3 leading-7">
+            <div className="absolute z-10 py-3 pl-5 pr-10 leading-7 bg-black bg-opacity-85">
               <p
                 onClick={allGameHandler}
                 className=" hover:text-[#FE7804] cursor-pointer"
@@ -480,7 +508,7 @@ export default function GameManagement() {
         <div className="mt-9">
           <h1 className="text-[18px] font-bold mb-5">Searched Results</h1>
           {gameSearchResultArr.length > 0 ? (
-            <div className="flex justify-between flex-wrap">
+            <div className="flex flex-wrap justify-between">
               {gameSearchResultArr.map((item) => (
                 <div
                   onClick={() => gameDeyailcardHandle(item._id)}
@@ -495,7 +523,7 @@ export default function GameManagement() {
               ))}
             </div>
           ) : (
-            <div className=" w-full p-7 flex flex-col justify-center items-center mb-9">
+            <div className="flex flex-col items-center justify-center w-full p-7 mb-9">
               <video autoPlay loop className="w-[200px] h-auto">
                 <source src={SearchError} type="video/webm" />
                 Your browser does not support the video tag.
@@ -510,7 +538,7 @@ export default function GameManagement() {
           {isAllChecked && (
             <div>
               <h1 className=" text-[18px] font-bold mb-5">All games</h1>
-              <div className="flex justify-between flex-wrap">
+              <div className="flex flex-wrap justify-between">
                 {gameDetails.map((item) => {
                   return (
                     <div
@@ -531,7 +559,7 @@ export default function GameManagement() {
           {isActionChecked && (
             <div>
               <h1 className=" text-[18px] font-bold mb-5">Action games</h1>
-              <div className="flex justify-between flex-wrap">
+              <div className="flex flex-wrap justify-between">
                 {actionGames.map((item) => {
                   return (
                     <div
@@ -552,7 +580,7 @@ export default function GameManagement() {
           {isAdventureChecked && (
             <div>
               <h1 className=" text-[18px] font-bold mb-5">Adventure games</h1>
-              <div className="flex justify-between flex-wrap">
+              <div className="flex flex-wrap justify-between">
                 {adventureGames.map((item) => {
                   return (
                     <div
@@ -573,7 +601,7 @@ export default function GameManagement() {
           {isRacingChecked && (
             <div>
               <h1 className=" text-[18px] font-bold mb-5">Racing games</h1>
-              <div className="flex justify-between flex-wrap">
+              <div className="flex flex-wrap justify-between">
                 {racingGames.map((item) => {
                   return (
                     <div
@@ -594,7 +622,7 @@ export default function GameManagement() {
           {isShootingChecked && (
             <div>
               <h1 className=" text-[18px] font-bold mb-5">Shooter games</h1>
-              <div className="flex justify-between flex-wrap">
+              <div className="flex flex-wrap justify-between">
                 {shooterGames.map((item) => {
                   return (
                     <div
@@ -615,7 +643,7 @@ export default function GameManagement() {
           {isSportChecked && (
             <div>
               <h1 className=" text-[18px] font-bold mb-5">Sport games</h1>
-              <div className="flex justify-between flex-wrap">
+              <div className="flex flex-wrap justify-between">
                 {sportsGames.map((item) => {
                   return (
                     <div
@@ -638,12 +666,12 @@ export default function GameManagement() {
 
       {/* Add new game */}
       {isGameAddFormChecked && (
-        <div className=" absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
+        <div className="absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
           <form
             onSubmit={createGame}
             className="bg-[#1B1E20] rounded-2xl border-2 w-[70%] border-[#FE7804] px-10 py-8"
           >
-            <div className=" w-full">
+            <div className="w-full ">
               <h1 className=" inline-block text-[25px] font-bold">
                 Add New Game
               </h1>
@@ -658,7 +686,7 @@ export default function GameManagement() {
               </div>
             </div>
 
-            <div className=" mt-5 mb-8 flex justify-between">
+            <div className="flex justify-between mt-5 mb-8 ">
               <div className="w-[30%]">
                 <label>Game Name</label>
                 <br />
@@ -668,6 +696,8 @@ export default function GameManagement() {
                   } border-opacity-20 mt-2`}
                   type="text"
                   value={name}
+                  onChange={handleNameChange}
+
                   required
                 />
                 {nameError && <span className="text-red-500">{nameError}</span>}
@@ -708,7 +738,7 @@ export default function GameManagement() {
               </div>
             </div>
 
-            <div className=" flex justify-between mb-8">
+            <div className="flex justify-between mb-8 ">
               <div className="w-[30%]">
                 <label>Developer</label>
                 <br />
@@ -771,7 +801,7 @@ export default function GameManagement() {
                 required
               />
             </div>
-            <div className=" flex justify-between mb-8">
+            <div className="flex justify-between mb-8 ">
               <div className="w-[48%]">
                 <label>Description</label>
                 <br />
@@ -809,12 +839,12 @@ export default function GameManagement() {
 
       {/* update Game */}
       {isGameUpdateFormCheked && (
-        <div className=" absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
+        <div className="absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
           <form
             onSubmit={gameUpdate}
             className="bg-[#1B1E20] rounded-2xl border-2 w-[70%] border-[#FE7804] px-10 py-8"
           >
-            <div className=" w-full">
+            <div className="w-full ">
               <h1 className=" inline-block text-[25px] font-bold">
                 Update game details
               </h1>
@@ -829,7 +859,7 @@ export default function GameManagement() {
               </div>
             </div>
 
-            <div className=" mt-5 mb-8 flex justify-between">
+            <div className="flex justify-between mt-5 mb-8 ">
               <div className="w-[30%]">
                 <label>Game Name</label>
                 <br />
@@ -839,6 +869,7 @@ export default function GameManagement() {
                   } border-opacity-20 mt-2`}
                   type="text"
                   value={itemname}
+                  onChange={handleUpdateNameChange}
                   required
                 />
                 {nameError && <span className="text-red-500">{nameError}</span>}
@@ -879,7 +910,7 @@ export default function GameManagement() {
               </div>
             </div>
 
-            <div className=" flex justify-between mb-8">
+            <div className="flex justify-between mb-8 ">
               <div className="w-[30%]">
                 <label>Developer</label>
                 <br />
@@ -945,7 +976,7 @@ export default function GameManagement() {
               </div>
               <img className="h-[70px] ml-5" src={itemgameImageUrl} />
             </div>
-            <div className=" flex justify-between mb-8">
+            <div className="flex justify-between mb-8 ">
               <div className="w-[48%]">
                 <label>Description</label>
                 <br />
@@ -984,7 +1015,7 @@ export default function GameManagement() {
       )}
 
       {isGameDetailCardCheked && (
-        <div className=" absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
+        <div className="absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
           <div className="bg-[#1B1E20] rounded-2xl border-2 w-[70%] border-[#FE7804] px-10 py-8">
             <div>
               <h1 className=" inline-block text-[25px] font-bold mb-6">
@@ -992,80 +1023,80 @@ export default function GameManagement() {
               </h1>
               <img
                 onClick={() => setIsGameDetailCardCheked(false)}
-                className=" float-right"
+                className="float-right "
                 width="25"
                 height="25"
                 src="https://img.icons8.com/ios-filled/50/FFFFFF/multiply.png"
                 alt="multiply"
               />
             </div>
-            <div className=" flex justify-between">
+            <div className="flex justify-between ">
               <img className="h-auto w-[30%]" src={itemgameImageUrl} />
               <div className=" w-[67%] pl-5 leading-8">
                 <pre className=" text-[#ffffff73]">
                   <img
-                    className=" inline-block mr-3"
+                    className="inline-block mr-3 "
                     width="12"
                     height="12"
                     src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png"
                     alt="checkmark"
                   />
-                  <span className=" text-white font-bold">Type</span> :{" "}
+                  <span className="font-bold text-white ">Type</span> :{" "}
                   <span>{itemtype}</span>
                 </pre>
                 <pre className=" text-[#ffffff73]">
                   <img
-                    className=" inline-block mr-3"
+                    className="inline-block mr-3 "
                     width="12"
                     height="12"
                     src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png"
                     alt="checkmark"
                   />
-                  <span className=" text-white font-bold">Price</span> :{" "}
+                  <span className="font-bold text-white ">Price</span> :{" "}
                   <span>$ {itemprice}</span>
                 </pre>
                 <pre className=" text-[#ffffff73]">
                   <img
-                    className=" inline-block mr-3"
+                    className="inline-block mr-3 "
                     width="12"
                     height="12"
                     src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png"
                     alt="checkmark"
                   />
-                  <span className=" text-white font-bold">Downloads</span> :{" "}
+                  <span className="font-bold text-white ">Downloads</span> :{" "}
                   <span>{itemdownloadCount} Downloads</span>
                 </pre>
                 <pre className=" text-[#ffffff73]">
                   <img
-                    className=" inline-block mr-3"
+                    className="inline-block mr-3 "
                     width="12"
                     height="12"
                     src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png"
                     alt="checkmark"
                   />
-                  <span className=" text-white font-bold">Developer</span> :{" "}
+                  <span className="font-bold text-white ">Developer</span> :{" "}
                   <span>{itemdeveloper}</span>
                 </pre>
                 <pre className=" text-[#ffffff73]">
                   <img
-                    className=" inline-block mr-3"
+                    className="inline-block mr-3 "
                     width="12"
                     height="12"
                     src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png"
                     alt="checkmark"
                   />
-                  <span className=" text-white font-bold">Publisher</span> :{" "}
+                  <span className="font-bold text-white ">Publisher</span> :{" "}
                   <span>{itempublisher}</span>
                 </pre>
                 <pre className=" text-[#ffffff73]">
                   <img
-                    className=" inline-block mr-3"
+                    className="inline-block mr-3 "
                     width="12"
                     height="12"
                     src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png"
                     alt="checkmark"
                   />
-                  <span className=" text-white font-bold">Releas Date</span> :{" "}
+                  <span className="font-bold text-white ">Releas Date</span> :{" "}
                   <span>{itemreleasdate}</span>
                 </pre>
               </div>
@@ -1075,13 +1106,13 @@ export default function GameManagement() {
               <div className=" w-[50%] p-5">
                 <p>
                   <img
-                    className=" inline-block mr-3"
+                    className="inline-block mr-3 "
                     width="12"
                     height="12"
                     src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png"
                     alt="checkmark"
                   />
-                  <span className=" text-white font-bold">Configuration</span>
+                  <span className="font-bold text-white ">Configuration</span>
                   <br />
                   <span className=" text-[#ffffff73]">
                     {itemconfigurations}
@@ -1091,13 +1122,13 @@ export default function GameManagement() {
               <div className=" w-[50%] p-5">
                 <p>
                   <img
-                    className=" inline-block mr-3"
+                    className="inline-block mr-3 "
                     width="12"
                     height="12"
                     src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png"
                     alt="checkmark"
                   />
-                  <span className=" text-white font-bold">Description</span>
+                  <span className="font-bold text-white ">Description</span>
                   <br />
                   <span className=" text-[#ffffff73]">{itemdescription}</span>
                 </p>
