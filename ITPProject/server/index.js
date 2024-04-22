@@ -284,6 +284,190 @@ app.delete("/deletePaymentHistoryRelatedToMember/:id", (req, res) => {
     .catch((err) => res.status(500).json({ error: err.message }));
 });
 
+<<<<<<< Updated upstream
+=======
+
+app.post("/createdounloadRecod", (req, res) => {
+  DownloadModel.create(req.body)
+    .then((download) => res.json(download))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+app.get("/getDownloadbyMemberid/:id", (req, res) => {
+  const id = req.params.id;
+  DownloadModel.find({ memberid: id })
+    .then((downloads) => {
+      if (downloads.length > 0) {
+        res.json(downloads);
+      } else {
+        res.json({ message: "No download records found for this member ID" });
+      }
+    })
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+app.delete("/deleteDownloadGame/:id", (req, res) => {
+  const id = req.params.id;
+  DownloadModel.findByIdAndDelete({ _id: id })
+    .then((downloads) => res.json(downloads))
+    .catch((err) => res.json(err));
+});
+
+
+app.post("/createCommunityPost", (req, res) => {
+  CommunityModel.create(req.body)
+    .then((community) => res.json(community))
+    .catch((err) => res.json(err));
+});
+
+app.put("/updateCommunityPost/:id", (req, res) => {
+  const id = req.params.id;
+  CommunityModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      postUrl: req.body.postUrl,
+      description: req.body.description,
+      name: req.body.name,
+      releasedate: req.body.releasedate,
+      type: req.body.type
+    }
+  )
+    .then((community) => res.json(community))
+    .catch((err) => res.json(err));
+});
+
+//delete game by id
+app.delete("/deleteCommunityPost/:id", (req, res) => {
+  const id = req.params.id;
+  CommunityModel.findByIdAndDelete({ _id: id })
+    .then((game) => res.json(game))
+    .catch((err) => res.json(err));
+});
+// create new stream
+app.post("/createStream", (req, res) => {
+  StreamModel.create(req.body)
+    .then((stream) => res.json(stream))
+    .catch((err) => res.status(500).json({ error: err.message }));
+
+});
+
+//delete stream by id
+app.delete("/deleteStream/:id", (req, res) => {
+  const id = req.params.id;
+  StreamModel.findByIdAndDelete({ _id: id })
+    .then((stream) => res.json(stream))
+    .catch((err) => res.json(err));
+});
+
+//update stream by id
+app.put("/updateStream/:id", (req, res) => {
+  const id = req.params.id;
+  StreamModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      name: req.body.name,
+      videoUrl: req.body.videoUrl,
+      thumbnailUrl: req.body.thumbnailUrl,
+      description: req.body.description,
+      viewCount: req.body.viewCount,
+      type: req.body.type,
+      channel_ID: req.body.channel_ID,
+      secretVideoCode: req.body.secretVideoCode,
+      gameType: req.body.gameType
+    }
+  )
+    .then((stream) => res.json(stream))
+    .catch((err) => res.json(err));
+});
+
+// get game details using id
+app.get("/getStream/:id", (req, res) => {
+  const id = req.params.id;
+  StreamModel.findById({ _id: id })
+    .then((stream) => res.json(stream))
+    .catch((err) => res.json(err));
+});
+
+app.get("/getStreamByChannelID/:channelID", (req, res) => {
+  const channelID = req.params.channelID;
+  StreamModel.find({ channel_ID: channelID }) 
+    .then((stream) => res.json(stream))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+// create new stream
+app.post("/createChannel", (req, res) => {
+  ChannelModel.create(req.body)
+    .then((stream) => res.json(stream))
+    .catch((err) => res.status(500).json({ error: err.message }));
+
+});
+
+app.get("/getChannelByMemberID/:memberID", (req, res) => {
+  const memberId = req.params.memberID;
+  ChannelModel.findOne({ memberID: memberId }) 
+    .then((channel) => res.json(channel))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+// get channel details using stream id
+app.get("/getChannelByStreamID/:channelid", (req, res) => {
+  const channelid = req.params.channelid;
+  ChannelModel.findById(channelid)
+    .then((channel) => res.json(channel))
+    .catch((err) => res.json(err));
+});
+
+
+app.get('/api/streams', async (req, res) => {
+  try {
+    const streams = await StreamModel.find().populate('channel_ID', 'channelName'); // Populating channel name
+    res.json(streams);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/streams/count-by-type', async (req, res) => {
+  try {
+      const countByType = await StreamModel.aggregate([
+          {
+              $group: {
+                  _id: '$type', // Group by the 'type' field
+                  count: { $sum: 1 } // Count the number of occurrences
+              }
+          },
+          {
+              $project: {
+                  _id: 0, // Exclude this field
+                  type: '$_id', // Rename '_id' to 'type'
+                  count: 1 // Include the count
+              }
+          }
+      ]);
+
+      const formattedCountByType = countByType.reduce((acc, curr) => {
+          acc[curr.type] = curr.count;
+          return acc;
+      }, {});
+
+      res.json(formattedCountByType);
+  } catch (err) {
+      res.status(500).json({ error: err.message });
+  }
+});
+
+
+
+app.get('/api/channels', async (req, res) => {
+  try {
+    const channels = await ChannelModel.find();
+    res.json(channels);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+>>>>>>> Stashed changes
 app.listen(3001, () => {
   console.log("Server is Running");
 });
