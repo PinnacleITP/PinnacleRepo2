@@ -99,20 +99,7 @@ export default function StreamEditBlock(props) {
   // Update stream details using stream id
   const streamUpdate = async (e) => {
     e.preventDefault();
-<<<<<<< Updated upstream
-    if (!name.trim()) {
-      alert("Name is required");
-      return;
-    }
-    if (!description.trim()) {
-      alert("Description is required");
-      return;
-    }
 
-=======
-    
-    
->>>>>>> Stashed changes
     if (thumbnail && thumbnail.size > 10485760) {
       alert("Thumbnail must be less than 10 MB");
       return;
@@ -121,11 +108,6 @@ export default function StreamEditBlock(props) {
       alert("Video must be less than 100 MB");
       return;
     }
-<<<<<<< Updated upstream
-
-=======
-    
->>>>>>> Stashed changes
     const codePattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!codePattern.test(secretVideoCode)) {
       alert("Secret Video Code must contain at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long");
@@ -373,10 +355,6 @@ export default function StreamEditBlock(props) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
                   className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
                 />
 
@@ -421,12 +399,8 @@ export default function StreamEditBlock(props) {
                     type="file"
                     accept="image/*"
                     id="thumbnail"
-<<<<<<< Updated upstream
                     onChange={(e) => setThumbnail(e.target.files[0])}
                     required
-=======
-                    onChange={(e) => setThumbnail(e.target.files[0])}                       
->>>>>>> Stashed changes
                     className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
                   />
                 </div>

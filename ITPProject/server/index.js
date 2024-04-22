@@ -12,6 +12,10 @@ const MemberModel = require("./models/Member");
 const LeaderBoardModel = require("./models/LeaderBoard");
 const GameModel = require("./models/Game");
 const PaymentModel = require("./models/Payment");
+const DownloadModel = require("./models/Downloads");
+const CommunityModel = require("./models/Community");
+const StreamModel = require("./models/Stream");
+const ChannelModel = require("./models/Channel");
 
 const app = express();
 app.use(cors());
@@ -158,6 +162,29 @@ app.get("/:id", (req, res) => {
       .then((game) => res.json(game))
       .catch((err) => res.json(err));
   }
+  //get all the premium plan details
+  else if (id === "Community") {
+    CommunityModel.find({})
+      .then((community) => res.json(community))
+      .catch((err) => res.json(err));
+  }
+  //get all the stream details
+  else if (id === "stream") {
+    StreamModel.find({})
+      .then((stream) => res.json(stream))
+      .catch((err) => res.json(err));
+  }
+});
+
+app.put("/updateViewCount/:id", (req, res) => {
+  const id = req.params.id;
+  StreamModel.findByIdAndUpdate({ _id: id },
+    {
+      viewCount: req.body.viewCount,
+    }
+  )
+    .then((stream) => res.json(stream))
+    .catch((err) => res.json(err));
 });
 
 
@@ -208,7 +235,7 @@ app.post("/createGame", (req, res) => {
 // get game details using id
 app.get("/getGamebyID/:id", (req, res) => {
   const id = req.params.id;
-  GameModel.findById(id)
+  GameModel.findById({_id : id})
     .then((game) => {
       if (game) {
         res.json(game);
@@ -268,6 +295,21 @@ app.get("/getPaymentRecodsByMemberID/:id", (req, res) => {
     .catch((err) => res.json(err));
 });
 
+app.get("/getlatestPayment/:id", (req, res) => {
+  const id = req.params.id;
+  PaymentModel.find({ memberid: id })
+    .sort({ date: -1 })
+    .limit(1)
+    .then((payment) => {
+      if (payment.length > 0) {
+        res.json(payment);
+      } else {
+        res.json({ message: "No payment records found for this member ID" });
+      }
+    })
+    .catch((err) => res.json(err));
+});
+
 //delete Payment history by id
 app.delete("/deletePaymentHistory/:id", (req, res) => {
   const id = req.params.id;
@@ -283,9 +325,6 @@ app.delete("/deletePaymentHistoryRelatedToMember/:id", (req, res) => {
     .then(() => res.json({ message: "All payment records deleted successfully." }))
     .catch((err) => res.status(500).json({ error: err.message }));
 });
-
-<<<<<<< Updated upstream
-=======
 
 app.post("/createdounloadRecod", (req, res) => {
   DownloadModel.create(req.body)
@@ -517,7 +556,7 @@ app.get('/api/channels', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
->>>>>>> Stashed changes
+
 app.listen(3001, () => {
   console.log("Server is Running");
 });

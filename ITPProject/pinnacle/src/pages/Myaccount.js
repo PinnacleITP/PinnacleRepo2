@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { HashLoader } from "react-spinners";
 import DeleteWorning from "../assets/payment/deleteanimation.webm";
 import SearchError from "../assets/payment/searchnotfound.webm";
 import Header from "../components/Header";
@@ -12,12 +13,18 @@ import Mastre3Icon from "../assets/myAccount/master3.png";
 import LegendIcon from "../assets/myAccount/legend.png";
 import Payment_history_card from "../components/Payment_history_card";
 import Game_download_card from "../components/Game_download_card";
+import Channel from "../components/Channel";
 import Footer from "../components/Footer";
+import SuccessPopup from "../components/SuccessPopup";
 
 export default function Myaccount() {
-  var memberID = "66118d9104fb9c92e1c7d980";
+  var memberID ="66118d9104fb9c92e1c7d980";
+  // var memberID ="66202ae130ee8bb8602d92b6";
+
   const [selectedDiv, setSelectedDiv] = useState("Dashboard");
   const [channelDiv, setChannelDiv] = useState("MyChannels");
+  const [loading, setLoading] = useState(false);
+  const [deleteSuccessMessagechecked, setDeleteSuccessMessagechecked] = useState(false);
 
   const handleDivClick = (divId) => {
     setSelectedDiv(divId === selectedDiv ? null : divId);
@@ -27,17 +34,22 @@ export default function Myaccount() {
     setChannelDiv(divId === channelDiv ? null : divId);
   };
 
-  var xpPoints = 40;
+  var xpPoints = 90;
+
+  const handleDeleteCloseSuccessPopup = () => {
+    setDeleteSuccessMessagechecked(false);
+  };
 
   {
-    /* ################################# Payment management ######################################*/
+    /* ##################################################################### Payment management ######################################*/
   }
   const [purchaseHistory, setPurchaseHistory] = useState([]);
   const [searchedPayments, setSearchedPayments] = useState([]);
   const [isFilterDivCkecked, setIsFilterDivCkecked] = useState(false);
   const [isPaymentSearchCkecked, setIsPaymentSearchCkecked] = useState(false);
   const [isNewastPaymentCkecked, setIsNewastPaymentCkecked] = useState(true);
-  const [isOldeststPaymentCkecked, setIsOldeststPaymentCkecked] = useState(false);
+  const [isOldeststPaymentCkecked, setIsOldeststPaymentCkecked] =
+    useState(false);
   const [isLargAmountCkecked, setIsLargAmountCkecked] = useState(false);
   const [isLowestAmountCkecked, setIsLowestAmountCkecked] = useState(false);
   const [AllDeleteConfirmMessage, setAllDeleteConfirmMessage] = useState(false);
@@ -74,17 +86,80 @@ export default function Myaccount() {
   };
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:3001/getPaymentRecodsByMemberID/${memberID}`)
-      .then((result) => setPurchaseHistory(result.data))
-      .catch((err) => console.log(err));
+    const fetchPaymentData = () => {
+      axios
+        .get(`http://localhost:3001/getPaymentRecodsByMemberID/${memberID}`)
+        .then((result) => setPurchaseHistory(result.data))
+        .catch((err) => console.log(err));
+    };
+    fetchPaymentData();
+    const intervalId = setInterval(fetchPaymentData, 5000);
+    return () => clearInterval(intervalId);
   }, [memberID]);
+  
 
   const handleAllPaymentHistoryDelete = (id) => {
+    setLoading(true);
     axios
       .delete("http://localhost:3001/deletePaymentHistoryRelatedToMember/" + id)
-      .then((res) => console.log(res))
+      .then((res) => {
+        console.log(res);
+        setLoading(false);
+      })
       .catch((errr) => console.log(errr));
+      setDeleteSuccessMessagechecked(true);
+  };
+
+  {
+    /* ################################################################### download management ######################################*/
+  }
+
+  const [downloads, setDownloads] = useState([]);
+  const [myGameSearchResult, setMyGameSearchResult] = useState([]);
+  const [myGameSearchDivCheck, setMyGameSearchDivCheck] = useState(false);
+
+  useEffect(() => {
+    const fetchDownloadData = () => {
+      axios
+        .get(`http://localhost:3001/getDownloadbyMemberid/${memberID}`)
+        .then((result) => {
+          const data = result.data;
+          if (Array.isArray(data)) {
+            setDownloads(data);
+          } else {
+            setDownloads([]);
+            console.log("Download data is not an array:", data);
+          }
+        })
+        .catch((err) => console.log(err));
+    };
+    fetchDownloadData();
+    const intervalId = setInterval(fetchDownloadData, 5000);
+    return () => clearInterval(intervalId);
+  }, [memberID]);
+
+  const handleMyDownloadSearch = () => {
+    setMyGameSearchDivCheck(true);
+    const myGamesSearchInput = document.getElementById(
+      "myDownloadGameSearch"
+    ).value;
+
+    const requests = downloads.map((item) =>
+      axios.get(`http://localhost:3001/getGamebyID/${item.gameid}`)
+    );
+
+    Promise.all(requests)
+      .then((results) => {
+        const downloadGamesData = results.map((result) => result.data);
+        const allDownloadGames = downloadGamesData.flat();
+        const myGameSearchvar = allDownloadGames.filter(
+          (item) =>
+            item.name &&
+            item.name.toLowerCase().includes(myGamesSearchInput.toLowerCase())
+        );
+        setMyGameSearchResult(myGameSearchvar);
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -376,7 +451,8 @@ export default function Myaccount() {
             {/* ######################### MyChannels ########################   */}
             {channelDiv === "MyChannels" && (
               <div className="text-white px-5 mt-3">
-                <h1>MyChannels</h1>
+                <Channel memberID={memberID}/>
+
               </div>
             )}
 
@@ -476,7 +552,10 @@ export default function Myaccount() {
                   alt="external-descending-miscellaneous-user-interface-v1-creatype-glyph-colourcreatype-2"
                 />
               </div>
-              <span onClick={() => setAllDeleteConfirmMessage(true)} className=" cursor-pointer h-full bg-transparent border-2 border-[#FE7804] rounded-lg flex items-center px-8 text-[#FE7804] font-semibold">
+              <span
+                onClick={() => setAllDeleteConfirmMessage(true)}
+                className=" cursor-pointer h-full bg-transparent border-2 border-[#FE7804] rounded-lg flex items-center px-8 text-[#FE7804] font-semibold"
+              >
                 Clear All
               </span>
             </div>
@@ -493,6 +572,9 @@ export default function Myaccount() {
                       reason={item.description}
                       amount={item.officialprice}
                       date={item.date}
+                      crystaldiscount={item.crystaldiscount}
+                      discount={item.discount}
+                      paidamount={item.paidamount}
                     />
                   ))}
                 </div>
@@ -519,6 +601,9 @@ export default function Myaccount() {
                     reason={item.description}
                     amount={item.officialprice}
                     date={item.date}
+                    crystaldiscount={item.crystaldiscount}
+                      discount={item.discount}
+                      paidamount={item.paidamount}
                   />
                 );
               })}
@@ -534,6 +619,9 @@ export default function Myaccount() {
                     reason={item.description}
                     amount={item.officialprice}
                     date={item.date}
+                    crystaldiscount={item.crystaldiscount}
+                      discount={item.discount}
+                      paidamount={item.paidamount}
                   />
                 );
               })}
@@ -549,6 +637,9 @@ export default function Myaccount() {
                     reason={item.description}
                     amount={item.officialprice}
                     date={item.date}
+                    crystaldiscount={item.crystaldiscount}
+                      discount={item.discount}
+                      paidamount={item.paidamount}
                   />
                 );
               })}
@@ -564,6 +655,9 @@ export default function Myaccount() {
                     reason={item.description}
                     amount={item.officialprice}
                     date={item.date}
+                    crystaldiscount={item.crystaldiscount}
+                      discount={item.discount}
+                      paidamount={item.paidamount}
                   />
                 );
               })}
@@ -598,7 +692,6 @@ export default function Myaccount() {
                     onClick={(e) => {
                       handleAllPaymentHistoryDelete(memberID);
                       setAllDeleteConfirmMessage(false);
-                      window.location.reload();
                     }}
                     className=" bg-[#FE7804] border-2 border-[#FE7804] hover:bg-[#FF451D] hover:border-[#FF451D] rounded-lg py-2 px-5 text-white font-semibold"
                   >
@@ -618,6 +711,8 @@ export default function Myaccount() {
           <div className="flex mb-8">
             <div className=" w-1/2 p-[2px] bg-gradient-to-l from-[#FE7804] to-[#FF451D] rounded-lg">
               <input
+                onKeyUp={handleMyDownloadSearch}
+                id="myDownloadGameSearch"
                 className=" bg-[#2A2B2F] text-[#FE7804] rounded-lg w-full  px-3 py-2 placeholder-[#FE7804]"
                 type="search"
                 placeholder="Search Games"
@@ -629,12 +724,40 @@ export default function Myaccount() {
               </span>
             </div>
           </div>
-          <Game_download_card
-            id="1"
-            name="Call of Duty - Modern warefire III"
-          />
-          <Game_download_card id="1" name="Aspalt 8" />
-          <Game_download_card id="1" name="Mobile legends" />
+
+          {myGameSearchDivCheck && (
+            <div>
+              {myGameSearchResult.length > 0 ? (
+                <div>
+                  {myGameSearchResult.map((item) => {
+                    return (
+                      <Game_download_card id={item._id} gameid={item._id} />
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className=" w-full p-7 flex flex-col justify-center items-center mb-9">
+                  <video autoPlay loop className="w-[200px] h-auto">
+                    <source src={SearchError} type="video/webm" />
+                    Your browser does not support the video tag.
+                  </video>
+                  <p className=" text-[#ffffffa0] text-[18px]">
+                    No results found
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {!myGameSearchDivCheck && (
+            <div>
+              {downloads.map((item) => {
+                return (
+                  <Game_download_card id={item._id} gameid={item.gameid} />
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
@@ -660,6 +783,18 @@ export default function Myaccount() {
       )}
 
       <Footer />
+
+      {loading && (
+        <div className=" z-50 fixed top-0 left-0 w-full h-screen flex justify-center bg-black bg-opacity-50 items-center">
+          <HashLoader size="75" color="#FE7804" />
+        </div>
+      )}
+
+{deleteSuccessMessagechecked && (
+  <SuccessPopup  type="Delete" item="Community post" onClose={handleDeleteCloseSuccessPopup} /> 
+)}
     </div>
+
+
   );
 }

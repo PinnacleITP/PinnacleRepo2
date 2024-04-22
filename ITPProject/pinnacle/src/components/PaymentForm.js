@@ -3,9 +3,20 @@ import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { HashLoader } from "react-spinners";
 import Paymentsuccess from "../assets/payment/paymentsuccessanimation.webm";
 import Paymenterror from "../assets/payment/paymenterroranimation.webm";
-import axios from 'axios';
+import axios from "axios";
 
-const PaymentForm = ({ clientSecret, subtotal, description, discount, officialprice, crystaldiscount, memberid, handlePaymentProcess }) => {
+const PaymentForm = ({
+  clientSecret,
+  subtotal,
+  description,
+  discount,
+  officialprice,
+  crystaldiscount,
+  memberid,
+  pageid,
+  itemid,
+  handlePaymentProcess,
+}) => {
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState(null);
@@ -60,6 +71,9 @@ const PaymentForm = ({ clientSecret, subtotal, description, discount, officialpr
       console.log("Payment successful:", responseData.paymentIntent);
       setPaymentSuccessMessage(true);
       paymentRecodHandler();
+      if (pageid == "G" || pageid == "C" ) {
+        downloadRecodHandler();
+      }
     } catch (error) {
       console.error("Error processing payment:", error.message);
       setError("Error processing payment. Please try again.");
@@ -91,6 +105,31 @@ const PaymentForm = ({ clientSecret, subtotal, description, discount, officialpr
       })
       .catch((err) => console.log(err));
   };
+
+  const downloadRecodHandler = () => {
+    const date = new Date();
+    const gameid = itemid;
+    setTimeout(() => {
+      axios
+      .get(`http://localhost:3001/getlatestPayment/${memberid}`)
+      .then((result) => {
+        const paymentid = result.data[0]._id;
+
+        axios
+          .post("http://localhost:3001/createdounloadRecod", {
+            memberid,
+            gameid,
+            paymentid,
+            date,
+          })
+          .then((result) => {
+            console.log(result);
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => console.log(err));
+    }, 5000);
+};
 
   return (
     <div className="text-white pt-3">

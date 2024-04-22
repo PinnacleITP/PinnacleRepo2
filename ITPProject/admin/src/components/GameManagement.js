@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import GameDetailcard from "./GameDetailcard";
+import SearchError from "../assets/animations/searchnotfound.webm";
 
 export default function GameManagement() {
   var pageid = "game";
@@ -40,11 +41,12 @@ export default function GameManagement() {
   const [isGameDetailCardCheked, setIsGameDetailCardCheked] = useState(false);
   const [isGameUpdateFormCheked, setIsGameUpdateFormCheked] = useState(false);
   const [gameDetails, setGameDetails] = useState([]);
+  const [gameSearch, setGameSearch] = useState(false);
+  const [gameSearchResultArr, setGameSearchResultArr] = useState([]);
+
 
   const actionGames = gameDetails.filter((game) => game.type === "action");
-  const adventureGames = gameDetails.filter(
-    (game) => game.type === "adventure"
-  );
+  const adventureGames = gameDetails.filter((game) => game.type === "adventure");
   const racingGames = gameDetails.filter((game) => game.type === "racing");
   const shooterGames = gameDetails.filter((game) => game.type === "shooter");
   const sportsGames = gameDetails.filter((game) => game.type === "sports");
@@ -240,6 +242,13 @@ export default function GameManagement() {
       .catch((errr) => console.log(errr));
   };
 
+  const gamesSearch = () => {
+    setGameSearch(true);
+    const gameSearchInput = document.getElementById("gameSearchbar").value;
+    const gameSearchResult = gameDetails.filter((item) => item.name && item.name.toLowerCase().includes(gameSearchInput.toLowerCase()));
+    setGameSearchResultArr(gameSearchResult);
+  }
+
   return (
     <div className="py-5 px-7 text-white ">
       <h1 className=" text-[25px] font-bold mb-3">Game Management</h1>
@@ -251,10 +260,11 @@ export default function GameManagement() {
       </button>
       <div className="flex justify-start">
         <div className=" w-1/2 p-[2px] bg-gradient-to-l from-[#FE7804] to-[#FF451D] rounded-2xl">
-          <input
+          <input id="gameSearchbar"
             className=" bg-[#262628] text-[#FE7804] rounded-2xl w-full  px-3 py-2 placeholder-[#FE7804]"
             type="search"
             placeholder="Search Games...."
+            onKeyUp={gamesSearch}
           />
         </div>
         <button className=" bg-gradient-to-tr from-[#FF451D] to-[#FE7804] px-4 py-2 text-[18px] font-semibold rounded-lg ml-3">
@@ -314,7 +324,34 @@ export default function GameManagement() {
           )}
         </div>
       </div>
+
+      {gameSearch && (
       <div className="mt-9">
+        <h1 className="text-[18px] font-bold mb-5">Searched Results</h1>
+        {gameSearchResultArr.length > 0 ? (
+        <div className="flex justify-between flex-wrap">
+          {gameSearchResultArr.map((item) => (
+            <div
+              onClick={() => gameDeyailcardHandle(item._id)}
+              className="p-0 m-0 w-[22%]"
+            >
+              <GameDetailcard
+              image={item.gameImageUrl}
+              name={item.name}
+              id={item._id}
+            />
+            </div>
+        ))}</div>):(<div className=" w-full p-7 flex flex-col justify-center items-center mb-9">
+        <video autoPlay loop className="w-[200px] h-auto">
+          <source src={SearchError} type="video/webm" />
+          Your browser does not support the video tag.
+        </video>
+        <p className=" text-[#ffffffa0] text-[18px]">
+          No results found
+        </p>
+      </div>)}
+      </div>)}
+      {!gameSearch && (<div className="mt-9">
         {isAllChecked && (
           <div>
             <h1 className=" text-[18px] font-bold mb-5">All games</h1>
@@ -441,10 +478,11 @@ export default function GameManagement() {
             </div>
           </div>
         )}
-      </div>
+      </div>)}
 
+      {/* Add new game */}
       {isGameAddFormChecked && (
-        <div className=" absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
+        <div className=" fixed top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
           <form
             onSubmit={createGame}
             className="bg-[#1B1E20] rounded-2xl border-2 w-[70%] border-[#FE7804] px-10 py-8"
@@ -473,6 +511,7 @@ export default function GameManagement() {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  required
                 />
               </div>
 
@@ -483,6 +522,7 @@ export default function GameManagement() {
                   value={type}
                   onChange={(e) => setType(e.target.value)}
                   className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
+                  required
                 >
                   <option value="action">Action</option>
                   <option value="adventure">Adventure</option>
@@ -500,6 +540,8 @@ export default function GameManagement() {
                   type="number"
                   value={price}
                   onChange={(e) => setPrice(parseFloat(e.target.value))}
+                  min="0"
+                  required
                 />
               </div>
             </div>
@@ -513,6 +555,7 @@ export default function GameManagement() {
                   type="text"
                   value={developer}
                   onChange={(e) => setDeveloper(e.target.value)}
+                  required
                 />
               </div>
 
@@ -523,16 +566,18 @@ export default function GameManagement() {
                   type="text"
                   value={publisher}
                   onChange={(e) => setPublisher(e.target.value)}
+                  required
                 />
               </div>
 
               <div className="w-[30%]">
-                <label>Releas date</label>
+              <label>Release date</label>
                 <input
                   className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
                   type="date"
                   value={releasdate}
                   onChange={(e) => setReleasDate(e.target.value)}
+                  required
                 />
               </div>
             </div>
@@ -546,6 +591,7 @@ export default function GameManagement() {
                 accept="image/*"
                 id="image"
                 onChange={(e) => setImage(e.target.files[0])}
+                required
               />
             </div>
             <div className=" flex justify-between mb-8">
@@ -556,6 +602,7 @@ export default function GameManagement() {
                   className=" w-full rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
+                  required
                 ></textarea>
               </div>
               <div className="w-[48%]">
@@ -566,6 +613,7 @@ export default function GameManagement() {
                   type="text"
                   value={configurations}
                   onChange={(e) => setConfiguration(e.target.value)}
+                  required
                 ></textarea>
               </div>
             </div>
@@ -579,6 +627,7 @@ export default function GameManagement() {
         </div>
       )}
 
+      {/* update Game */}
       {isGameUpdateFormCheked && (
         <div className=" absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
           <form
@@ -609,6 +658,7 @@ export default function GameManagement() {
                   type="text"
                   value={itemname}
                   onChange={(e) => setitemName(e.target.value)}
+                  required
                 />
               </div>
 
@@ -619,6 +669,7 @@ export default function GameManagement() {
                   value={itemtype}
                   onChange={(e) => setitemType(e.target.value)}
                   className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
+                  required
                 >
                   <option value="action">Action</option>
                   <option value="adventure">Adventure</option>
@@ -636,6 +687,8 @@ export default function GameManagement() {
                   type="number"
                   value={itemprice}
                   onChange={(e) => setitemPrice(parseFloat(e.target.value))}
+                  min="0"
+                  required
                 />
               </div>
             </div>
@@ -649,6 +702,7 @@ export default function GameManagement() {
                   type="text"
                   value={itemdeveloper}
                   onChange={(e) => setitemDeveloper(e.target.value)}
+                  required
                 />
               </div>
 
@@ -659,6 +713,7 @@ export default function GameManagement() {
                   type="text"
                   value={itempublisher}
                   onChange={(e) => setitemPublisher(e.target.value)}
+                  required
                 />
               </div>
 
@@ -669,6 +724,7 @@ export default function GameManagement() {
                   type="date"
                   value={itemreleasdate}
                   onChange={(e) => setitemReleasDate(e.target.value)}
+                  required
                 />
               </div>
             </div>
@@ -694,7 +750,8 @@ export default function GameManagement() {
                 <br />
                 <textarea
                   className=" w-full rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) => setitemDescription(e.target.value)}
+                  required
                 >
                   {itemdescription}
                 </textarea>
@@ -705,7 +762,8 @@ export default function GameManagement() {
                 <textarea
                   className="rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 w-full mt-2"
                   type="text"
-                  onChange={(e) => setConfiguration(e.target.value)}                >
+                  onChange={(e) => setitemConfiguration(e.target.value)}
+                  required                >
                   {itemconfigurations}
                 </textarea>
               </div>
