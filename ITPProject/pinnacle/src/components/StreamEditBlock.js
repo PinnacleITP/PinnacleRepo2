@@ -99,6 +99,20 @@ export default function StreamEditBlock(props) {
   // Update stream details using stream id
   const streamUpdate = async (e) => {
     e.preventDefault();
+
+    if (thumbnail && thumbnail.size > 10485760) {
+      alert("Thumbnail must be less than 10 MB");
+      return;
+    }
+    if (video && video.size > 104857600) {
+      alert("Video must be less than 100 MB");
+      return;
+    }
+    const codePattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!codePattern.test(secretVideoCode)) {
+      alert("Secret Video Code must contain at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long");
+      return;
+    }
     setLoading(true);
     try {
       // Upload video file
@@ -340,6 +354,7 @@ export default function StreamEditBlock(props) {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  required
                   className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
                 />
 
@@ -348,6 +363,7 @@ export default function StreamEditBlock(props) {
                   type="text"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
+                  required
                   className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
                 />
               </div>
@@ -365,6 +381,7 @@ export default function StreamEditBlock(props) {
                     accept="video/*"
                     id="video"
                     onChange={(e) => setVideo(e.target.files[0])}
+                    required
                     className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
                   />
                 </div>
@@ -383,6 +400,7 @@ export default function StreamEditBlock(props) {
                     accept="image/*"
                     id="thumbnail"
                     onChange={(e) => setThumbnail(e.target.files[0])}
+                    required
                     className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
                   />
                 </div>
@@ -393,6 +411,7 @@ export default function StreamEditBlock(props) {
                   <select
                     value={type}
                     onChange={(e) => setType(e.target.value)}
+                    required
                     className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
                   >
                     <option value="action">Action</option>
@@ -407,6 +426,7 @@ export default function StreamEditBlock(props) {
                   <select
                     value={gameType}
                     onChange={(e) => setGameType(e.target.value)}
+                    required
                     className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
                   >
                     <option value="other">Other</option>
@@ -427,6 +447,10 @@ export default function StreamEditBlock(props) {
                     type="text"
                     value={secretVideoCode}
                     onChange={(e) => setSecretVideoCode(e.target.value)}
+                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                    title="The secret video code must include capital letters, simple letters, numbers, symbols, and should be 8 characters long."
+                    required
+                    maxLength={8}
                     className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
                   />
                 </div>

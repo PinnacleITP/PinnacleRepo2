@@ -7,7 +7,10 @@ const StreamSchema = new mongoose.Schema({
     description: String,
     viewCount: Number,
     type: String, 
-    channel_ID: String,
+    channel_ID: {
+        type: mongoose.Schema.Types.Mixed, // Define as ObjectId
+        ref: 'channel' // Reference to the Channel model
+    },
     secretVideoCode: String,
     gameType:String
 })
