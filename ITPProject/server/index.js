@@ -2,6 +2,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { resolve } = require('path');
+
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+const multer = require('multer');
+
 const env = require('dotenv').config({ path: './.env' });
 const bodyParser = require('body-parser');
 const stripe = require('stripe')('sk_test_51P0Ggb02NNbm5WjcvAZ8IAsOgpidQiTfSeqewumWezdCAORzNCcfATJXnNGG0CIMHcqOcFsjigLKuKgMrJJHMNhW00vtdgHWvv');
@@ -23,11 +28,10 @@ const cookieParser = require('cookie-parser');
 
 const store = session.MemoryStore();
 
-
 const app = express();
 app.use(
   cors({
-    origin: ['http://localhost:3000'],
+    origin: ['http://localhost:3000', 'http://localhost:3002'],
     credentials: true,
   })
 );
@@ -50,7 +54,6 @@ app.use(
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-
 mongoose.connect(
   "mongodb+srv://pinnacleitp:pinnacle123@crud.vsshiuj.mongodb.net/?retryWrites=true&w=majority&appName=crud",
   {
@@ -58,6 +61,7 @@ mongoose.connect(
     useUnifiedTopology: true,
   }
 );
+
 // mongoose.connect("mongodb://127.0.0.1:27017/pinnacle")
 
 //if conflict remove
@@ -65,6 +69,18 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => console.log('Connected to MongoDB'));
 
+// Multer setup for file uploads
+const storage = multer.diskStorage({
+  destination: './uploads/',
+  filename: function (req, file, cb) {
+    cb(null, uuidv4() + path.extname(file.originalname));
+  },
+});
+const upload = multer({ storage: storage });
+
+// Serve static files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+//----------multer end
 //create new bank card details
 app.post("/createBankCard", (req, res) => {
   BankCardModel.create(req.body)
@@ -641,6 +657,8 @@ app.get('/api/channels', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+//Dasun - New...............................................................................................................
+
 //------dasun part start----
 
 const bcrypt = require('bcrypt');
@@ -855,6 +873,9 @@ app.get('/api/getuser', (req, res) => {
 });
 
 //------dasun part end----
+
+
+//Dasun - New..............
 
 app.listen(3001, () => {
   console.log("Server is Running");
