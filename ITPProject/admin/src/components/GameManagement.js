@@ -1137,7 +1137,7 @@ export default function GameManagement() {
                 }}
                 className=" bg-transparent text-[#FE7804] border-2 border-[#FE7804] hover:bg-[#FE7804] hover:text-white rounded-lg px-5 py-2 text-[16px] font-bold"
               >
-                Upgrade
+                Update
               </button>
               <button
                 onClick={(e) => handleDelete(itemId)}

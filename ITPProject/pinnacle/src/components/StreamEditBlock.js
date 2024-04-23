@@ -381,7 +381,6 @@ export default function StreamEditBlock(props) {
                     accept="video/*"
                     id="video"
                     onChange={(e) => setVideo(e.target.files[0])}
-                    required
                     className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
                   />
                 </div>
@@ -400,7 +399,6 @@ export default function StreamEditBlock(props) {
                     accept="image/*"
                     id="thumbnail"
                     onChange={(e) => setThumbnail(e.target.files[0])}
-                    required
                     className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
                   />
                 </div>

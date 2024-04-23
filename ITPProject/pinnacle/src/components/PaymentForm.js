@@ -15,6 +15,7 @@ const PaymentForm = ({
   memberid,
   pageid,
   itemid,
+  email,
   handlePaymentProcess,
 }) => {
   const stripe = useStripe();
@@ -98,12 +99,14 @@ const PaymentForm = ({
         crystaldiscount,
         date,
         memberid,
+        email,
       })
       .then((result) => {
         console.log(result);
         document.getElementById("paymentdetailsform").reset();
       })
       .catch((err) => console.log(err));
+      
   };
 
   const downloadRecodHandler = () => {
@@ -128,7 +131,7 @@ const PaymentForm = ({
           .catch((err) => console.log(err));
       })
       .catch((err) => console.log(err));
-    }, 5000);
+    }, 1000);
 };
 
   return (
@@ -161,7 +164,7 @@ const PaymentForm = ({
             </p>
             <div className=" w-full mt-12 mb-5 flex justify-end px-8">
               <button
-                onClick={() => setPaymentSuccessMessage(false)}
+                onClick={() => {setPaymentSuccessMessage(false);  window.location.href = '/account';}}
                 className=" bg-transparent text-[#3ab755] border-2 border-[#3ab755] hover:bg-[#3ab755] hover:text-white rounded-lg py-2 px-5 mr-4"
               >
                 Cancel

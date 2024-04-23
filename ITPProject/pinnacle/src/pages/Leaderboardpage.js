@@ -9,15 +9,44 @@ import Footer from "../components/Footer";
 import Leaderboard_rank_card from "../components/Leaderboard_rank_card";
 
 export default function Leaderboardpage() {
-  var pageid='LeaderBoard'
+  var pageid = "LeaderBoard";
   const [leaderBoardDetails, setLeaderBoardDetails] = useState([]);
+
+  // useEffect(() => {
+  //   axios
+  //     .get(`http://localhost:3001/getChannelbyViewCount`)
+  //     .then((result) => setLeaderBoardDetails(result.data))
+  //     .catch((err) => console.log(err));
+  // }, []);
 
   useEffect(() => {
     axios
       .get(`http://localhost:3001/${pageid}`)
       .then((result) => setLeaderBoardDetails(result.data))
       .catch((err) => console.log(err));
-  }, [pageid]);
+
+    axios
+      .delete("http://localhost:3001/deleteAllLeaderboardRecords/")
+      .then((res) => {
+        console.log(res);
+        leaderBoardDetails.forEach((detail) => {
+          axios
+            .post("http://localhost:3001/createLeaderboard", {
+              ChannelID: detail._id,
+              viewcount: detail.viewCount,
+              channelname: detail.channelName,
+              subscribercount: detail.subscribercount,
+            })
+            .then((result) => {
+              console.log(result);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        });
+      })
+      .catch((errr) => console.log(errr));  
+  }, [pageid, leaderBoardDetails]);
 
 
 
@@ -40,15 +69,13 @@ export default function Leaderboardpage() {
           >
             <div className=" bg-gradient-to-t from-[#876415] to-[#C9AA64] p-1 mx-auto w-[102px] rounded-full my-10">
               <img
-                src={levinho}
+                src={leaderBoardDetails[1]?.channelDp}
                 alt="trash--v1"
-                width="100"
-                height="100"
-                className="rounded-full "
+                className="rounded-full w-[100px] h-[95px] "
               />
             </div>
             <h1 className=" text-white text-[25px] text-center font-bold">
-            {leaderBoardDetails[1]?.channelname}
+              {leaderBoardDetails[1]?.channelName}
             </h1>
             <h1 className="text-[85px] text-[#F1CA71] font-extrabold text-center">
               2
@@ -70,15 +97,13 @@ export default function Leaderboardpage() {
           >
             <div className=" bg-gradient-to-t from-[#876415] to-[#C9AA64] p-1 mx-auto w-[102px] rounded-full my-10">
               <img
-                src={levinho}
+                src={leaderBoardDetails[0]?.channelDp}
                 alt="trash--v1"
-                width="100"
-                height="100"
-                className="rounded-full "
+                className="rounded-full w-[100px] h-[95px] "
               />
             </div>
             <h1 className=" text-white text-[25px] text-center font-bold">
-            {leaderBoardDetails[0]?.channelname}
+              {leaderBoardDetails[0]?.channelName}
             </h1>
             <h1 className="text-[96px] text-[#F1CA71] font-extrabold text-center">
               1
@@ -100,15 +125,13 @@ export default function Leaderboardpage() {
           >
             <div className=" bg-gradient-to-t from-[#876415] to-[#C9AA64] p-1 mx-auto w-[102px] rounded-full my-10">
               <img
-                src={levinho}
+                src={leaderBoardDetails[2]?.channelDp}
                 alt="trash--v1"
-                width="100"
-                height="100"
-                className="rounded-full "
+                className="rounded-full w-[100px] h-[95px] "
               />
             </div>
             <h1 className=" text-white text-[25px] text-center font-bold">
-            {leaderBoardDetails[2]?.channelname}
+              {leaderBoardDetails[2]?.channelName}
             </h1>
             <h1 className="text-[81px] text-[#F1CA71] font-extrabold text-center">
               3
@@ -141,11 +164,15 @@ export default function Leaderboardpage() {
             <div className="w-[15%]">Subscribers</div>
           </div>
           {leaderBoardDetails.map((item, index) => {
-              return (
-                <Leaderboard_rank_card rank={index+1} streamer={item.channelname} views={item.viewcount} subscribers={item.subscribercount}/>
-              );
-            })}
-          
+            return (
+              <Leaderboard_rank_card
+                rank={index + 1}
+                streamer={item.channelName}
+                views={item.viewCount}
+                subscribers={item.subscribercount}
+              />
+            );
+          })}
         </div>
       </div>
       <Footer />
