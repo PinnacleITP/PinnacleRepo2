@@ -276,7 +276,7 @@ app.put("/updateGame/:id", (req, res) => {
     { _id: id },
     {
       name: req.body.itemname,
-      image: req.body.itemgameImageUrl,
+      gameImageUrl: req.body.itemgameImageUrl,
       configurations: req.body.itemconfigurations,
       description: req.body.itemdescription,
       price: req.body.itemprice,
