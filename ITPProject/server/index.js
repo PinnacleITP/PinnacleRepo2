@@ -349,7 +349,6 @@ app.delete("/deletePaymentHistoryRelatedToMember/:id", (req, res) => {
     .catch((err) => res.status(500).json({ error: err.message }));
 });
 
-
 app.post("/createdounloadRecod", (req, res) => {
   DownloadModel.create(req.body)
     .then((download) => res.json(download))
@@ -506,7 +505,6 @@ app.get("/getChannelbyViewCount", (req, res) => {
     .catch((err) => res.json(err));
   } 
 );
-
 
 app.get('/api/streams', async (req, res) => {
   try {
