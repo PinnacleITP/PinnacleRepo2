@@ -3,13 +3,39 @@ import './styles/header.css';
 import Pinnaclelogo from '../assets/header/pinnaclelogo.png';
 import { Link } from 'react-router-dom';
 import Rounded_corner_btn from './Rounded_corner_btn';
-import { useState } from 'react';
+import { useState ,useEffect} from 'react';
+import useSWR from 'swr';
+import axios from 'axios';
 
 export default function Header(props) {
   const activeNavItem = props.navid;
 
+  const { data, isLoading } = useSWR('api/me');
+
   const [isChecked, setIsChecked] = useState(false);
 
+  const [userData, setUserData] = useState('');
+  useEffect(() => {
+    setTimeout(() => {
+      const userEmail = data?.user.email;
+      if (userEmail) { 
+        console.log(userEmail);
+
+        const fetchData = async () => {
+          try {
+            const response = await axios.get('http://localhost:3001/api/getuser?email=' + userEmail);
+            setUserData(response.data);
+          } catch (error) {
+            console.error("Error fetching data:", error);
+            alert(error.message);
+          }
+        };
+
+        fetchData();
+      }
+  }, 1000);
+  }, []);
+  
   return (
     <div>
     <div className='header'>
@@ -33,11 +59,26 @@ export default function Header(props) {
         <Link to="/premiumplanes"><Rounded_corner_btn value='Go Premium'/></Link>
         <Link to="/account" style={{ textDecoration: 'none' }}>
           <div className='user_profile'>
-            <div className='user_dtails'>
-              <span className='user_name'>New User</span><br/>
-              <span className='user_settings'>Settings</span>
-            </div>
-            <img src="https://img.icons8.com/ios-filled/50/FD7E14/user-male-circle.png" alt="user-male-circle"/>
+          <div className="flex items-center">
+                <img
+                  src={userData?.image ? userData?.image : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}
+                  alt="user"
+                  className="rounded-full"
+                />
+
+                {isLoading ? (
+                  'loading'
+                ) : (
+                  <div className="flex flex-col">
+                    <p className="text-white pr-5 capitalize">
+                      {data ? data.user?.username : ''}
+                    </p>
+                    <p className="text-white text-sm pr-5 lowercase">
+                      {data ? data.user?.email : ''}
+                    </p>
+                  </div>
+                )}
+              </div>
           </div>
         </Link>
       </div>

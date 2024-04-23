@@ -3,11 +3,15 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { SWRConfig } from 'swr';
+import fetcher from './lib/fetcher';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <SWRConfig value={{ fetcher, refreshInterval: 300 }}>
+      <App />
+    </SWRConfig>
   </React.StrictMode>
 );
 
