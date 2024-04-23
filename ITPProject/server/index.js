@@ -8,7 +8,7 @@ const stripe = require('stripe')('sk_test_51P0Ggb02NNbm5WjcvAZ8IAsOgpidQiTfSeqew
 const BankCardModel = require("./models/BankCards");
 const PrimiumPlanModel = require("./models/PremiumPlan");
 const CartModel = require("./models/Cart");
-const MemberModel = require("./models/Member");
+const MemberModel = require("./models/User");
 const LeaderBoardModel = require("./models/LeaderBoard");
 const GameModel = require("./models/Game");
 const PaymentModel = require("./models/Payment");
@@ -145,9 +145,13 @@ app.get("/:id", (req, res) => {
 
   //get leaderboard details
   if (id === "LeaderBoard") {
-    LeaderBoardModel.find({})
-    .sort({ viewcount: -1 }) // Sorting by viewcount column in descending order
-    .then((LeaderboardDetails) => res.json(LeaderboardDetails))
+    // LeaderBoardModel.find({})
+    // .sort({ viewcount: -1 }) // Sorting by viewcount column in descending order
+    // .then((LeaderboardDetails) => res.json(LeaderboardDetails))
+    // .catch((err) => res.json(err));
+    ChannelModel.find({})
+    .sort({ viewCount: -1 }) // Sorting by viewcount column in descending order
+    .then((channel) => res.json(channel))
     .catch((err) => res.json(err));
   } 
   //get all the premium plan details
@@ -174,6 +178,25 @@ app.get("/:id", (req, res) => {
       .then((stream) => res.json(stream))
       .catch((err) => res.json(err));
   }
+  else if (id === "Aleaderboard") {
+    LeaderBoardModel.find({})
+    .then((LeaderboardDetails) => res.json(LeaderboardDetails))
+    .catch((err) => res.json(err));
+  }
+});
+
+//deled all leaderboard
+app.delete("/deleteAllLeaderboardRecords", (req, res) => {
+  LeaderBoardModel.deleteMany({})
+    .then(() => res.json({ message: "All records deleted successfully." }))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+//create leaderboard 
+app.post("/createLeaderboard", (req, res) => {
+  LeaderBoardModel.create(req.body)
+    .then((leaderboard) => res.json(leaderboard))
+    .catch((err) => res.json(err));
 });
 
 app.put("/updateViewCount/:id", (req, res) => {
@@ -456,6 +479,32 @@ app.get("/getChannelByStreamID/:channelid", (req, res) => {
     .then((channel) => res.json(channel))
     .catch((err) => res.json(err));
 });
+
+app.get("/getChannelbyid/:id", (req, res) => {
+  const id = req.params.id;
+  ChannelModel.findById({ _id: id })
+    .then((channel) => res.json(channel))
+    .catch((err) => res.json(err));
+});
+
+app.put("/updateChannelViewCount/:id", (req, res) => {
+  const id = req.params.id;
+  ChannelModel.findByIdAndUpdate({ _id: id },
+    {
+      viewCount: req.body.channelviewCount,
+    }
+  )
+    .then((channel) => res.json(channel))
+    .catch((err) => res.json(err));
+});
+
+app.get("/getChannelbyViewCount", (req, res) => {
+  ChannelModel.find({})
+    .sort({ viewcount: -1 }) // Sorting by viewcount column in descending order
+    .then((channel) => res.json(channel))
+    .catch((err) => res.json(err));
+  } 
+);
 
 app.get('/api/streams', async (req, res) => {
   try {
