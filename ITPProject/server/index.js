@@ -17,17 +17,53 @@ const CommunityModel = require("./models/Community");
 const StreamModel = require("./models/Stream");
 const ChannelModel = require("./models/Channel");
 
+const UserModel = require('./models/User');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+
+const store = session.MemoryStore();
+
+
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: ['http://localhost:3000'],
+    credentials: true,
+  })
+);
 app.use(express.json());
+app.use(cookieParser());
+app.use(
+  session({
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      sameSite: false,
+      secure: false,
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60,
+    },
+    store,
+  })
+);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-mongoose.connect(
-  "mongodb+srv://pinnacleitp:pinnacle123@crud.vsshiuj.mongodb.net/?retryWrites=true&w=majority&appName=crud"
-);
 
+mongoose.connect(
+  "mongodb+srv://pinnacleitp:pinnacle123@crud.vsshiuj.mongodb.net/?retryWrites=true&w=majority&appName=crud",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
 // mongoose.connect("mongodb://127.0.0.1:27017/pinnacle")
+
+//if conflict remove
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => console.log('Connected to MongoDB'));
 
 //create new bank card details
 app.post("/createBankCard", (req, res) => {
@@ -605,6 +641,220 @@ app.get('/api/channels', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+//------dasun part start----
+
+const bcrypt = require('bcrypt');
+const saltRounds = 10; // You can adjust this based on security/performance needs
+
+app.post('/api/signup', async (req, res) => {
+  try {
+    const { username, email, password, accountType, firstname, lastname, dob } = req.body;
+    if (!username || !email || !password || !accountType) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    // Check if email already exists
+    const existingUser = await UserModel.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    let image = '';
+
+    // Create a new user with the hashed password
+    const newUser = new UserModel({
+      username,
+      email,
+      password: hashedPassword, // Store the hashed password, not the plain one
+      accountType,
+      firstname,
+      lastname,
+      dob,
+      image
+    });
+
+    await newUser.save(); // Save the new user in the database
+    res.status(201).json({ message: 'User created successfully', user: newUser });
+
+  } catch (error) {
+    console.error('Error signing up:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/api/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    // Find the user by email
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' }); // No user found
+    }
+
+    // Compare the submitted password with the hashed password in the database
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.status(401).json({ error: 'Invalid credentials' }); // Password does not match
+    }
+
+    // Assuming you are using sessions for storing user information
+    req.session.authenticated = true;
+    req.session.user = {
+      username: user.username,
+      email,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      type: user.accountType,
+      dob: user.dob,
+      image: user.image
+    };
+
+    res.status(200).json({
+      message: 'Login successful',
+      user: {
+        username: user.username,
+      },
+    });
+  } catch (error) {
+    console.error('Error logging in:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// current user endpoint
+app.get('/api/me', async (req, res) => {
+  try {
+    if (req.session.authenticated) {
+      return res.status(200).json({
+        user: req.session.user,
+      });
+    }
+
+    return res.status(401).json({
+      message: 'unauthorized',
+    });
+  } catch (error) {
+    console.error('Error logging in:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.put('/api/changeData', async(req, res) => {
+
+  const {detail} = req.body;
+
+  if(detail == 'changePass'){
+    const {username, email, newPass} = req.body;
+    const user = await UserModel.findOne({ email, username });
+
+    const hashedPassword = await bcrypt.hash(newPass, saltRounds);
+  
+    if(user){
+      user.password = hashedPassword;
+  
+      await user.save()
+      .then((user) => res.json(user))
+      .catch((err) => res.json(err));
+    }
+  }else if(detail == 'updateDetails'){
+    const {username, email, firstName, lastName, dob} = req.body;
+    const user = await UserModel.findOne({ email, username });
+
+    if(user){
+      user.firstname = firstName;
+      user.lastname = lastName;
+      user.dob = dob;
+  
+      await user.save()
+      .then((user) => res.json(user))
+      .catch((err) => res.json(err));
+    }
+  }else if(detail == 'updateProfileImage'){
+    const {username, email, url} = req.body;
+    const user = await UserModel.findOne({ email, username });
+
+    if(user){
+      user.image = url;
+  
+      await user.save()
+      .then((user) => res.json(user))
+      .catch((err) => res.json(err));
+    }
+  }
+});
+
+app.delete('/api/deleteAccount', async (req, res) => {
+  try {
+
+    const {username, email} = req.body;
+
+    const deletedAccount = await UserModel.findOneAndDelete({ email, username });
+
+    if (!deletedAccount) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ message: 'User deleted successfully', post: deletedAccount });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/deleteUniqueAccount', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Mark the user as deleted instead of completely removing them
+    const updatedAccount = await UserModel.findOneAndUpdate(
+      { email }, 
+      { deleted: true },  // Assuming there's a 'deleted' field in your schema
+      { new: true }
+    );
+
+    if (!updatedAccount) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ message: 'User deleted successfully', post: updatedAccount });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
+app.get('/api/allUsers', async (req, res) => {
+  try {
+    const allUsers = await UserModel.find();
+    res.json(allUsers);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//get user details
+app.get('/api/getuser', (req, res) => {
+  const email = req.query.email;
+  console.log(email)
+  UserModel.findOne({ email })
+    .then((user) => {
+      if (user) {
+        res.json(user);
+      } else {
+        res.status(404).json({ message: 'No User Found' });
+      }
+    })
+    .catch((err) => res.status(500).json({ message: 'Internal Server Error' }));
+});
+
+//------dasun part end----
 
 app.listen(3001, () => {
   console.log("Server is Running");
