@@ -5,6 +5,9 @@ import GameDetailcard from "./GameDetailcard";
 import SearchError from "../assets/animations/searchnotfound.webm";
 import "../pages/styles/extarnal.css";
 
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+
 export default function GameManagement() {
   var pageid = "game";
   const [name, setName] = useState("");
@@ -58,12 +61,13 @@ export default function GameManagement() {
   const [submitButtonEnable, setSubmitButtonEnable] = useState(false);
 
   const actionGames = gameDetails.filter((game) => game.type === "action");
-  const adventureGames = gameDetails.filter((game) => game.type === "adventure");
+  const adventureGames = gameDetails.filter(
+    (game) => game.type === "adventure"
+  );
   const racingGames = gameDetails.filter((game) => game.type === "racing");
   const shooterGames = gameDetails.filter((game) => game.type === "shooter");
   const sportsGames = gameDetails.filter((game) => game.type === "sports");
 
-  //read game details
   useEffect(() => {
     axios
       .get(`http://localhost:3001/${pageid}`)
@@ -100,6 +104,7 @@ export default function GameManagement() {
     }
   };
 
+  //Create Game
   const createGame = async (e) => {
     e.preventDefault();
     try {
@@ -200,6 +205,7 @@ export default function GameManagement() {
     setIsFilterBtnChecked(!isFilterBtnChecked);
   };
 
+  //Read game
   const gameDeyailcardHandle = (id) => {
     setIsGameDetailCardCheked(true);
     axios
@@ -221,6 +227,7 @@ export default function GameManagement() {
       .catch((err) => console.log(err));
   };
 
+  //update game using id
   const gameUpdate = (e) => {
     e.preventDefault();
     axios
@@ -254,6 +261,7 @@ export default function GameManagement() {
       .catch((errr) => console.log(errr));
   };
 
+  //Search game
   const gamesSearch = () => {
     setGameSearch(true);
     const gameSearchInput = document.getElementById("gameSearchbar").value;
@@ -273,7 +281,6 @@ export default function GameManagement() {
       setSubmitButtonEnable(false);
       setPriceError("Price cannot contain letters");
       document.getElementById("gameAddSubmit").disabled = true;
-  
     } else {
       setPriceError("");
       document.getElementById("gameAddSubmit").disabled = false;
@@ -324,7 +331,6 @@ export default function GameManagement() {
       setDeveloperError("Maximum size limit should be 25 characters");
       setSubmitButtonEnable(false);
       document.getElementById("gameUpdateSubmit").disabled = true;
-
     } else {
       setDeveloperError("");
       setitemDeveloper(enteredDeveloper);
@@ -422,6 +428,57 @@ export default function GameManagement() {
       setNameError(""); // Clear the error if the name is not empty
     }
   };
+  
+  const [games, setGames] = useState([]);
+ 
+  // State hooks for search and filtering
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedField, setSelectedField] = useState('name');
+
+// Handling search query updates
+const handleSearchChange = (event) => {
+  setSearchQuery(event.target.value.toLowerCase());
+};
+
+// Handling changes in the field selected for searching
+const handleFieldChange = (event) => {
+  setSelectedField(event.target.value);
+};
+
+// Generating PDF from the game table
+const generatePDF = () => {
+  const input = document.getElementById('pdf-table');
+  html2canvas(input, { useCORS: true }).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF();
+    const imgWidth = 210;
+    const pageHeight = 297;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft >= 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    pdf.save('All Games.pdf');
+  });
+};
+
+// Adjust the filtering logic to consider the selected field and search query
+const filteredData = games.length > 0 ? games.filter(game => 
+  game[selectedField]?.toString().toLowerCase().includes(searchQuery)
+) : gameDetails.filter(game => 
+  game[selectedField]?.toString().toLowerCase().includes(searchQuery)
+);
+
+
 
   return (
     <div className="py-5 text-white px-7 ">
@@ -458,7 +515,7 @@ export default function GameManagement() {
             />
           </button>
           {isFilterBtnChecked && (
-            <div className="absolute z-10 py-3 pl-5 pr-10 leading-7 bg-black  bg-opacity-85">
+            <div className="absolute z-10 py-3 pl-5 pr-10 leading-7 bg-black bg-opacity-85">
               <p
                 onClick={allGameHandler}
                 className=" hover:text-[#FE7804] cursor-pointer"
@@ -519,7 +576,7 @@ export default function GameManagement() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center w-full  p-7 mb-9">
+            <div className="flex flex-col items-center justify-center w-full p-7 mb-9">
               <video autoPlay loop className="w-[200px] h-auto">
                 <source src={SearchError} type="video/webm" />
                 Your browser does not support the video tag.
@@ -662,7 +719,7 @@ export default function GameManagement() {
 
       {/* Add new game */}
       {isGameAddFormChecked && (
-        <div className="fixed top-0 left-0 z-10 flex items-center justify-center w-full h-full  backdrop-blur-lg">
+        <div className="fixed top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
           <form
             onSubmit={createGame}
             className="bg-[#1B1E20] rounded-2xl border-2 w-[70%] border-[#FE7804] px-10 py-8"
@@ -834,7 +891,7 @@ export default function GameManagement() {
 
       {/* update Game */}
       {isGameUpdateFormCheked && (
-        <div className="absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full  backdrop-blur-lg">
+        <div className="absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
           <form
             onSubmit={gameUpdate}
             className="bg-[#1B1E20] rounded-2xl border-2 w-[70%] border-[#FE7804] px-10 py-8"
@@ -1010,7 +1067,7 @@ export default function GameManagement() {
       )}
 
       {isGameDetailCardCheked && (
-        <div className="absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full  backdrop-blur-lg">
+        <div className="absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full backdrop-blur-lg">
           <div className="bg-[#1B1E20] rounded-2xl border-2 w-[70%] border-[#FE7804] px-10 py-8">
             <div>
               <h1 className=" inline-block text-[25px] font-bold mb-6">
@@ -1137,7 +1194,7 @@ export default function GameManagement() {
                 }}
                 className=" bg-transparent text-[#FE7804] border-2 border-[#FE7804] hover:bg-[#FE7804] hover:text-white rounded-lg px-5 py-2 text-[16px] font-bold"
               >
-                Update
+                Upgrade
               </button>
               <button
                 onClick={(e) => handleDelete(itemId)}
@@ -1149,6 +1206,108 @@ export default function GameManagement() {
           </div>
         </div>
       )}
+      {/* ::::::::::::::::::::::::::::::::::::::::::::::Game Table:::::::::::::::::::::::::::::::::::::::::::::: */}
+
+      <div className="w-11/12 mx-auto mt-5">
+        <h1 className="mb-6 text-2xl font-bold text-white">All Games</h1>
+        <div className="flex items-center gap-4 mb-8">
+          <button
+            onClick={generatePDF}
+            className="float-right bg-gradient-to-tr from-[#FF451D] to-[#FE7804] px-4 py-2 text-[18px] font-semibold rounded-lg"
+          >
+            Generate PDF
+          </button>
+          <input
+            type="text"
+            className="bg-[#262628] text-[#FE7804] rounded-2xl flex-grow px-4 py-2 rounded-lg placeholder-[#FE7804] h-10 text-white  px-3 py-2 "
+            placeholder="Search Games..."
+            onChange={handleSearchChange}
+          />
+          <select
+            onChange={handleFieldChange}
+            onFocus={(e) => (e.target.style.backgroundColor = "#ff7f50")} // Change to your desired color on focus
+            onBlur={(e) => (e.target.style.backgroundColor = "#FF451D")} // Reset to default color on blur
+            style={{
+              padding: "8px 16px",
+              borderRadius: "12px",
+              backgroundImage:
+                "linear-gradient(to top right, #FF451D, #FE7804)",
+              height: "40px",
+              color: "white",
+              borderColor: "#ddd", // Default border color, change as needed
+            }}
+            className="px-4 py-2 rounded-lg bg-gradient-to-tr from-[#FF451D] to-[#FE7804] h-10 text-white"
+          >
+            <option value="name">Name</option>
+            <option value="type">Type</option>
+            <option value="price">Price</option>
+            <option value="developer">Developer</option>
+            <option value="publisher">Publisher</option>
+            <option value="releaseDate">Release Date</option>
+          </select>
+        </div>
+
+        <div id="pdf-table" className="overflow-x-auto">
+          <table className="w-full border border-collapse border-gray-800 table-auto">
+            <thead>
+              <tr>
+                <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">
+                  Name
+                </th>
+                <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">
+                  Image
+                </th>
+                <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">
+                  Type
+                </th>
+                <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">
+                  Price
+                </th>
+                <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">
+                  Developer
+                </th>
+                <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">
+                  Publisher
+                </th>
+                <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">
+                  Release Date
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredData.map((game) => (
+                <tr key={game._id}>
+                  <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">
+                    {game.name}
+                  </td>
+                  <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">
+                    <img
+                      src={game.gameImageUrl}
+                      alt="Game Image"
+                      style={{ width: "100%", maxHeight: "100px" }}
+                    />
+                  </td>
+                  <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">
+                    {game.type}
+                  </td>
+                  <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">
+                    ${game.price}
+                  </td>
+                  <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">
+                    {game.developer}
+                  </td>
+                  <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">
+                    {game.publisher}
+                  </td>
+                  <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">
+                    {new Date(game.releasdate).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
