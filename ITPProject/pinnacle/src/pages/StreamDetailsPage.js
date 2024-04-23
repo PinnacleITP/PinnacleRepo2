@@ -13,19 +13,50 @@ export default function StreamDetailsPage() {
   const queryParams = new URLSearchParams(location.search);
   const streamid = queryParams.get("streamid");
   const channel = queryParams.get("channel");
-  const [channelName, setChannelName] = useState([]);
-  const [channelDp, setChannelDp] = useState([]);
+  const [channelDetails, setChannelDetails] = useState([]);
+  // const [channelName, setChannelName] = useState([]);
+  // const [channelDp, setChannelDp] = useState([]);
+
+  // useEffect(() => {
+  //   axios
+  //     .get(`http://localhost:3001/getChannelByStreamID/${channel}`)
+  //     .then((result) => {
+  //       console.log(result.channel_ID);
+  //       setChannelName(result.data.channelName);
+  //       setChannelDp(result.data.channelDp);
+  //     })
+  //     .catch((err) => console.log(err));
+  // }, [channel]);
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/getChannelByStreamID/${channel}`)
+      .get(`http://localhost:3001/getChannelbyid/${channel}`)
       .then((result) => {
-        console.log(result.channel_ID);
-        setChannelName(result.data.channelName);
-        setChannelDp(result.data.channelDp);
+        console.log("Stream details:", result.data);
+        setChannelDetails(result.data);
+        // Call updateViewCount after setting streamMoreDetails
+      
       })
       .catch((err) => console.log(err));
   }, [channel]);
+
+  useEffect(() => {
+    updateChannelViewCount(channelDetails.viewCount);
+    console.log("channel"+channelDetails.viewCount);
+  }, [channelDetails.viewCount]);
+
+  const updateChannelViewCount = (bdviewcount) => {
+    const channelviewCount = bdviewcount + 1;
+    console.log("Current view count:", bdviewcount);
+    console.log("Updated view count:", channelviewCount);
+    axios
+      .put(`http://localhost:3001/updateChannelViewCount/${channelDetails._id}`, { channelviewCount })
+      .then((result) => {
+        console.log("Update result:", result);
+      })
+      .catch((err) => console.log(err));
+  };
+
   //read all stream details
 
   // useEffect(() => {
@@ -96,7 +127,8 @@ export default function StreamDetailsPage() {
             <div className="py-4 px-7 flex justify-start relative items-center">
               <div>
                 <img
-                  src="https://img.icons8.com/ios-filled/50/FD7E14/user-male-circle.png"
+                className=" w-[50px] h-[50px] rounded-full"
+                  src={channelDetails.channelDp}
                   alt="user-male-circle"
                 />
               </div>
@@ -105,7 +137,7 @@ export default function StreamDetailsPage() {
                 <p className=" font-bold text-[20px]">
                   {streamMoreDetails.name}
                 </p>
-                <p className="text-[18px] text-[#ffffff9a]">{channelName}</p>
+                <p className="text-[18px] text-[#ffffff9a]">{channelDetails.channelName}</p>
 
               </div>
               <div className=" ml-5">

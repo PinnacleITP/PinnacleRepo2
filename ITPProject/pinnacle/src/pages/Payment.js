@@ -45,6 +45,15 @@ export default function Payment() {
   const [crystalDiscount, setCrystalDiscount] = useState(0);
   const [userDetails, setUserDetails] = useState([]);
 
+  //validation usestate
+  const [paymentEmail, setPaymentEmail] = useState("");
+  const [paymentName, setPaymentName] = useState("");
+  const [paymentCountry, setPaymentCountry] = useState("");
+  const [payBtnEnable, setPayBtnEnable] = useState(false);
+  const [emaiIsValid, setEmaiIsValid] = useState(false);
+  const [cardNameIsValide, setCardNameIsValide] = useState(false);
+  const [countryIsValide, setCuntryIsValide] = useState(false);
+
   //set memberid to usestate
   useEffect(() => {
     setMemberID(userid);
@@ -74,7 +83,7 @@ export default function Payment() {
           setCartItem(result.data);
         })
         .catch((err) => console.log(err));
-    }else if (page == "G") {
+    } else if (page == "G") {
       axios
         .get(`http://localhost:3001/getGamebyID/${itemId}`)
         .then((result) => {
@@ -100,10 +109,10 @@ export default function Payment() {
     } else if (page === "C") {
       setOfficialPrice(cartItem.price);
       setPaymentDescription(cartItem.game);
-    }else if (page === "G") {
+    } else if (page === "G") {
       setOfficialPrice(gameItem.price);
       setPaymentDescription(gameItem.name);
-    }else if (page === "CS") {
+    } else if (page === "CS") {
       setOfficialPrice(parseFloat(itemsTotalPrice));
       setPaymentDescription(SelectedItems);
     }
@@ -259,6 +268,29 @@ export default function Payment() {
     setEXPDate(formattedExpiryDate);
   };
 
+  // email validation
+  const emailValidater = () => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    setEmaiIsValid(emailPattern.test(paymentEmail));
+  };
+
+  // card validation
+  const cardNameValidater = () => {
+    const onlyLettersRegex = /^[A-Za-z]+$/;
+
+    setCardNameIsValide(onlyLettersRegex.test(paymentName));
+  };
+
+  // card validation
+  const countryValidater = () => {
+    const lettersWithSpacesRegex = /^[A-Za-z\s]+$/;
+
+    setCuntryIsValide(lettersWithSpacesRegex.test(paymentCountry));
+  };
+
+  // ###################### payment submit ##############################
+
   const [submitHandler, setSubmitHandler] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -306,11 +338,15 @@ export default function Payment() {
               </lable>
               <br />
               <input
-                className="text-white h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50"
+                id="paymentEmail"
+                className={` h-[45px] w-full bg-[#2A2B2F] border-[#D8DAE3] border-2 border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50 ${
+                  emaiIsValid ? "text-white" : "text-red-500"
+                }`}
                 type="email"
                 name="paymentemail"
                 placeholder="abc@gmail.com"
-                required
+                onChange={(e) => setPaymentEmail(e.target.value)}
+                onBlur={emailValidater}
               />
               <br />
             </div>
@@ -329,6 +365,7 @@ export default function Payment() {
                     memberid={memberID}
                     pageid={page}
                     itemid={itemId}
+                    email={paymentEmail}
                     handlePaymentProcess={handlePaymentProcess}
                   />
                 </Elements>
@@ -345,11 +382,12 @@ export default function Payment() {
                 </lable>
                 <br />
                 <input
-                  className="text-white pl-3 placeholder-[#9D9191] placeholder-opacity-50 h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px]"
+                  className={` pl-3 placeholder-[#9D9191] placeholder-opacity-50 h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] ${cardNameIsValide ? "text-white" : " text-red-500"}`}
                   type="text"
                   name="cardname"
                   placeholder="jonathan"
-                  required
+                  onChange={(e) => setPaymentName(e.target.value)}
+                  onBlur={cardNameValidater}
                 />
                 <br />
               </div>
@@ -363,11 +401,12 @@ export default function Payment() {
                 </lable>
                 <br />
                 <input
-                  className="text-white h-[45px] pl-3 placeholder-[#9D9191] placeholder-opacity-50 w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] "
+                  className={` h-[45px] pl-3 placeholder-[#9D9191] placeholder-opacity-50 w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] ${countryIsValide ? "text-white" : " text-red-500"} `}
                   type="text"
                   name="country"
                   placeholder="Sri Lanka"
-                  required
+                  onChange={(e) => setPaymentCountry(e.target.value)}
+                  onBlur={countryValidater}
                 />
                 <br />
               </div>
@@ -402,7 +441,10 @@ export default function Payment() {
               <div className="mb-1 text-[18px] font-semibold text-[#D9D9D9]">
                 <span>Official Price</span>
                 <span className="float-right">
-                  ${" "}{typeof officialPrice === "number" ? officialPrice.toFixed(2) : ""}
+                  ${" "}
+                  {typeof officialPrice === "number"
+                    ? officialPrice.toFixed(2)
+                    : ""}
                 </span>
               </div>
               <div className="px-4 mb-3">
@@ -423,9 +465,7 @@ export default function Payment() {
               </div>
               {isCheckedCrystals && (
                 <div className="mb-1 font-semibold text-[18px]">
-                  <span className="text-[#FE7804]">
-                    Crystal Discount
-                  </span>
+                  <span className="text-[#FE7804]">Crystal Discount</span>
                   <span className="float-right text-[#FE7804]">
                     ${" "}
                     {typeof crystalDiscount === "number"
@@ -455,17 +495,25 @@ export default function Payment() {
               </div>
 
               <div className="mb-5 ">
-                <span className="text-[28px] font-bold text-white">Sub Total</span>
+                <span className="text-[28px] font-bold text-white">
+                  Sub Total
+                </span>
                 <span className="float-right text-[28px] font-bold text-white">
                   $ {subTotal}
                 </span>
               </div>
-              <button
+              {emaiIsValid && cardNameIsValide && countryIsValide && (<button
+                id="MakePaymentbtn"
                 onClick={handleSubmit}
                 className="bg-gradient-to-b from-[#FF451D] to-[#FE7804] text-white w-full h-10 rounded-[10px] text-lg font-bold"
               >
                 Make Payment
-              </button>
+              </button>)}
+              {!(emaiIsValid && cardNameIsValide && countryIsValide) && (<button
+                className="bg-gradient-to-b from-[#6a6966] to-[#E8E8E7] text-[#545353] w-full h-10 rounded-[10px] text-lg font-bold"
+              >
+                Make Payment
+              </button>)}
             </div>
           </div>
           <div>
@@ -602,7 +650,7 @@ export default function Payment() {
         </div>
       )}
 
-      <Footer/>
+      <Footer />
     </div>
   );
 }
