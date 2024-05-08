@@ -3,6 +3,7 @@ import axios from "axios";
 import DeleteWorning from "../assets/payment/deleteanimation.webm";
 import SuccessPopup from "../components/SuccessPopup";
 import { HashLoader } from "react-spinners";
+import { saveAs } from 'file-saver';
 
 
 export default function Payment_history_card(props) {
@@ -26,6 +27,28 @@ export default function Payment_history_card(props) {
   const handleDeleteCloseSuccessPopup = () => {
     setDeleteSuccessMessagechecked(false);
   };
+
+  const name = "user";
+  const email = "user@gmail.com";
+  const description = props.reason;
+  const officialpice = props.amount;
+  const crystal = props.crystaldiscount;
+  const discount = props.discount;
+  const pid = props.id;
+  const date = props.date;
+  const subtotal = props.paidamount;
+
+  //pdf
+const createAndDownloadPdf = () => {
+  axios.post('http://localhost:3001/api/create-pdf', { name, email, description, officialpice, crystal, discount, pid, date, subtotal})
+    .then(() => axios.get('http://localhost:3001/api/fetch-pdf', { responseType: 'blob' }))
+    .then((res) => {
+      const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
+      saveAs(pdfBlob, 'newPdf.pdf');
+    })
+    .catch((error) => console.error('Error occurred while creating or fetching PDF:', error));
+};
+
 
   return (
     <div className="shadow-lg shadow-[#ffffff1a] my-3">
@@ -61,6 +84,7 @@ export default function Payment_history_card(props) {
         <p className=" font-bold"><img className=" inline-block mr-3" width="12" height="12" src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png" alt="checkmark" /><span className=" font-normal mr-2">Official Price:</span>${" "}{typeof props.amount === "number" ? props.amount.toFixed(2) : ""}</p>
         <p className=" font-bold"><img className=" inline-block mr-3" width="12" height="12" src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png" alt="checkmark" /><span className=" font-normal mr-2">Discount:</span>${" "}{typeof props.discount === "number" ? props.discount.toFixed(2) : ""}</p>
         <p className=" font-bold"><img className=" inline-block mr-3" width="12" height="12" src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png" alt="checkmark" /><span className=" font-normal mr-2">Crystal Discount:</span>${" "}{typeof props.crystaldiscount === "number" ? props.crystaldiscount.toFixed(2) : ""}</p>
+        <img onClick={createAndDownloadPdf} className=" float-right" width="23" height="23" src="https://img.icons8.com/ios-filled/50/FD7E14/pdf--v1.png" alt="pdf--v1"/>
         <p className=" font-bold"><img className=" inline-block mr-3" width="12" height="12" src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png" alt="checkmark" /><span className=" font-normal mr-2">Paid Amount:</span>${" "}{typeof props.paidamount === "number" ? props.paidamount.toFixed(2) : ""}</p>
       </div>)}
       

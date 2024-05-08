@@ -39,6 +39,7 @@ export default function Payment() {
 
   const [officialPrice, setOfficialPrice] = useState(0);
   const [paymentDescription, setPaymentDescription] = useState("");
+  const [paymentCategary, setPaymentCategary] = useState("");
   const [discount, setDiscount] = useState(0);
   const [subTotal, setSubTotal] = useState(0);
   const [crystalCount, setCrystalCount] = useState(0);
@@ -53,6 +54,9 @@ export default function Payment() {
   const [emaiIsValid, setEmaiIsValid] = useState(false);
   const [cardNameIsValide, setCardNameIsValide] = useState(false);
   const [countryIsValide, setCuntryIsValide] = useState(false);
+  const [clickemail, setclickemail] = useState(false);
+  const [clickname, setclickname] = useState(false);
+  const [clickcountry, setclickcountry] = useState(false);
 
   //set memberid to usestate
   useEffect(() => {
@@ -106,12 +110,15 @@ export default function Payment() {
     if (page === "P") {
       setOfficialPrice(premiumPlan.price);
       setPaymentDescription(premiumPlan.planType);
+      setPaymentCategary(premiumPlan.planType)
     } else if (page === "C") {
       setOfficialPrice(cartItem.price);
       setPaymentDescription(cartItem.game);
+      
     } else if (page === "G") {
       setOfficialPrice(gameItem.price);
       setPaymentDescription(gameItem.name);
+      setPaymentCategary(gameItem.type)
     } else if (page === "CS") {
       setOfficialPrice(parseFloat(itemsTotalPrice));
       setPaymentDescription(SelectedItems);
@@ -271,22 +278,24 @@ export default function Payment() {
   // email validation
   const emailValidater = () => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
     setEmaiIsValid(emailPattern.test(paymentEmail));
+    setclickemail(!emailPattern.test(paymentEmail));
   };
 
   // card validation
   const cardNameValidater = () => {
     const onlyLettersRegex = /^[A-Za-z]+$/;
-
     setCardNameIsValide(onlyLettersRegex.test(paymentName));
+    setclickname(!onlyLettersRegex.test(paymentName));
+
   };
 
   // card validation
   const countryValidater = () => {
     const lettersWithSpacesRegex = /^[A-Za-z\s]+$/;
-
     setCuntryIsValide(lettersWithSpacesRegex.test(paymentCountry));
+    setclickcountry(!lettersWithSpacesRegex.test(paymentCountry));
+
   };
 
   // ###################### payment submit ##############################
@@ -339,22 +348,23 @@ export default function Payment() {
               <br />
               <input
                 id="paymentEmail"
-                className={` h-[45px] w-full bg-[#2A2B2F] border-[#D8DAE3] border-2 border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50 ${
-                  emaiIsValid ? "text-white" : "text-red-500"
+                className={` h-[45px] w-full bg-[#4f5153d2] border-[#D8DAE3] border-2 border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50 ${
+                  emaiIsValid ? "text-black" : "text-red-500"
                 }`}
                 type="email"
                 name="paymentemail"
                 placeholder="abc@gmail.com"
                 onChange={(e) => setPaymentEmail(e.target.value)}
-                onBlur={emailValidater}
+                onKeyUp={emailValidater}
+                onClick={() => setclickemail(true)}
               />
-              <br />
+              {clickemail && (<p className=" text-[14px] text-red-500 pl-1 pt-1">Invalid email!</p>)}
             </div>
 
             <div className="mb-5 ">
               <span className="mx-1 my-2 text-lg text-white">Card Details</span>
               <br />
-              <div className="text-white h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50">
+              <div className="!text-white h-[45px] w-full bg-[#4f5153d2] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50">
                 <Elements stripe={stripePromise}>
                   <PaymentForm
                     subtotal={subTotal}
@@ -366,6 +376,9 @@ export default function Payment() {
                     pageid={page}
                     itemid={itemId}
                     email={paymentEmail}
+                    crystalcount ={crystalCount}
+                    name={paymentName}
+                    type={paymentCategary}
                     handlePaymentProcess={handlePaymentProcess}
                   />
                 </Elements>
@@ -382,13 +395,15 @@ export default function Payment() {
                 </lable>
                 <br />
                 <input
-                  className={` pl-3 placeholder-[#9D9191] placeholder-opacity-50 h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] ${cardNameIsValide ? "text-white" : " text-red-500"}`}
+                  className={` pl-3 placeholder-[#9D9191] placeholder-opacity-50 h-[45px] w-full bg-[#4f5153d2] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] ${cardNameIsValide ? "text-black" : " text-red-500"}`}
                   type="text"
                   name="cardname"
                   placeholder="jonathan"
                   onChange={(e) => setPaymentName(e.target.value)}
-                  onBlur={cardNameValidater}
+                  onKeyUp={cardNameValidater}
+                  onClick={() => setclickname(true)}
                 />
+                {clickname && (<p className=" text-[14px] text-red-500 pl-1 pt-1">Invalid input!</p>)}
                 <br />
               </div>
 
@@ -401,13 +416,15 @@ export default function Payment() {
                 </lable>
                 <br />
                 <input
-                  className={` h-[45px] pl-3 placeholder-[#9D9191] placeholder-opacity-50 w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] ${countryIsValide ? "text-white" : " text-red-500"} `}
+                  className={` h-[45px] pl-3 placeholder-[#9D9191] placeholder-opacity-50 w-full bg-[#4f5153d2] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] ${countryIsValide ? "text-black" : " text-red-500"} `}
                   type="text"
                   name="country"
                   placeholder="Sri Lanka"
                   onChange={(e) => setPaymentCountry(e.target.value)}
-                  onBlur={countryValidater}
+                  onKeyUp={countryValidater}
+                  onClick={() => setclickcountry(true)}
                 />
+                {clickcountry && (<p className=" text-[14px] text-red-500 pl-1 pt-1">Invalid input!</p>)}
                 <br />
               </div>
             </div>
@@ -460,7 +477,7 @@ export default function Payment() {
               </div>
 
               <div className="mb-1 font-semibold text-[18px]">
-                <span className="text-[#D9D9D9]">Discount</span>
+                <span className="text-[#D9D9D9]">Seasonal Discount</span>
                 <span className="float-right text-[#D9D9D9]">$ 0.00</span>
               </div>
               {isCheckedCrystals && (
