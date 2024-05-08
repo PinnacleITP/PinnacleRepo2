@@ -585,15 +585,15 @@ export default function Gamepage() {
       <div className="w-11/12 mx-auto mt-9 mb-9">
         <h1 className="text-[28px] font-bold">MOST WANTED GAMES</h1>
         <div className="flex justify-between mt-7">
-          {latestGameDetails.slice(0, 3).map((item) => {
+        {latestGameDetails.slice(0, 3).map((item) => {
             return (
               <div className="p-0 m-0 w-[30%] rounded-lg">
                 <Link to={`/gamedetail?gameid=${item._id}`}>
-                  <Game_Block_Card
-                    price={item.price}
-                    image={item.gameImageUrl}
-                    imgsize="30"
-                  />
+                <Game_Block_Card
+                  price={item.price}
+                  image={item.gameImageUrl}
+                  imgsize="30"
+                />
                 </Link>
               </div>
             );

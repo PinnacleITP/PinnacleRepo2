@@ -28,6 +28,7 @@ export default function GameManagement() {
   const navigate = useNavigate();
 
   const [itemId, setitemId] = useState("");
+  const [itemimage, setitemImage] = useState("");
   const [itemname, setitemName] = useState("");
   const [itemgameImageUrl, setitemgameImageUrl] = useState("");
   const [itemconfigurations, setitemConfiguration] = useState("");
@@ -1048,7 +1049,7 @@ export default function GameManagement() {
                   type="file"
                   accept="image/*"
                   id="image"
-                  onChange={(e) => setImage(e.target.files[0])}
+                  onChange={(e) => setitemImage(e.target.files[0])}
                 />
               </div>
               <img className="h-[70px] ml-5" src={itemgameImageUrl} />

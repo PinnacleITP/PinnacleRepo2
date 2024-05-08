@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const pdf = require('html-pdf');
 const cors = require("cors");
 const { resolve } = require('path');
 
@@ -13,7 +14,7 @@ const stripe = require('stripe')('sk_test_51P0Ggb02NNbm5WjcvAZ8IAsOgpidQiTfSeqew
 const BankCardModel = require("./models/BankCards");
 const PrimiumPlanModel = require("./models/PremiumPlan");
 const CartModel = require("./models/Cart");
-const MemberModel = require("./models/User");
+const MemberModel = require("./models/Member");
 const LeaderBoardModel = require("./models/LeaderBoard");
 const GameModel = require("./models/Game");
 const PaymentModel = require("./models/Payment");
@@ -21,6 +22,9 @@ const DownloadModel = require("./models/Downloads");
 const CommunityModel = require("./models/Community");
 const StreamModel = require("./models/Stream");
 const ChannelModel = require("./models/Channel");
+const SeasonModel = require("./models/Season");
+
+const pdfTemplate = require('./documents');
 
 const UserModel = require('./models/User');
 const session = require('express-session');
@@ -358,6 +362,12 @@ app.post("/createPaymnetRecod", (req, res) => {
     .catch((err) => res.status(500).json({ error: err.message }));
 });
 
+app.get("/api/adminAllPayment", (req, res) => {
+    PaymentModel.find({})
+      .then((payment) => res.json(payment))
+      .catch((err) => res.json(err));
+});
+
 //get payment details related to member
 app.get("/getPaymentRecodsByMemberID/:id", (req, res) => {
   const id = req.params.id;
@@ -424,6 +434,31 @@ app.delete("/deleteDownloadGame/:id", (req, res) => {
   const id = req.params.id;
   DownloadModel.findByIdAndDelete({ _id: id })
     .then((downloads) => res.json(downloads))
+    .catch((err) => res.json(err));
+});
+
+//update CrystalCount
+app.put("/updateCrystalCount/:id", (req, res) => {
+  const id = req.params.id;
+  MemberModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      crystalCount: req.body.newCrystalcount,
+    }
+  )
+    .then((member) => res.json(member))
+    .catch((err) => res.json(err));
+});
+
+app.put("/updatedownloadcount/:id", (req, res) => {
+  const id = req.params.id;
+  GameModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      downloadCount: req.body.newDownloadcount,
+    }
+  )
+    .then((game) => res.json(game))
     .catch((err) => res.json(err));
 });
 
@@ -646,8 +681,6 @@ app.get('/api/streams/count-by-type', async (req, res) => {
       res.status(500).json({ error: err.message });
   }
 });
-
-
 
 app.get('/api/channels', async (req, res) => {
   try {
@@ -876,6 +909,60 @@ app.get('/api/getuser', (req, res) => {
 
 
 //Dasun - New..............
+
+// pdf genaration
+app.post('/api/create-pdf', (req, res) => {
+  pdf.create(pdfTemplate(req.body), {}).toFile('result.pdf', (err) => {
+      if(err) {
+          res.status(500).send('Error creating PDF');
+          return;
+      }
+      res.status(200).send('PDF created successfully');
+  });
+});
+
+app.get('/api/fetch-pdf', (req, res) => {
+  res.sendFile(`${__dirname}/result.pdf`, (err) => {
+      if(err) {
+          res.status(500).send('Error fetching PDF');
+          return;
+      }
+  });
+});
+
+
+app.post("/season", (req, res) => {
+  SeasonModel.create(req.body)
+    .then((season) => res.json(season))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+app.get("/api/readSeason/:id", (req, res) => {
+  const id = req.params.id;
+  SeasonModel.findById(id)
+    .then((season) => {
+      if (!season) {
+        return res.status(404).json({ error: "Season not found" });
+      }
+      res.json(season);
+    })
+    .catch((err) => {
+      console.error("Error retrieving season:", err);
+      res.status(500).json({ error: "Internal server error" });
+    });
+});
+
+app.put("/updateEndDate/:id", (req, res) => {
+  const id = req.params.id;
+  SeasonModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      endDate: req.body.newEndDate,
+    }
+  )
+    .then((season) => res.json(season))
+    .catch((err) => res.json(err));
+});
 
 app.listen(3001, () => {
   console.log("Server is Running");
