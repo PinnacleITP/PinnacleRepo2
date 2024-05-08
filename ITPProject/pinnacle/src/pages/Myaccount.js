@@ -1252,7 +1252,7 @@ export default function Myaccount() {
 
   <input
     type="text"
-    className="bg-[#262628] text-[#FE7804] rounded-2xl flex-grow px-4 py-2 rounded-lg placeholder-[#FE7804] h-10 text-white  px-3 py-2"
+    className="bg-[#262628] text-[#FE7804] flex-grow px-4 py-2 rounded-lg placeholder-[#FE7804] h-10"
     placeholder="Search..."
     onChange={handleSearchChange}
   />
