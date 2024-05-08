@@ -782,6 +782,71 @@ export default function Myaccount() {
         </div>
       )}
 
+      {/* ######################### All Users ########################   */}
+      {selectedDiv === 'AllUsers' && (
+      <div className="w-11/12 mx-auto mt-5">
+      <h1 className="text-white text-2xl font-bold mb-6">All Users</h1>
+      <div className="mb-8 flex gap-4 items-center">
+  <button onClick={generatePDF} className="float-right bg-gradient-to-tr from-[#FF451D] to-[#FE7804] px-4 py-2 text-[18px] font-semibold rounded-lg text-white">
+    Generate PDF
+  </button>
+
+  <input
+    type="text"
+    className="bg-[#262628] text-[#FE7804] flex-grow px-4 py-2 rounded-lg placeholder-[#FE7804] h-10"
+    placeholder="Search..."
+    onChange={handleSearchChange}
+  />
+
+<select onChange={handleFieldChange} onFocus={(e) => e.target.style.backgroundColor = '#ff7f50'} // Change to your desired color on focus
+  onBlur={(e) => e.target.style.backgroundColor = '#FF451D'}  // Reset to default color on blur
+  style={{
+    padding: '8px 16px', 
+    borderRadius: '12px',
+    backgroundImage: 'linear-gradient(to top right, #FF451D, #FE7804)',
+    height: '40px', 
+    color: 'white',
+    borderColor: '#ddd' // Default border color, change as needed
+  }} className="px-4 py-2 rounded-lg bg-gradient-to-tr from-[#FF451D] to-[#FE7804] h-10 text-white">
+    <option value="username">Username</option>
+    <option value="email">Email</option>
+    <option value="firstname">First Name</option>
+    <option value="lastname">Last Name</option>
+    <option value="dob">DOB</option>
+    <option value="accountType">Role</option>
+  </select>
+</div>
+
+      
+      <div id="pdf-table" className="overflow-x-auto">
+        <table className="table-auto w-full border-collapse border border-gray-800">
+          <thead>
+            <tr>
+              <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Username</th>
+              <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Email</th>
+              <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">First Name</th>
+              <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Last Name</th>
+              <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">DOB</th>
+              <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredData.map((user) => (
+              <tr key={user._id}>
+                <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{user.username}</td>
+                <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{user.email}</td>
+                <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{user.firstname}</td>
+                <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{user.lastname}</td>
+                <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{user.dob}</td>
+                <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{user.accountType}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+      )}
+
       <Footer />
 
       {loading && (
