@@ -11,6 +11,9 @@ const userSchema = new mongoose.Schema({
   image: { type: String, required: false },
   crystalCount: {type: Number, require: false},
   primium: {type: String, require: false},
+  xpCount:{type:Number,require:false},
+  memberLevel:{type:Number,require:false},
+  league:{type:String,require:false},
 });
 
 const User = mongoose.model('User', userSchema);
