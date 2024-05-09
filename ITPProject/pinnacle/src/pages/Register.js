@@ -108,10 +108,10 @@ export default function Register() {
 
     {/* Account Type input spans both columns */}
     <div className="flex flex-col col-span-2 ">
-      <label htmlFor="accountType" className="mt-4 mb-2 font-medium text-white">Account Type</label>
-      <input
+      <label htmlFor="accountType" className="mt-4 mb-2 font-medium text-white hidden">Account Type</label>
+      <input 
         id="accountType"
-        type="text"
+        type="hidden"
         name="accountType"
         placeholder="Account Type"
         value="user"  // Static and capitalized as necessary
@@ -119,11 +119,11 @@ export default function Register() {
         required
         className={inputClasses}
       />
-      <input
+      {/*<input
         type="hidden"
         name="accountType"
         value="user"
-      />
+  />*/}
     </div>
 
     {/* Password fields are each in one column */}
