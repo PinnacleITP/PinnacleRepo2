@@ -8,3 +8,6 @@ const MemberSchema = new mongoose.Schema({
 const MemberModel = mongoose.model("Member", MemberSchema)
 
 module.exports = MemberModel
+
+
+
