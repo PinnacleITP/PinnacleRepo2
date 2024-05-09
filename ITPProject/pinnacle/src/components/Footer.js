@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <div className="bg-[#000000] w-full pt-7 pb-1 mt-10">
+    <div className="bg-[#000000] w-full pt-7 pb-1">
       <div className="flex w-10/12 justify-between mx-auto text-white">
         <div className="w-[30%] ">
           <h1 className=" font-bold text-[22px] mb-4 text-[#ffffffaa]">GAMES BY GENRE</h1>

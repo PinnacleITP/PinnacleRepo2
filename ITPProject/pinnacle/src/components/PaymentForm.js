@@ -4,6 +4,7 @@ import { HashLoader } from "react-spinners";
 import Paymentsuccess from "../assets/payment/paymentsuccessanimation.webm";
 import Paymenterror from "../assets/payment/paymenterroranimation.webm";
 import axios from "axios";
+import { saveAs } from 'file-saver';
 
 const PaymentForm = ({
   clientSecret,
@@ -16,6 +17,9 @@ const PaymentForm = ({
   pageid,
   itemid,
   email,
+  name,
+  crystalcount,
+  type,
   handlePaymentProcess,
 }) => {
   const stripe = useStripe();
@@ -24,6 +28,7 @@ const PaymentForm = ({
   const [loading, setLoading] = useState(false);
   const [paymentSuccessMessage, setPaymentSuccessMessage] = useState(false);
   const [paymentErrorMessage, setPaymentErrorMessage] = useState(false);
+  const [pid, setpid] = useState("");
 
   const handleSubmit = async (event) => {
     if (event) {
@@ -72,6 +77,8 @@ const PaymentForm = ({
       console.log("Payment successful:", responseData.paymentIntent);
       setPaymentSuccessMessage(true);
       paymentRecodHandler();
+      crystalCountUpdater();
+      
       if (pageid == "G" || pageid == "C" ) {
         downloadRecodHandler();
       }
@@ -100,6 +107,7 @@ const PaymentForm = ({
         date,
         memberid,
         email,
+        type,
       })
       .then((result) => {
         console.log(result);
@@ -109,6 +117,24 @@ const PaymentForm = ({
       
   };
 
+  // const downloadCountUpdater = () => {
+  //   const newDownloadcount = downloads + 1;
+  //   axios.put(`http://localhost:3001/updateCrystalCount/${itemid}`, { newDownloadcount })
+  //     .then(result => {
+  //         console.log(result);
+  //     })
+  //     .catch(err => console.log(err));
+  // }
+
+  const crystalCountUpdater = () => {
+    const newCrystalcount = crystalcount- (crystaldiscount*1000);
+    axios.put(`http://localhost:3001/updateCrystalCount/${memberid}`, { newCrystalcount })
+      .then(result => {
+          console.log(result);
+      })
+      .catch(err => console.log(err));
+  }
+
   const downloadRecodHandler = () => {
     const date = new Date();
     const gameid = itemid;
@@ -117,6 +143,7 @@ const PaymentForm = ({
       .get(`http://localhost:3001/getlatestPayment/${memberid}`)
       .then((result) => {
         const paymentid = result.data[0]._id;
+        setpid(paymentid);
 
         axios
           .post("http://localhost:3001/createdounloadRecod", {
@@ -132,7 +159,20 @@ const PaymentForm = ({
       })
       .catch((err) => console.log(err));
     }, 1000);
+    // downloadCountUpdater();
 };
+
+//pdf
+// const createAndDownloadPdf = () => {
+//   const date = new Date();
+//   axios.post('http://localhost:3001/api/create-pdf', { name, email, description, officialprice, crystaldiscount, discount, pid, date, subtotal})
+//     .then(() => axios.get('http://localhost:3001/api/fetch-pdf', { responseType: 'blob' }))
+//     .then((res) => {
+//       const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
+//       saveAs(pdfBlob, 'newPdf.pdf');
+//     })
+//     .catch((error) => console.error('Error occurred while creating or fetching PDF:', error));
+// };
 
   return (
     <div className="text-white pt-3">
@@ -163,14 +203,14 @@ const PaymentForm = ({
               <br /> we received your payment.
             </p>
             <div className=" w-full mt-12 mb-5 flex justify-end px-8">
-              <button
+              {/* <button
                 onClick={() => {setPaymentSuccessMessage(false);  window.location.href = '/account';}}
                 className=" bg-transparent text-[#3ab755] border-2 border-[#3ab755] hover:bg-[#3ab755] hover:text-white rounded-lg py-2 px-5 mr-4"
               >
                 Cancel
-              </button>
-              <button className=" bg-[#3ab755] border-2 border-[#3ab755] hover:bg-[#51d06b] rounded-lg py-2 px-5">
-                Download Receipt
+              </button> */}
+              <button onClick={() => { setPaymentSuccessMessage(false); window.location.href = '/account';}} className=" bg-[#3ab755] border-2 border-[#3ab755] hover:bg-[#51d06b] rounded-lg py-2 px-5">
+                Ok
               </button>
             </div>
           </div>

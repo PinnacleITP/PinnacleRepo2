@@ -23,7 +23,7 @@ import jsPDF from 'jspdf';
 
 
 export default function Myaccount() {
-  var memberID ="66118d9104fb9c92e1c7d980";
+  var memberID = "66118d9104fb9c92e1c7d980";
   // var memberID ="66202ae130ee8bb8602d92b6";
   const navigate = useNavigate();
   const imageInputRef = useRef(null);
@@ -418,6 +418,7 @@ export default function Myaccount() {
   const [isLargAmountCkecked, setIsLargAmountCkecked] = useState(false);
   const [isLowestAmountCkecked, setIsLowestAmountCkecked] = useState(false);
   const [AllDeleteConfirmMessage, setAllDeleteConfirmMessage] = useState(false);
+  const [userDetails, setUserDetails] = useState([]);
 
   const sortedPaymentsDateAsc = purchaseHistory
     .slice()
@@ -461,7 +462,6 @@ export default function Myaccount() {
     const intervalId = setInterval(fetchPaymentData, 5000);
     return () => clearInterval(intervalId);
   }, [memberID]);
-  
 
   const handleAllPaymentHistoryDelete = (id) => {
     setLoading(true);
@@ -472,8 +472,17 @@ export default function Myaccount() {
         setLoading(false);
       })
       .catch((errr) => console.log(errr));
-      setDeleteSuccessMessagechecked(true);
+    setDeleteSuccessMessagechecked(true);
   };
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:3001/getMemberById/${memberID}`)
+      .then((result) => {
+        setUserDetails(result.data);
+      })
+      .catch((err) => console.log(err));
+  }, [memberID]);
 
   {
     /* ################################################################### download management ######################################*/
@@ -801,7 +810,9 @@ export default function Myaccount() {
                   Crystals
                 </span>
                 <div className="w-2/3 h-[2px] bg-[#ffffff50]"></div>
-                <span className="text-[18px] text-white my-7">30 Crystals</span>
+                <span className="text-[18px] text-white my-7">
+                  {userDetails.crystalCount} Crystals
+                </span>
               </div>
 
               <div className=" bg-[#ffffff1a] w-5/12 flex flex-col items-center py-8 mt-9 rounded-3xl">
@@ -841,8 +852,7 @@ export default function Myaccount() {
             {/* ######################### MyChannels ########################   */}
             {channelDiv === "MyChannels" && (
               <div className="text-white px-5 mt-3">
-                <Channel memberID={memberID}/>
-
+                <Channel memberID={memberID} />
               </div>
             )}
 
@@ -992,8 +1002,8 @@ export default function Myaccount() {
                     amount={item.officialprice}
                     date={item.date}
                     crystaldiscount={item.crystaldiscount}
-                      discount={item.discount}
-                      paidamount={item.paidamount}
+                    discount={item.discount}
+                    paidamount={item.paidamount}
                   />
                 );
               })}
@@ -1010,8 +1020,8 @@ export default function Myaccount() {
                     amount={item.officialprice}
                     date={item.date}
                     crystaldiscount={item.crystaldiscount}
-                      discount={item.discount}
-                      paidamount={item.paidamount}
+                    discount={item.discount}
+                    paidamount={item.paidamount}
                   />
                 );
               })}
@@ -1028,8 +1038,8 @@ export default function Myaccount() {
                     amount={item.officialprice}
                     date={item.date}
                     crystaldiscount={item.crystaldiscount}
-                      discount={item.discount}
-                      paidamount={item.paidamount}
+                    discount={item.discount}
+                    paidamount={item.paidamount}
                   />
                 );
               })}
@@ -1046,8 +1056,8 @@ export default function Myaccount() {
                     amount={item.officialprice}
                     date={item.date}
                     crystaldiscount={item.crystaldiscount}
-                      discount={item.discount}
-                      paidamount={item.paidamount}
+                    discount={item.discount}
+                    paidamount={item.paidamount}
                   />
                 );
               })}
@@ -1242,7 +1252,7 @@ export default function Myaccount() {
 
   <input
     type="text"
-    className="bg-[#262628] text-[#FE7804] rounded-2xl flex-grow px-4 py-2 rounded-lg placeholder-[#FE7804] h-10 text-white  px-3 py-2"
+    className="bg-[#262628] text-[#FE7804] flex-grow px-4 py-2 rounded-lg placeholder-[#FE7804] h-10"
     placeholder="Search..."
     onChange={handleSearchChange}
   />
@@ -1297,6 +1307,9 @@ export default function Myaccount() {
       )}
 
       <Footer />
+      <div className=" mt-10">
+        <Footer />
+      </div>
 
       {loading && (
         <div className=" z-50 fixed top-0 left-0 w-full h-screen flex justify-center bg-black bg-opacity-50 items-center">
@@ -1304,11 +1317,13 @@ export default function Myaccount() {
         </div>
       )}
 
-{deleteSuccessMessagechecked && (
-  <SuccessPopup  type="Delete" item="Community post" onClose={handleDeleteCloseSuccessPopup} /> 
-)}
+      {deleteSuccessMessagechecked && (
+        <SuccessPopup
+          type="Delete"
+          item="Community post"
+          onClose={handleDeleteCloseSuccessPopup}
+        />
+      )}
     </div>
-
-
   );
 }
