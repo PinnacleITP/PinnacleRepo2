@@ -699,7 +699,7 @@ const saltRounds = 10; // You can adjust this based on security/performance need
 
 app.post('/api/signup', async (req, res) => {
   try {
-    const { username, email, password, accountType, firstname, lastname, dob } = req.body;
+    const { username, email, password, accountType, firstname, lastname, dob,crystalCount,primium,xpCount,memberLevel,league } = req.body;
     if (!username || !email || !password || !accountType) {
       return res.status(400).json({ error: 'All fields are required' });
     }
@@ -724,7 +724,12 @@ app.post('/api/signup', async (req, res) => {
       firstname,
       lastname,
       dob,
-      image
+      image,
+      crystalCount,
+      primium,
+      xpCount,
+      memberLevel,
+      league
     });
 
     await newUser.save(); // Save the new user in the database

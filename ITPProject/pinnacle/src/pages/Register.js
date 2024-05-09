@@ -13,7 +13,13 @@ export default function Register() {
     confirmPassword: '',
     email: '',
     accountType: 'user',
-    dob: ''
+    dob: '',
+    crystalCount:100,
+    primium:'',
+    xpCount:20,
+    memberLevel:0,
+    league:'Rookie',
+
   });
   const [emailValid, setEmailValid] = useState(true);  
 
