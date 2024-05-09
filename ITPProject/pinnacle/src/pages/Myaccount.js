@@ -21,7 +21,6 @@ import { useNavigate } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
-
 export default function Myaccount() {
   var memberID = "66118d9104fb9c92e1c7d980";
   // var memberID ="66202ae130ee8bb8602d92b6";
@@ -405,6 +404,8 @@ export default function Myaccount() {
     return user[selectedField].toString().toLowerCase().includes(searchQuery);
   });
   
+  
+
   {
     /* ##################################################################### Payment management ######################################*/
   }
@@ -1306,7 +1307,6 @@ export default function Myaccount() {
     </div>
       )}
 
-      <Footer />
       <div className=" mt-10">
         <Footer />
       </div>
