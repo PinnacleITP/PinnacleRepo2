@@ -731,14 +731,16 @@ app.post('/api/login', async (req, res) => {
       lastname: user.lastname,
       type: user.accountType,
       dob: user.dob,
-      image: user.image
+      image: user.image,
+      id: user._id.toString()
     };
 
     res.status(200).json({
       message: 'Login successful',
-      user: {
-        username: user.username,
-      },
+      user: req.session.user,
+      // user: {
+      //   username: user.username,
+      // },
     });
   } catch (error) {
     console.error('Error logging in:', error);

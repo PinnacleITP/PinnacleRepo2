@@ -5,9 +5,12 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 
 export default function Cartpage() {
+  const userEmail = localStorage.getItem('userEmail');
+  const userId = localStorage.getItem('userId');
   const [selectedItems, setSelectedItems] = useState([]);
   const [ItemDetails, setItemDetails] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
+
   let selecteditemsdescription = ""; 
  
   var memberID = "66118d9104fb9c92e1c7d980";
@@ -51,7 +54,8 @@ export default function Cartpage() {
   return (
     <div>
       <Header navid="home" />
-
+      <p className="text-xl text-center">Your email: <span className="text-orange-500">{userEmail}</span></p>
+      <p className="text-xl text-center">Member ID: <span className="text-orange-500">{userId}</span></p>
       <div className="flex mt-10 justify-between w-11/12 mx-auto text-white ">
         <div className="w-[70%] ">
           <h1 className="p-2  font-bold  text-[28px]">My Cart</h1>
