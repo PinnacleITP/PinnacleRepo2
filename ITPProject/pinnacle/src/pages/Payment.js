@@ -15,9 +15,8 @@ const stripePromise = loadStripe(
 export default function Payment() {
   const userEmail = localStorage.getItem('userEmail');
   const userId = localStorage.getItem('userId');
-  // User id
-  var userid = "66118d9104fb9c92e1c7d980";
-  //var userid = userId;
+  var userid = userId;
+  // var userid = "6640a771b7b3a8d3156eb377";
   //usestate for read card details
   const [memberID, setMemberID] = useState();
   const [cardNumber, setCardNumber] = useState();
