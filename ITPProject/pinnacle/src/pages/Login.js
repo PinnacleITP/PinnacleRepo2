@@ -32,6 +32,8 @@ export default function Login() {
         }
       );
       console.log('Response:', response.data);
+      localStorage.setItem('userEmail', formData.email);
+      localStorage.setItem('userId', response.data.user.id);
       navigate('/'); // Navigate to the account page upon successful login
     } catch (error) {
       alert(error.response?.data?.error || "An error occurred during login.");

@@ -540,9 +540,7 @@ export default function GameDetailsPage() {
             })}</div>) : (<div className="flex justify-around my-4">
               <span className=" text-[#7e7a7a]">Currenly one edition available</span>
             </div>)}
-          
-            
-        
+
       </div>
 
       <Footer />
