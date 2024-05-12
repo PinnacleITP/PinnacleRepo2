@@ -263,7 +263,6 @@ export default function GameManagement() {
         })
         .then((result) => {
           console.log(result);
-          window.location.reload();
         })
         .catch((err) => console.log(err));
         setLoading(false);
@@ -1049,6 +1048,7 @@ export default function GameManagement() {
                   type="file"
                   accept="image/*"
                   id="image"
+                  value={itemgameImageUrl}
                   onChange={(e) => setitemImage(e.target.files[0])}
                 />
               </div>

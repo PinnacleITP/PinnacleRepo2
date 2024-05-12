@@ -17,7 +17,7 @@ export default function Payment() {
   var userid = "66118d9104fb9c92e1c7d980";
 
   //usestate for read card details
-  const [memberID, setMemberID] = useState();
+  const [memberID, setMemberID] = useState('');
   const [cardNumber, setCardNumber] = useState();
   const [CardName, setCardName] = useState();
   const [expDate, setEXPDate] = useState();
@@ -58,18 +58,18 @@ export default function Payment() {
   const [clickname, setclickname] = useState(false);
   const [clickcountry, setclickcountry] = useState(false);
 
-  //set memberid to usestate
+  // set memberid to usestate
   useEffect(() => {
     setMemberID(userid);
   }, []);
 
   //read card data from db
-  useEffect(() => {
-    axios
-      .get("http://localhost:3001/getBankCardByUserID/" + userid)
-      .then((result) => setCreditCards(result.data))
-      .catch((err) => console.log(err));
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .get("http://localhost:3001/getBankCardByUserID/" + userid)
+  //     .then((result) => setCreditCards(result.data))
+  //     .catch((err) => console.log(err));
+  // }, []);
 
   //get details related to the url details
   useEffect(() => {
@@ -136,7 +136,7 @@ export default function Payment() {
       typeof crystalCount === "number" &&
       typeof crystalDiscount === "number"
     ) {
-      setSubTotal(officialPrice - (discount + crystalDiscount));
+      setSubTotal((officialPrice - (discount + crystalDiscount)).toFixed(2));
     }
   };
 
@@ -533,7 +533,7 @@ export default function Payment() {
               </button>)}
             </div>
           </div>
-          <div>
+          {/* <div>
             <h1 className="text-white text-[30px] font-bold">Saved Cards</h1>
             <div className="bg-[#202022] rounded-xl my-4 p-5">
               {creditCards.map((card) => {
@@ -553,11 +553,11 @@ export default function Payment() {
                 Add New Card
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
-      {showForm && (
+      {/* {showForm && (
         <div className="absolute top-0 left-0 z-40 flex items-center justify-center w-full h-full backdrop-blur-lg">
           <form
             onSubmit={SubmitCard}
@@ -665,7 +665,7 @@ export default function Payment() {
             </div>
           </form>
         </div>
-      )}
+      )} */}
 
       <Footer />
     </div>

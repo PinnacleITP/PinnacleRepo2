@@ -22,7 +22,10 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 export default function Myaccount() {
-  var memberID = "66118d9104fb9c92e1c7d980";
+  const userEmail = localStorage.getItem('userEmail');
+  const userId = localStorage.getItem('userId');
+  //var memberID = "66118d9104fb9c92e1c7d980";
+  var memberID = userId;
   // var memberID ="66202ae130ee8bb8602d92b6";
   const navigate = useNavigate();
   const imageInputRef = useRef(null);

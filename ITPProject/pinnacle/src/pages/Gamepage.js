@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import SearchError from "../assets/animations/searchnotfound.webm";
 
 export default function Gamepage() {
+  
   var pageid = "game";
   const [isAllChecked, setIsAllCkecked] = useState(true);
   const [isActionChecked, setIsActionCkecked] = useState(false);
