@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import StreamEditBlock from "./StreamEditBlock";
 import SuccessPopup from "./SuccessPopup";
 import { HashLoader } from "react-spinners";
+import DeleteWarning from "../assets/animations/deleteanimation.webm";
 
 export default function Channel(props) {
   var viewCount = 0;
@@ -22,25 +23,40 @@ export default function Channel(props) {
   const [channelDescription, setChannelDescription] = useState("");
   const [channelDp, setChannelDp] = useState(null);
   const [channelViewCount, setChannelViewCount] = useState(0);
+  const [subscribercount, setSubscribercount] = useState(0);
 
   const navigate = useNavigate();
+  const [isChannelUpdateClicked, setIsChannelUpdateClicked] = useState(false);
   const [streamDetails, setStreamDetails] = useState([]);
   const [channelDetails, setChannelDetails] = useState([]);
   const [channelDiv, setChannelDiv] = useState("channelVideos");
+
   const [createSuccessMessagechecked, setCreateSuccessMessagechecked] =
     useState(false);
+  const [updateSuccessMessagechecked, setUpdateSuccessMessagechecked] =
+    useState(false);
+  const [deleteSuccessMessagechecked, setDeleteSuccessMessagechecked] =
+    useState(false);
+    const [isDeleteWarning, setIsDeleteWarning] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleChannelfunction = (divId) => {
     setChannelDiv(divId === channelDiv ? null : divId);
   };
+
   // Read channel details using member id
   useEffect(() => {
     axios
       .get(`http://localhost:3001/getChannelByMemberID/${props.memberID}`)
       .then((result) => {
         console.log(result);
+        const channelData = result.data;
         setChannelDetails(result.data);
+        setChannelName(channelData.channelName);
+        setChannelDescription(channelData.channelDescription);
+        setChannelDp(channelData.channelDp);
+        setChannelViewCount(channelData.channelViewCount);
+        setSubscribercount(channelData.subscribercount);
       })
       .catch((err) => console.log(err));
   }, [props.memberID]);
@@ -48,15 +64,17 @@ export default function Channel(props) {
   // Read all stream details
   useEffect(() => {
     const fetchstreamData = () => {
-    // Check if channelDetails is not null before accessing its _id property
-    if (channelDetails && channelDetails._id) {
-      axios
-        .get(`http://localhost:3001/getStreamByChannelID/${channelDetails._id}`)
-        .then((result) => setStreamDetails(result.data))
-        .catch((err) => console.log(err));
-    }
-  };
-  fetchstreamData();
+      // Check if channelDetails is not null before accessing its _id property
+      if (channelDetails && channelDetails._id) {
+        axios
+          .get(
+            `http://localhost:3001/getStreamByChannelID/${channelDetails._id}`
+          )
+          .then((result) => setStreamDetails(result.data))
+          .catch((err) => console.log(err));
+      }
+    };
+    fetchstreamData();
     const intervalId = setInterval(fetchstreamData, 5000);
     return () => clearInterval(intervalId);
   }, [channelDetails?._id]); // Using optional chaining to access _id property
@@ -117,9 +135,12 @@ export default function Channel(props) {
       return;
     }
 
-    const codePattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const codePattern =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!codePattern.test(secretVideoCode)) {
-      alert("Secret Video Code must contain at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long");
+      alert(
+        "Secret Video Code must contain at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long"
+      );
       return;
     }
     try {
@@ -157,7 +178,6 @@ export default function Channel(props) {
       setType("action");
       setSecretVideoCode("");
       setGameType("other");
-      
     } catch (error) {
       console.error("Error creating stream:", error);
     }
@@ -166,6 +186,7 @@ export default function Channel(props) {
   //fucntion to create a channel
   const createNewChannel = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       // Upload DP file
       const dpUrl = channelDp
@@ -178,7 +199,8 @@ export default function Channel(props) {
         channelDescription,
         channelDp: dpUrl,
         memberID: props.memberID,
-        viewCount:channelViewCount,
+        viewCount: channelViewCount,
+        subscribercount,
       });
       console.log("Channel created successfully:", response.data);
       setCreateSuccessMessagechecked(true);
@@ -189,7 +211,55 @@ export default function Channel(props) {
       console.error("Error creating Channel:", error);
     }
   };
-  // console.log(channelDetails._id);
+  const channelUpdate = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      // Upload DP file
+      const dpUrl = channelDp
+        ? await uploadFile("image", channelDp, "channel")
+        : null;
+
+      const response = await axios.put(
+        "http://localhost:3001/updateChannelData/" + channelDetails._id,
+        {
+          channelName,
+          channelDescription,
+          channelDp: dpUrl,
+        }
+      );
+      console.log("Channel updated successfully:", response.data);
+      setCreateSuccessMessagechecked(true);
+      handleChannelfunction("channelVideos");
+      setLoading(false);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error creating Channel:", error);
+    }
+  };
+  // Delete channel using stream id
+  const handleDelete = (id) => {
+    axios
+      .delete("http://localhost:3001/deleteChannel/" + id)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((errr) => console.log(errr));
+    setDeleteSuccessMessagechecked(true);
+  };
+
+  // Function to handle channel update click
+  const handleChannelUpdateClick = () => {
+    setIsChannelUpdateClicked(true);
+  };
+  
+  const handleDeleteCloseSuccessPopup = () => {
+    setDeleteSuccessMessagechecked(false);
+  };
+
+  const handleUpdateCloseSuccessPopup = () => {
+    setUpdateSuccessMessagechecked(false);
+  };
 
   const handleCreateCloseSuccessPopup = () => {
     setCreateSuccessMessagechecked(false);
@@ -208,7 +278,6 @@ export default function Channel(props) {
             </div>
 
             <h1 className="text-[#ffffff9d]">
-
               Stream your videos on Pinnacle by creating your own channel.
             </h1>
           </div>
@@ -235,12 +304,29 @@ export default function Channel(props) {
               <h1 className="text-[22px] mb-4 text-[#ffffff93] ">
                 {channelDetails.channelDescription}
               </h1>
+              <h1 className="text-[25px] mb-4 text-[#ffffff93] ">
+                {subscribercount} Subscribers
+              </h1>
             </div>
-            <div
-              className=" cursor-pointer absolute right-0 bottom-0 my-5 mr-5 bg-gradient-to-tr from-[#FF451D] to-[#FE7804] px-4 py-2 text-[18px] font-semibold rounded-lg"
-              onClick={() => handleChannelfunction("addStream")}
-            >
-              <h1>Add new Stream</h1>
+            <div className="absolute right-0 bottom-0 ">
+              <div
+                className="my-3 mx-2 py-1 px-5 border-2 border-[#FE7804] rounded-3xl text-[#FE7804] font-semibold  cursor-pointer hover:bg-gradient-to-t from-[#FF451D] to-[#FE7804] hover:text-white text-[16px]"
+                onClick={handleChannelUpdateClick}
+              >
+                <h1>Update Channel</h1>
+              </div>
+              <div
+                className="my-3 mx-2 py-1 px-5 border-2 border-[#FE7804] rounded-3xl text-[#FE7804] font-semibold  cursor-pointer hover:bg-gradient-to-t from-[#FF451D] to-[#FE7804] hover:text-white text-[16px]"
+                onClick={() => setIsDeleteWarning(true)}
+              >
+                <h1>Delete Channel</h1>
+              </div>
+              <div
+                className="cursor-pointer m-2 bg-gradient-to-tr from-[#FF451D] to-[#FE7804] px-4 py-2 text-[18px] font-semibold rounded-lg"
+                onClick={() => handleChannelfunction("addStream")}
+              >
+                <h1>Add new Stream</h1>
+              </div>
             </div>
           </div>
 
@@ -265,14 +351,13 @@ export default function Channel(props) {
               onSubmit={createNewChannel}
               className="relative z-50 p-8 w-[30%] border-2 border-[#FE7804] rounded-lg bg-[#1B1E20]"
             >
-              <div className="w-full flex justify-end">
+              <div className=" float-right cursor-pointer">
                 <img
+                  onClick={() => setChannelDiv(false)}
                   width="25"
                   height="25"
-                  className="float-right mb-3"
-                  src="https://img.icons8.com/sf-black/64/EBEBEB/multiply.png"
+                  src="https://img.icons8.com/ios-filled/50/FFFFFF/multiply.png"
                   alt="multiply"
-                  onClick={() => setChannelDiv(false)}
                 />
               </div>
               <h1 className="text-white text-center text-2xl mb-10 mt-2 font-bold">
@@ -283,6 +368,7 @@ export default function Channel(props) {
                 type="text"
                 value={channelName}
                 onChange={(e) => setChannelName(e.target.value)}
+                required
                 className="text-white h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50"
               />
 
@@ -293,6 +379,7 @@ export default function Channel(props) {
                 type="text"
                 value={channelDescription}
                 onChange={(e) => setChannelDescription(e.target.value)}
+                required
                 className="text-white h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50"
               />
 
@@ -304,6 +391,7 @@ export default function Channel(props) {
                 accept="image/*"
                 id="channelDp"
                 onChange={(e) => setChannelDp(e.target.files[0])}
+                required
                 className="text-white h-[45px] w-full bg-[#2A2B2F] py-2 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50"
               />
 
@@ -333,7 +421,7 @@ export default function Channel(props) {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-           required
+                required
                 className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
               />
 
@@ -404,9 +492,7 @@ export default function Channel(props) {
                   </select>
                 </div>
                 <div className="w-1/3 mx-1">
-                  <label className="block text-white mt-4">
-                    Secret Code:
-                  </label>
+                  <label className="block text-white mt-4">Secret Code:</label>
                   <input
                     type="text"
                     value={secretVideoCode}
@@ -436,6 +522,70 @@ export default function Channel(props) {
             </form>
           </div>
         )}
+        {isChannelUpdateClicked && (
+          <div className="fixed z-50 backdrop-blur-lg bg-opacity-80 top-0 left-0 h-screen w-full justify-center items-center flex">
+            <form
+              onSubmit={channelUpdate}
+              className="relative z-50 p-8 w-[30%] border-2 border-[#FE7804] rounded-lg bg-[#1B1E20]"
+            >
+              <div className=" float-right cursor-pointer">
+                <img
+                  onClick={() => setIsChannelUpdateClicked(false)}
+                  width="25"
+                  height="25"
+                  src="https://img.icons8.com/ios-filled/50/FFFFFF/multiply.png"
+                  alt="multiply"
+                />
+              </div>
+              <h1 className="text-white text-center text-2xl mb-10 mt-2 font-bold">
+                Update Your Channel
+              </h1>
+              <label className="block text-white mb-2">Channel Name:</label>
+              <input
+                type="text"
+                value={channelName}
+                onChange={(e) => setChannelName(e.target.value)}
+                required
+                className="text-white h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50"
+              />
+
+              <label className="block text-white mt-4 mb-2">
+                Description about channel:
+              </label>
+              <input
+                type="text"
+                value={channelDescription}
+                onChange={(e) => setChannelDescription(e.target.value)}
+                required
+                className="text-white h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50"
+              />
+
+              <label className="block text-white mt-4 mb-2">
+                Display Picture(Dp):
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                id="channelDp"
+                onChange={(e) => setChannelDp(e.target.files[0])}
+                className="text-white h-[45px] w-full bg-[#2A2B2F] py-2 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50"
+              />
+
+              <div className="flex justify-end mt-7">
+                <button
+                  type="submit"
+                  className="bg-[#FE7804]  border-2 border-[#FE7804]  text-white hover:bg-[#FF451D] rounded-lg px-5 py-2 mx-2 text-[16px] font-semibold"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+            {/* </div> */}
+          </div>
+        )}
+        {/* {!isChannelUpdateClicked && (<div>
+          setIsChannelUpdateClicked(false);
+        </div>)} */}
         {loading && (
           <div className=" z-50 fixed top-0 left-0 w-full h-screen flex justify-center bg-black bg-opacity-50 items-center">
             <HashLoader size="75" color="#FE7804" />
@@ -449,6 +599,54 @@ export default function Channel(props) {
             onClose={handleCreateCloseSuccessPopup}
           />
         )}
+        {deleteSuccessMessagechecked && (
+          <SuccessPopup
+            type="Delete"
+            item="Channel"
+            onClose={handleDeleteCloseSuccessPopup}
+          />
+        )}
+
+        {updateSuccessMessagechecked && (
+          <SuccessPopup
+            type="Update"
+            item="Channel"
+            onClose={handleUpdateCloseSuccessPopup}
+          />
+        )}
+          
+{isDeleteWarning && (
+        <div className=" z-50 fixed top-0 left-0 w-full h-screen flex justify-center bg-black bg-opacity-80 items-center">
+          <div className=" flex flex-col justify-center items-center w-[28%] border-2 border-[#FE7804] border-opacity-50 rounded-lg bg-[#1B1E20]">
+            <div className="mt-6">
+              <video autoPlay loop className="w-[150px] h-auto">
+                <source src={DeleteWarning} type="video/webm" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            <h1 className=" text-[#FE7804] text-[32px] font-bold">Warning!</h1>
+            <p className=" mt-5 text-center text-[#b6b6b6] text-base">
+              Once you delete record, thre's no getting it back.<br/>
+              Make suer you want to do this.
+            </p>
+            <div className=" w-full mt-12 mb-5 flex justify-end px-8">
+            <button
+                onClick={() => setIsDeleteWarning(false)}
+                className=" bg-transparent border-2 border-[#FE7804] text-[#FE7804] hover:bg-[#FE7804] hover:text-white rounded-lg py-2 px-5 mr-4 font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={(e) =>{ handleDelete(channelDetails._id);
+                setIsDeleteWarning(false);}}
+                className=" bg-[#FE7804] border-2 border-[#FE7804] hover:bg-[#FF451D] hover:border-[#FF451D] rounded-lg py-2 px-5 text-white font-semibold"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );
