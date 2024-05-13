@@ -25,6 +25,10 @@ const ChannelModel = require("./models/Channel");
 const SeasonModel = require("./models/Season");
 const SubscriberModel = require("./models/Subscribers");
 
+//feedback and faq
+const FeedbackModel =require('./models/Feedback')
+const FaqModel  =require('./models/faqs')
+
 const pdfTemplate = require('./documents');
 
 const UserModel = require('./models/User');
@@ -252,6 +256,18 @@ app.get("/:id", (req, res) => {
     .then((LeaderboardDetails) => res.json(LeaderboardDetails))
     .catch((err) => res.json(err));
   }
+
+  //feddback and faq 
+  else if (id === "fblist") {
+    FeedbackModel.find({})
+    .then(feedbacks =>res.json(feedbacks))
+    .catch(err => res.json(err))
+  }
+  else if (id === "faq") {
+    FaqModel.find({})
+    .then(faqs =>res.json(faqs))
+    .catch(err => res.json(err))
+  }
 });
 
 //deled all leaderboard
@@ -280,14 +296,14 @@ app.put("/updateViewCount/:id", (req, res) => {
 });
 
 //get member details using member id
-app.get("/getMemberById/:id", (req, res) => {
+app.get("/getmemberbyid/:id", (req, res) => {
   const id = req.params.id;
-  MemberModel.findById(id)
-    .then((Member) => {
-      if (Member) {
-        res.json(Member);
+  UserModel.findById({ _id: id })
+    .then((user) => {
+      if (user) {
+        res.json(user);
       } else {
-        res.status(404).json({ message: "No plan found for the given ID" });
+        res.status(404).json({ message: "No game found for the given ID" });
       }
     })
     .catch((err) => res.status(500).json({ message: "Internal Server Error" }));
@@ -1086,6 +1102,49 @@ app.put("/updateEndDate/:id", (req, res) => {
     .then((season) => res.json(season))
     .catch((err) => res.json(err));
 });
+app.get('/getFeedback/:id',(req,res) => {
+  const id=req.params.id;
+  FeedbackModel.findById({_id:id})
+  .then(feedbacks =>res.json(feedbacks))
+  .catch(err => res.json(err))
+})
+
+app.put('/updateFeedback/:id',(req,res) => {
+  const id=req.params.id;
+  FeedbackModel.findByIdAndUpdate({_id:id},{
+      name:req.body.name,
+      email:req.body.email,
+      feedback:req.body.feedback})
+  .then(feedbacks =>res.json(feedbacks))
+  .catch(err => res.json(err))
+})
+
+app.delete('/deleteFeedback/:id',(req,res) => {
+  const id=req.params.id;
+  FeedbackModel.findByIdAndDelete({_id:id})
+  .then(res => res.json(res))
+  .catch(err => res.json(err))
+})
+
+app.post("/createfeedback",(req,res) => {
+  FeedbackModel.create(req.body)
+  .then(feedbacks => res.json(feedbacks))
+  .catch(err => res.json(err))
+})
+
+
+app.post("/createfaq",(req,res) => {
+  FaqModel.create(req.body)
+  .then(faqs => res.json(faqs))
+  .catch(err => res.json(err))
+})
+
+app.delete('/deletefaq/:id',(req,res) =>{
+  const id=req.params.id;
+  FaqModel.findByIdAndDelete({_id:id})
+  .then(res =>res.json(res))
+  .catch(err => res.json(err))
+})
 
 app.listen(3001, () => {
   console.log("Server is Running");
