@@ -14,7 +14,7 @@ const stripe = require('stripe')('sk_test_51P0Ggb02NNbm5WjcvAZ8IAsOgpidQiTfSeqew
 const BankCardModel = require("./models/BankCards");
 const PrimiumPlanModel = require("./models/PremiumPlan");
 const CartModel = require("./models/Cart");
-const MemberModel = require("./models/Member");
+const MemberModel = require("./models/User");
 const LeaderBoardModel = require("./models/LeaderBoard");
 const GameModel = require("./models/Game");
 const PaymentModel = require("./models/Payment");
@@ -23,6 +23,11 @@ const CommunityModel = require("./models/Community");
 const StreamModel = require("./models/Stream");
 const ChannelModel = require("./models/Channel");
 const SeasonModel = require("./models/Season");
+const SubscriberModel = require("./models/Subscribers");
+
+//feedback and faq
+const FeedbackModel =require('./models/Feedback')
+const FaqModel  =require('./models/faqs')
 
 const pdfTemplate = require('./documents');
 
@@ -134,7 +139,7 @@ app.delete("/deleteCardDeatils/:id", (req, res) => {
     .catch((err) => res.json(err));
 });
 
-//create premium plan 
+//create premium plan
 app.post("/createPremiumPlane", (req, res) => {
   PrimiumPlanModel.create(req.body)
     .then((premiumplan) => res.json(premiumplan))
@@ -160,6 +165,13 @@ app.get("/getPlanById/:id", (req, res) => {
 //     .then(ItemDetails => res.json(ItemDetails))
 //     .catch(err => res.json(err))
 // })
+
+//create new bank card details
+app.post("/createCartItem", (req, res) => {
+  CartModel.create(req.body)
+    .then((carts) => res.json(carts))
+    .catch((err) => res.json(err));
+});
 
 //get cart details related to member
 app.get("/getCartItemByMemberID/:id", (req, res) => {
@@ -188,13 +200,12 @@ app.get("/getCartItemById/:id", (req, res) => {
 });
 
 //delete cart items
-app.delete("/deleteItem/:id", (req, res) => {
+app.delete("/deleteCartItem/:id", (req, res) => {
   const id = req.params.id;
   CartModel.findByIdAndDelete({ _id: id })
     .then((ItemDetails) => res.json(ItemDetails))
     .catch((err) => res.json(err));
 });
-
 
 app.get("/:id", (req, res) => {
   const id = req.params.id;
@@ -212,9 +223,9 @@ app.get("/:id", (req, res) => {
   } 
   //get all the premium plan details
   else if (id === "premiumplan") {
-      PrimiumPlanModel.find({})
-        .then((premiumplan) => res.json(premiumplan))
-        .catch((err) => res.json(err));
+    PrimiumPlanModel.find({})
+      .then((premiumplan) => res.json(premiumplan))
+      .catch((err) => res.json(err));
   }
   //get all the premium plan details
   else if (id === "game") {
@@ -234,10 +245,28 @@ app.get("/:id", (req, res) => {
       .then((stream) => res.json(stream))
       .catch((err) => res.json(err));
   }
+   //get all the cart details
+   else if (id === "cart") {
+    CartModel.find({})
+      .then((carts) => res.json(carts))
+      .catch((err) => res.json(err));
+  }
   else if (id === "Aleaderboard") {
     LeaderBoardModel.find({})
     .then((LeaderboardDetails) => res.json(LeaderboardDetails))
     .catch((err) => res.json(err));
+  }
+
+  //feddback and faq 
+  else if (id === "fblist") {
+    FeedbackModel.find({})
+    .then(feedbacks =>res.json(feedbacks))
+    .catch(err => res.json(err))
+  }
+  else if (id === "faq") {
+    FaqModel.find({})
+    .then(faqs =>res.json(faqs))
+    .catch(err => res.json(err))
   }
 });
 
@@ -255,6 +284,7 @@ app.post("/createLeaderboard", (req, res) => {
     .catch((err) => res.json(err));
 });
 
+
 // app.put("/updateViewCount/:id", (req, res) => {
 //   const id = req.params.id;
 //   StreamModel.findByIdAndUpdate({ _id: id },
@@ -266,42 +296,43 @@ app.post("/createLeaderboard", (req, res) => {
 //     .catch((err) => res.json(err));
 // });
 
+
+
 //get member details using member id
-app.get("/getMemberById/:id", (req, res) => {
+app.get("/getmemberbyid/:id", (req, res) => {
   const id = req.params.id;
-  MemberModel.findById(id)
-    .then((Member) => {
-      if (Member) {
-        res.json(Member);
+  UserModel.findById({ _id: id })
+    .then((user) => {
+      if (user) {
+        res.json(user);
       } else {
-        res.status(404).json({ message: "No plan found for the given ID" });
+        res.status(404).json({ message: "No game found for the given ID" });
       }
     })
     .catch((err) => res.status(500).json({ message: "Internal Server Error" }));
 });
 
-app.post('/api/payment', async (req, res) => {
+app.post("/api/payment", async (req, res) => {
   try {
     const { payment_method_id, subtotal, description } = req.body;
 
     // Create a PaymentIntent on the server using the Stripe API
     const paymentIntent = await stripe.paymentIntents.create({
       payment_method: payment_method_id,
-      amount: subtotal*100, // Amount in cents
-      currency: 'usd',
+      amount: subtotal * 100, // Amount in cents
+      currency: "usd",
       description: description,
       confirm: true,
-      return_url: 'http://localhost:3000/account',
+      return_url: "http://localhost:3000/account",
     });
 
     // PaymentIntent was successful
     res.json({ success: true, paymentIntent });
   } catch (error) {
-    console.error('Error processing payment:', error);
+    console.error("Error processing payment:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
-
 
 // create new game
 app.post("/createGame", (req, res) => {
@@ -313,7 +344,7 @@ app.post("/createGame", (req, res) => {
 // get game details using id
 app.get("/getGamebyID/:id", (req, res) => {
   const id = req.params.id;
-  GameModel.findById({_id : id})
+  GameModel.findById({ _id: id })
     .then((game) => {
       if (game) {
         res.json(game);
@@ -339,13 +370,12 @@ app.put("/updateGame/:id", (req, res) => {
       type: req.body.itemtype,
       developer: req.body.itemdeveloper,
       publisher: req.body.itempublisher,
-      releasdate: req.body.itemreleasdate
+      releasdate: req.body.itemreleasdate,
     }
   )
     .then((game) => res.json(game))
     .catch((err) => res.json(err));
 });
-
 
 //delete game by id
 app.delete("/deleteGame/:id", (req, res) => {
@@ -406,7 +436,9 @@ app.delete("/deletePaymentHistory/:id", (req, res) => {
 app.delete("/deletePaymentHistoryRelatedToMember/:id", (req, res) => {
   const memberId = req.params.id;
   PaymentModel.deleteMany({ memberid: memberId })
-    .then(() => res.json({ message: "All payment records deleted successfully." }))
+    .then(() =>
+      res.json({ message: "All payment records deleted successfully." })
+    )
     .catch((err) => res.status(500).json({ error: err.message }));
 });
 
@@ -477,7 +509,7 @@ app.put("/updateCommunityPost/:id", (req, res) => {
       description: req.body.description,
       name: req.body.name,
       releasedate: req.body.releasedate,
-      type: req.body.type
+      type: req.body.type,
     }
   )
     .then((community) => res.json(community))
@@ -491,6 +523,7 @@ app.delete("/deleteCommunityPost/:id", (req, res) => {
     .then((game) => res.json(game))
     .catch((err) => res.json(err));
 });
+
 //create new stream
 // app.post("/createStream", (req, res) => {
 //   StreamModel.create(req.body)
@@ -520,7 +553,7 @@ app.put("/updateStream/:id", (req, res) => {
       type: req.body.type,
       channel_ID: req.body.channel_ID,
       secretVideoCode: req.body.secretVideoCode,
-      gameType: req.body.gameType
+      gameType: req.body.gameType,
     }
   )
     .then((stream) => res.json(stream))
@@ -537,7 +570,7 @@ app.get("/getStream/:id", (req, res) => {
 
 app.get("/getStreamByChannelID/:channelID", (req, res) => {
   const channelID = req.params.channelID;
-  StreamModel.find({ channel_ID: channelID }) 
+  StreamModel.find({ channel_ID: channelID })
     .then((stream) => res.json(stream))
     .catch((err) => res.status(500).json({ error: err.message }));
 });
@@ -547,12 +580,11 @@ app.post("/createChannel", (req, res) => {
   ChannelModel.create(req.body)
     .then((stream) => res.json(stream))
     .catch((err) => res.status(500).json({ error: err.message }));
-
 });
 
 app.get("/getChannelByMemberID/:memberID", (req, res) => {
   const memberId = req.params.memberID;
-  ChannelModel.findOne({ memberID: memberId }) 
+  ChannelModel.findOne({ memberID: memberId })
     .then((channel) => res.json(channel))
     .catch((err) => res.status(500).json({ error: err.message }));
 });
@@ -591,6 +623,29 @@ app.get("/getChannelbyViewCount", (req, res) => {
   } 
 );
 
+//update game by id
+app.put("/updateChannelData/:id", (req, res) => {
+  const id = req.params.id;
+  ChannelModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      channelName: req.body.channelName,
+      channelDescription: req.body.channelDescription,
+      channelDp: req.body.channelDp,
+    }
+  )
+    .then((channel) => res.json(channel))
+    .catch((err) => res.json(err));
+});
+//delete stream by id
+app.delete("/deleteChannel/:id", (req, res) => {
+  const id = req.params.id;
+  ChannelModel.findByIdAndDelete({ _id: id })
+    .then((stream) => res.json(stream))
+    .catch((err) => res.json(err));
+});
+
+
 app.get('/api/streams', async (req, res) => {
   try {
     const streams = await StreamModel.find().populate('channel_ID', 'channelName'); // Populating channel name
@@ -688,6 +743,56 @@ app.get('/api/channels', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// get channel details using stream id
+app.get("/getChannelByChannelID/:channelid", (req, res) => {
+  const channelid = req.params.channelid;
+  ChannelModel.findById(channelid)
+    .then((channel) => res.json(channel))
+    .catch((err) => res.json(err));
+});
+
+//create new Subscriber details
+app.post("/createSubscription", (req, res) => {
+  SubscriberModel.create(req.body)
+    .then((subscribers) => res.json(subscribers))
+    .catch((err) => res.json(err));
+});
+app.put("/updateSubscriberCountofChannel/:id", (req, res) => {
+  const id = req.params.id;
+  SubscriberModel.findByIdAndUpdate({ _id: id },
+    {
+      subscribercount: req.body.subscriberCount,
+    }
+  )
+    .then((subscribers) => res.json(subscribers))
+    .catch((err) => res.json(err));
+});
+//get subscription details related to member - function was written to find if a member is already subscribed or not to a channel
+app.get("/getSubscribtionByMemberID/:memberID/:channelID", (req, res) => {
+  const { memberID, channelID } = req.params;
+  SubscriberModel.findOne({ memberID, channelID })
+    .then((subscribers) => {
+      if (subscribers) {
+        res.json(subscribers);
+      } else {
+        res.status(404).json({ message: "Subscription not found." });
+      }
+    })
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+//get subscriptions related to member
+app.get("/getSubscriptionsByMemberID/:id", (req, res) => {
+  const id = req.params.id;
+  SubscriberModel.find({ memberID: id })
+    .then((subscription) => {
+      if (subscription.length > 0) {
+        res.json(subscription);
+      }
+    })
+    .catch((err) => res.json(err));
+});
+
 //Dasun - New...............................................................................................................
 
 //------dasun part start----
@@ -1044,6 +1149,7 @@ app.delete('/deletefaq/:id',(req,res) =>{
   .then(res =>res.json(res))
   .catch(err => res.json(err))
 })
+
 // ----------levelling system code start ----------
 //Updated by Ishan
 app.put("/updateViewCount/:id", (req, res) => {
@@ -1255,6 +1361,7 @@ app.post("/createStream", (req, res) => {
 });
 
 //----------levelling system code end ----------
+
 app.listen(3001, () => {
   console.log("Server is Running");
 });

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Leaderboard_rank_card from "./Leaderboard_rank_card";
 import axios from "axios";
 import SearchError from "../assets/animations/searchnotfound.webm";
+import SuccessPopup from "./SuccessPopup";
 
 export default function LeaderboardManagement() {
   const pageid = "Aleaderboard";
@@ -15,6 +16,7 @@ export default function LeaderboardManagement() {
   const [isearch, setsearch] = useState(false);
   const [differenceInDays, setdifferenceInDays] = useState(0);
   const [searchResultArr, setSearchResultArr] = useState([]);
+  const [createSuccessMessagechecked, setCreateSuccessMessagechecked] = useState(false);
 
   // const create = ()  => {
   //   axios
@@ -87,6 +89,7 @@ const Updatedate = (e) => {
     .delete("http://localhost:3001/deleteAllLeaderboardRecords/")
     .then((res) => console.log(res))
     .catch((errr) => console.log(errr));
+    setCreateSuccessMessagechecked(true);
   }
 
   const ascendingOrder = leaderboardDetails.slice().sort((a, b) => a.viewcount - b.viewcount);
@@ -99,6 +102,13 @@ const Updatedate = (e) => {
     const result = leaderboardDetails.filter((item) => item.channelname && item.channelname.toLowerCase().includes(input.toLowerCase()));
     setSearchResultArr(result);
   }
+
+  const handleCreateCloseSuccessPopup = () => {
+    setCreateSuccessMessagechecked(false);
+    window.location.reload();
+  };
+
+  
   
 
   return (
@@ -216,6 +226,9 @@ const Updatedate = (e) => {
 
 
 </div>)}
+{createSuccessMessagechecked && (
+  <SuccessPopup  type="Delete" item="leaderboard" onClose={handleCreateCloseSuccessPopup} /> 
+)}
 
     </div>
   );

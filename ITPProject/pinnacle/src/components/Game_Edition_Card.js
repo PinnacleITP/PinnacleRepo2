@@ -4,7 +4,7 @@ import cod2 from "../assets/games/cod2.jpg";
 export default function Game_Edition_Card(props) {
   return (
     <div className=" bg-white bg-opacity-10">
-      <img src={cod2} />
+      <img src={props.image} />
       <div className="p-6">
         <p className=" font-bold mb-4">{props.name}</p>
         <p className="text-[#ffffff73] text-[16px] line-through text-center">

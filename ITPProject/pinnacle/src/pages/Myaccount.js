@@ -14,6 +14,7 @@ import LegendIcon from "../assets/myAccount/legend.png";
 import Payment_history_card from "../components/Payment_history_card";
 import Game_download_card from "../components/Game_download_card";
 import Channel from "../components/Channel";
+import Subscribers from "../components/Subscribers";
 import Footer from "../components/Footer";
 import SuccessPopup from "../components/SuccessPopup";
 import useSWR from 'swr';
@@ -24,14 +25,16 @@ import RookieLeague from "../assets/myAccount/rookie_league.png";
 import MasterLeague from "../assets/myAccount/master_league.png";
 import LegendaryLeague from "../assets/myAccount/legendary_league.png";
 
-
 export default function Myaccount() {
-  var memberID = "66118d9104fb9c92e1c7d980";
+
+  const userEmail = localStorage.getItem('userEmail');
+  const userId = localStorage.getItem('userId');
+  //var memberID = "66118d9104fb9c92e1c7d980";
+  var memberID = userId;
   // var memberID ="66202ae130ee8bb8602d92b6";
+
   const navigate = useNavigate();
   const imageInputRef = useRef(null);
-  
-  
   const [selectedDiv, setSelectedDiv] = useState("Dashboard");
   const [channelDiv, setChannelDiv] = useState("MyChannels");
   const [loading, setLoading] = useState(false);
@@ -429,6 +432,8 @@ export default function Myaccount() {
   }, 1000);
   }, [reloadCount,selectedDiv]);
   
+  
+
   {
     /* ##################################################################### Payment management ######################################*/
   }
@@ -889,7 +894,7 @@ export default function Myaccount() {
             {/* ######################### MySubcriptions ########################   */}
             {channelDiv === "MySubcriptions" && (
               <div className="text-white px-5 mt-3">
-                <h1>MySubcriptions</h1>
+              <Subscribers memberID={memberID} />
               </div>
             )}
           </div>
@@ -1336,7 +1341,6 @@ export default function Myaccount() {
     </div>
       )}
 
-      <Footer />
       <div className=" mt-10">
         <Footer />
       </div>
