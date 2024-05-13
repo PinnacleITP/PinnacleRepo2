@@ -1054,6 +1054,39 @@ app.put("/updateEndDate/:id", (req, res) => {
     .catch((err) => res.json(err));
 });
 
+app.post("/season", (req, res) => {
+  SeasonModel.create(req.body)
+    .then((season) => res.json(season))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+app.get("/api/readSeason/:id", (req, res) => {
+  const id = req.params.id;
+  SeasonModel.findById(id)
+    .then((season) => {
+      if (!season) {
+        return res.status(404).json({ error: "Season not found" });
+      }
+      res.json(season);
+    })
+    .catch((err) => {
+      console.error("Error retrieving season:", err);
+      res.status(500).json({ error: "Internal server error" });
+    });
+});
+
+app.put("/updateEndDate/:id", (req, res) => {
+  const id = req.params.id;
+  SeasonModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      endDate: req.body.newEndDate,
+    }
+  )
+    .then((season) => res.json(season))
+    .catch((err) => res.json(err));
+});
+
 app.listen(3001, () => {
   console.log("Server is Running");
 });

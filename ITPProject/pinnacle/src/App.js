@@ -15,6 +15,8 @@ import GameDetailsPage from './pages/GameDetailsPage';
 import StreamDetailsPage from './pages/StreamDetailsPage';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import Leaderboardminigames from './pages/Leaderboardminigames';
+
 
 function App() {
   return (
@@ -35,6 +37,7 @@ function App() {
           <Route path='/payment' element={<Payment/>}></Route>
           <Route path="/register" element={<Register />}></Route>
           <Route path="/login" element={<Login />}></Route>
+          <Route path='/leaderboardminigame' element={<Leaderboardminigames/>}></Route>
         </Routes>
       </BrowserRouter>
     </div>
