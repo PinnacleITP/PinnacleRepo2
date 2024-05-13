@@ -17,7 +17,7 @@ export default function Register() {
     crystalCount:100,
     primium:'',
     xpCount:20,
-    memberLevel:0,
+    memberLevel:1,
     league:'Rookie',
 
   });

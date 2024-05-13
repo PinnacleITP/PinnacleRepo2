@@ -255,17 +255,16 @@ app.post("/createLeaderboard", (req, res) => {
     .catch((err) => res.json(err));
 });
 
-app.put("/updateViewCount/:id", (req, res) => {
-  const id = req.params.id;
-  StreamModel.findByIdAndUpdate({ _id: id },
-    {
-      viewCount: req.body.viewCount,
-    }
-  )
-    .then((stream) => res.json(stream))
-    .catch((err) => res.json(err));
-});
-
+// app.put("/updateViewCount/:id", (req, res) => {
+//   const id = req.params.id;
+//   StreamModel.findByIdAndUpdate({ _id: id },
+//     {
+//       viewCount: req.body.viewCount,
+//     }
+//   )
+//     .then((stream) => res.json(stream))
+//     .catch((err) => res.json(err));
+// });
 
 //get member details using member id
 app.get("/getMemberById/:id", (req, res) => {
@@ -411,11 +410,11 @@ app.delete("/deletePaymentHistoryRelatedToMember/:id", (req, res) => {
     .catch((err) => res.status(500).json({ error: err.message }));
 });
 
-app.post("/createdounloadRecod", (req, res) => {
-  DownloadModel.create(req.body)
-    .then((download) => res.json(download))
-    .catch((err) => res.status(500).json({ error: err.message }));
-});
+// app.post("/createdounloadRecod", (req, res) => {
+//   DownloadModel.create(req.body)
+//     .then((download) => res.json(download))
+//     .catch((err) => res.status(500).json({ error: err.message }));
+// });
 
 app.get("/getDownloadbyMemberid/:id", (req, res) => {
   const id = req.params.id;
@@ -492,13 +491,12 @@ app.delete("/deleteCommunityPost/:id", (req, res) => {
     .then((game) => res.json(game))
     .catch((err) => res.json(err));
 });
-// create new stream
-app.post("/createStream", (req, res) => {
-  StreamModel.create(req.body)
-    .then((stream) => res.json(stream))
-    .catch((err) => res.status(500).json({ error: err.message }));
-
-});
+//create new stream
+// app.post("/createStream", (req, res) => {
+//   StreamModel.create(req.body)
+//     .then((stream) => res.json(stream))
+//     .catch((err) => res.status(500).json({ error: err.message }));
+// });
 
 //delete stream by id
 app.delete("/deleteStream/:id", (req, res) => {
@@ -971,6 +969,292 @@ app.put("/updateEndDate/:id", (req, res) => {
     .catch((err) => res.json(err));
 });
 
+app.post("/season", (req, res) => {
+  SeasonModel.create(req.body)
+    .then((season) => res.json(season))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+app.get("/api/readSeason/:id", (req, res) => {
+  const id = req.params.id;
+  SeasonModel.findById(id)
+    .then((season) => {
+      if (!season) {
+        return res.status(404).json({ error: "Season not found" });
+      }
+      res.json(season);
+    })
+    .catch((err) => {
+      console.error("Error retrieving season:", err);
+      res.status(500).json({ error: "Internal server error" });
+    });
+});
+
+app.put("/updateEndDate/:id", (req, res) => {
+  const id = req.params.id;
+  SeasonModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      endDate: req.body.newEndDate,
+    }
+  )
+    .then((season) => res.json(season))
+    .catch((err) => res.json(err));
+});
+app.get('/getFeedback/:id',(req,res) => {
+  const id=req.params.id;
+  FeedbackModel.findById({_id:id})
+  .then(feedbacks =>res.json(feedbacks))
+  .catch(err => res.json(err))
+})
+
+app.put('/updateFeedback/:id',(req,res) => {
+  const id=req.params.id;
+  FeedbackModel.findByIdAndUpdate({_id:id},{
+      name:req.body.name,
+      email:req.body.email,
+      feedback:req.body.feedback})
+  .then(feedbacks =>res.json(feedbacks))
+  .catch(err => res.json(err))
+})
+
+app.delete('/deleteFeedback/:id',(req,res) => {
+  const id=req.params.id;
+  FeedbackModel.findByIdAndDelete({_id:id})
+  .then(res => res.json(res))
+  .catch(err => res.json(err))
+})
+
+app.post("/createfeedback",(req,res) => {
+  FeedbackModel.create(req.body)
+  .then(feedbacks => res.json(feedbacks))
+  .catch(err => res.json(err))
+})
+
+
+app.post("/createfaq",(req,res) => {
+  FaqModel.create(req.body)
+  .then(faqs => res.json(faqs))
+  .catch(err => res.json(err))
+})
+
+app.delete('/deletefaq/:id',(req,res) =>{
+  const id=req.params.id;
+  FaqModel.findByIdAndDelete({_id:id})
+  .then(res =>res.json(res))
+  .catch(err => res.json(err))
+})
+// ----------levelling system code start ----------
+//Updated by Ishan
+app.put("/updateViewCount/:id", (req, res) => {
+  const id = req.params.id;
+  const userId = req.body.userId;
+  StreamModel.findByIdAndUpdate({ _id: id },
+    {
+      viewCount: req.body.viewCount,
+    }
+  )
+  .then((stream) => {
+    // Find the user by _id and update xpCount
+    UserModel.findOneAndUpdate(
+      { _id: req.body.userId },
+      { $inc: { xpCount: 5 } },
+      { new: true }
+    )
+      .then((user) => {
+        if (user) {
+          const level = Math.floor(user.xpCount / 100);
+          if (user.xpCount >= 500 && user.xpCount < 1000) {
+            UserModel.findOneAndUpdate(
+              { _id: req.body.userId },
+              { $set: { memberLevel: level, league: 'Master' } },
+              { new: true }
+            )
+            .then((updatedUser) => {
+              // Send response with updated user
+              res.json({ stream, user: updatedUser });
+            })
+            .catch((err) => res.status(500).json({ error: err.message }));
+          } else if(user.xpCount >= 1000 && user.xpCount < 1500){
+            UserModel.findOneAndUpdate(
+              { _id: req.body.userId },
+              { $set: { memberLevel: level, league: 'Legendary' } },
+              { new: true }
+            )
+            .then((updatedUser) => {
+              // Send response with updated user
+              res.json({ stream, user: updatedUser });
+            })
+            .catch((err) => res.status(500).json({ error: err.message }));
+          }else if(user.xpCount >= 1500){
+            UserModel.findOneAndUpdate(
+              { _id: req.body.userId },
+              { $set: { memberLevel: level, league: 'Legendary' } },
+              { new: true }
+            )
+            .then((updatedUser) => {
+              // Send response with updated user
+              res.json({ stream, user: updatedUser });
+            })
+            .catch((err) => res.status(500).json({ error: err.message }));
+          }else {
+            UserModel.findOneAndUpdate(
+              { _id: req.body.userId },
+              { $set: { memberLevel: level, league: 'Rookie' } },
+              { new: true }
+            )
+            .then((updatedUser) => {
+              // Send response with updated user
+              res.json({ stream, user: updatedUser });
+            })
+            .catch((err) => res.status(500).json({ error: err.message }));
+          }
+        } else {
+          res.status(404).json({ error: "User not found" });
+        }
+      })
+      .catch((err) => res.status(500).json({ error: err.message }));
+    })
+    .catch((err) => res.status(500).json({ error: err.message }));
+  });
+
+  //Updated by Ishan
+app.post("/createdounloadRecod", (req, res) => {
+  DownloadModel.create(req.body)
+    .then((download) => {
+      // Find the user by _id and update xpCount
+      UserModel.findOneAndUpdate(
+        { _id: req.body.userId },
+        { $inc: { xpCount: 50 } },
+        { new: true }
+      )
+        .then((user) => {
+          if (user) {
+            const level = Math.floor(user.xpCount / 100);
+            if (user.xpCount >= 500 && user.xpCount < 1000) {
+              UserModel.findOneAndUpdate(
+                { _id: req.body.userId },
+                { $set: { memberLevel: level, league: 'Master' } },
+                { new: true }
+              )
+              .then((updatedUser) => {
+                // Send response with updated user
+                res.json({ download, user: updatedUser });
+              })
+              .catch((err) => res.status(500).json({ error: err.message }));
+            } else if(user.xpCount >= 1000 && user.xpCount < 1500){
+              UserModel.findOneAndUpdate(
+                { _id: req.body.userId },
+                { $set: { memberLevel: level, league: 'Legendary' } },
+                { new: true }
+              )
+              .then((updatedUser) => {
+                // Send response with updated user
+                res.json({ download, user: updatedUser });
+              })
+              .catch((err) => res.status(500).json({ error: err.message }));
+            }else if(user.xpCount >= 1500){
+              UserModel.findOneAndUpdate(
+                { _id: req.body.userId },
+                { $set: { memberLevel: level, league: 'Legendary' } },
+                { new: true }
+              )
+              .then((updatedUser) => {
+                // Send response with updated user
+                res.json({ download, user: updatedUser });
+              })
+              .catch((err) => res.status(500).json({ error: err.message }));
+            }else {
+              UserModel.findOneAndUpdate(
+                { _id: req.body.userId },
+                { $set: { memberLevel: level, league: 'Rookie' } },
+                { new: true }
+              )
+              .then((updatedUser) => {
+                // Send response with updated user
+                res.json({ stream, user: updatedUser });
+              })
+              .catch((err) => res.status(500).json({ error: err.message }));
+            }
+          } else {
+            res.status(404).json({ error: "User not found" });
+          }
+        })
+        .catch((err) => res.status(500).json({ error: err.message }));
+    })
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+//Updated by Ishan
+// create new stream
+app.post("/createStream", (req, res) => {
+  // Create the stream
+  StreamModel.create(req.body)
+    .then((stream) => {
+      // Find the user by _id and update xpCount
+      UserModel.findOneAndUpdate(
+        { _id: req.body.userId },
+        { $inc: { xpCount: 20 } },
+        { new: true }
+      )
+        .then((user) => {
+          if (user) {
+            const level = Math.floor(user.xpCount / 100);
+            if (user.xpCount >= 500 && user.xpCount < 1000) {
+              UserModel.findOneAndUpdate(
+                { _id: req.body.userId },
+                { $set: { memberLevel: level, league: 'Master' } },
+                { new: true }
+              )
+              .then((updatedUser) => {
+                // Send response with updated user
+                res.json({ stream, user: updatedUser });
+              })
+              .catch((err) => res.status(500).json({ error: err.message }));
+            } else if(user.xpCount >= 1000 && user.xpCount < 1500){
+              UserModel.findOneAndUpdate(
+                { _id: req.body.userId },
+                { $set: { memberLevel: level, league: 'Legendary' } },
+                { new: true }
+              )
+              .then((updatedUser) => {
+                // Send response with updated user
+                res.json({ stream, user: updatedUser });
+              })
+              .catch((err) => res.status(500).json({ error: err.message }));
+            }else if(user.xpCount >= 1500){
+              UserModel.findOneAndUpdate(
+                { _id: req.body.userId },
+                { $set: { memberLevel: level, league: 'Legendary' } },
+                { new: true }
+              )
+              .then((updatedUser) => {
+                // Send response with updated user
+                res.json({ stream, user: updatedUser });
+              })
+              .catch((err) => res.status(500).json({ error: err.message }));
+            }else {
+              UserModel.findOneAndUpdate(
+                { _id: req.body.userId },
+                { $set: { memberLevel: level, league: 'Rookie' } },
+                { new: true }
+              )
+              .then((updatedUser) => {
+                // Send response with updated user
+                res.json({ stream, user: updatedUser });
+              })
+              .catch((err) => res.status(500).json({ error: err.message }));
+            }
+          } else {
+            res.status(404).json({ error: "User not found" });
+          }
+        })
+        .catch((err) => res.status(500).json({ error: err.message }));
+    })
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+//----------levelling system code end ----------
 app.listen(3001, () => {
   console.log("Server is Running");
 });
