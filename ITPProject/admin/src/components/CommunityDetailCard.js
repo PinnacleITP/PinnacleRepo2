@@ -21,6 +21,9 @@ export default function CommunityDetailCard(props) {
 
 
   const [dateDiff, setDateDiff] = useState(null);
+  const [releaseDateError, setReleaseDateError] = useState("");
+  const [descriptionError, setDescriptionError] = useState('');
+
 
   useEffect(() => {
     const currentDate = new Date();
@@ -109,6 +112,31 @@ const handleUpdateCloseSuccessPopup = () => {
   setUpdateSuccessMessagechecked(false);
 };
 
+const handleReleaseDateChange = (e) => {
+  const selectedDate = e.target.value;
+  const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+  if (selectedDate < today) {
+    setReleaseDateError("Please select a future date");
+    setReleasedate("");
+  } else {
+    setReleaseDateError("");
+    setReleasedate(selectedDate);
+  }
+};
+
+const handleDescriptionChange = (e) => {
+  const enteredDescription = e.target.value;
+  if (enteredDescription.length > 150) {
+    setDescriptionError('Maximum 150 characters allowed');
+    // Truncate the entered text to 150 characters
+    setDescription(enteredDescription.slice(0, 150));
+  } else {
+    setDescriptionError('');
+    setDescription(enteredDescription);
+  }
+};
+
+
   return (
     <div className=" mt-8 p-4 relative text-white font-semibold">
       <div>
@@ -156,6 +184,7 @@ const handleUpdateCloseSuccessPopup = () => {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  required
                 />
               </div>
               <div className="w-[90%] mx-auto mt-5 flex justify-between">
@@ -167,8 +196,11 @@ const handleUpdateCloseSuccessPopup = () => {
                   className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
                   type="date"
                   value={releasedate}
-                  onChange={(e) => setReleasedate(e.target.value)}
+                  onChange={handleReleaseDateChange}
+                  min={new Date().toISOString().split("T")[0]} // Set min attribute to current date
+                  required
                 />
+                 {releaseDateError && <p className="text-red-500">{releaseDateError}</p>}
               </div>
               <div className=" w-[45%]" >
               <label>Game Type</label>
@@ -177,6 +209,7 @@ const handleUpdateCloseSuccessPopup = () => {
                   value={type}
                   onChange={(e) => setType(e.target.value)}
                   className="w-full px-1 py-[6px] text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
+                  required
                 >
                   <option value="action">Action</option>
                   <option value="adventure">Adventure</option>
@@ -195,6 +228,7 @@ const handleUpdateCloseSuccessPopup = () => {
                 accept="image/*"
                 id="image"
                 onChange={(e) => setImage(e.target.files[0])}
+               
               />
               </div>
               <div className="w-[90%] mx-auto mt-5">
@@ -204,9 +238,10 @@ const handleUpdateCloseSuccessPopup = () => {
                   className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
                   type="file"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={handleDescriptionChange}
+                  required
                 ></textarea>
-
+{descriptionError && <p className="text-red-500">{descriptionError}</p>}
                 <button
                   type="submit"
                   className=" mt-8 float-right bg-transparent text-[#FE7804] border-2 border-[#FE7804] hover:bg-[#FE7804] hover:text-white rounded-lg px-5 py-2 text-[16px] font-bold"

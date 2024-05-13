@@ -23,6 +23,10 @@ export default function CommunityManagement() {
   const [filteredCommunityPosts, setFilterdCommunityPosts] = useState([]);
   const [searchedCommunityPosts, setSearchedCommunityPosts] = useState([]);
 
+  const [releaseDateError, setReleaseDateError] = useState("");
+  const [descriptionError, setDescriptionError] = useState("");
+  const [nameError, setNameError] = useState("");
+
   const filterhandler = (type) => {
     setIsFilterChecked(true);
     const filterdPosts = CommunityPosts.filter((post) => post.type === type);
@@ -94,6 +98,18 @@ export default function CommunityManagement() {
     e.preventDefault();
     try {
       setLoading(true);
+
+      // Check if name field is empty
+    if (!name.trim()) {
+      // Set error message if name is empty
+      setNameError("Post name cannot be empty");
+      setLoading(false);
+      return; // Return to prevent further execution
+    }
+
+    // Reset name error if it was previously set
+    setNameError("");
+
       // Upload image file
       const postUrl = image ? await uploadFile("image", image) : null;
 
@@ -128,6 +144,30 @@ export default function CommunityManagement() {
   const handleCreateCloseSuccessPopup = () => {
     setCreateSuccessMessagechecked(false);
   };
+
+  const handleReleaseDateChange = (e) => {
+    const selectedDate = e.target.value;
+    const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+
+    if (selectedDate < today) {
+      setReleaseDateError("Please select a future date");
+      setReleasedate("");
+    } else {
+      setReleaseDateError("");
+      setReleasedate(selectedDate);
+    }
+  };
+
+  const handleDescriptionChange = (e) => {
+    const enteredDescription = e.target.value;
+    if (enteredDescription.length > 150) {
+      setDescriptionError('Maximum 150 characters allowed');
+    } else {
+      setDescriptionError('');
+      setDescription(enteredDescription);
+    }
+  };
+
 
   return (
     <div className="py-5 px-7 text-white ">
@@ -315,6 +355,7 @@ export default function CommunityManagement() {
                   alt="multiply"
                 />
               </div>
+              <div className="py-5 px-7 text-white "></div>
               <div className="w-[90%] mx-auto mt-5">
                 <label>Post Name</label>
                 <br />
@@ -323,7 +364,9 @@ export default function CommunityManagement() {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  required
                 />
+                 {nameError && <p className="text-red-500">{nameError}</p>}
               </div>
               <div className="w-[90%] mx-auto mt-5 flex justify-between">
                 <div className=" w-[45%]">
@@ -333,8 +376,11 @@ export default function CommunityManagement() {
                     className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
                     type="date"
                     value={releasedate}
-                    onChange={(e) => setReleasedate(e.target.value)}
+                    onChange={handleReleaseDateChange}
+                    min={new Date().toISOString().split("T")[0]} // Set min attribute to current date
+                    required
                   />
+                   {releaseDateError && <p className="text-red-500">{releaseDateError}</p>}
                 </div>
                 <div className=" w-[45%]">
                   <label>Game Type</label>
@@ -343,6 +389,7 @@ export default function CommunityManagement() {
                     value={type}
                     onChange={(e) => setType(e.target.value)}
                     className="w-full px-1 py-[6px] text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
+                    required
                   >
                     <option value="action">Action</option>
                     <option value="adventure">Adventure</option>
@@ -361,6 +408,7 @@ export default function CommunityManagement() {
                   accept="image/*"
                   id="image"
                   onChange={(e) => setImage(e.target.files[0])}
+                  required
                 />
               </div>
               <div className="w-[90%] mx-auto mt-5">
@@ -370,9 +418,10 @@ export default function CommunityManagement() {
                   className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
                   type="file"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={handleDescriptionChange}
+                  required
                 ></textarea>
-
+{descriptionError && <p className="text-red-500">{descriptionError}</p>}
                 <button
                   type="submit"
                   className=" mt-8 float-right bg-transparent text-[#FE7804] border-2 border-[#FE7804] hover:bg-[#FE7804] hover:text-white rounded-lg px-5 py-2 text-[16px] font-bold"
