@@ -19,6 +19,7 @@
     "react-simple-typewriter": "^5.0.1",
     "react-spinners": "^0.13.8",
     "react-typed": "^2.0.12",
+    "sweetalert2": "^11.11.0",
     "swr": "^2.2.5",
     "web-vitals": "^2.1.4"
   },
