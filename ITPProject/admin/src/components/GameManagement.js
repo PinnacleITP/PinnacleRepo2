@@ -6,6 +6,9 @@ import SearchError from "../assets/animations/searchnotfound.webm";
 import "../pages/styles/extarnal.css";
 import { HashLoader } from "react-spinners";
 
+import DeleteWorning from "../assets/animations/deleteanimation.webm";
+import SuccessPopup from "./SuccessPopup";
+
 //::::::::::::::::::::::::::::::::::::::::::::::Game Table::::::::::::::::::::::::::::::::::::::::::::::
 
 import html2canvas from "html2canvas";
@@ -28,7 +31,6 @@ export default function GameManagement() {
   const navigate = useNavigate();
 
   const [itemId, setitemId] = useState("");
-  const [itemimage, setitemImage] = useState("");
   const [itemname, setitemName] = useState("");
   const [itemgameImageUrl, setitemgameImageUrl] = useState("");
   const [itemconfigurations, setitemConfiguration] = useState("");
@@ -74,6 +76,10 @@ export default function GameManagement() {
   const racingGames = gameDetails.filter((game) => game.type === "racing");
   const shooterGames = gameDetails.filter((game) => game.type === "shooter");
   const sportsGames = gameDetails.filter((game) => game.type === "sports");
+
+  const [isDeleteWarning, setIsDeleteWarning] = useState(false);
+  const [deleteSuccessMessagechecked, setDeleteSuccessMessagechecked] =
+    useState(false);
 
   //read game details
   // When the data is fetched successfully, it updates the state variable
@@ -237,7 +243,9 @@ export default function GameManagement() {
         setitemType(result.data.type);
         setitemDeveloper(result.data.developer);
         setitemPublisher(result.data.publisher);
-        setitemReleasDate(result.data.releasdate);
+        setitemReleasDate(
+          new Date(result.data.releasdate).toISOString().split("T")[0]
+        );
       })
       .catch((err) => console.log(err));
   };
@@ -263,23 +271,56 @@ export default function GameManagement() {
         })
         .then((result) => {
           console.log(result);
+          window.location.reload();
         })
         .catch((err) => console.log(err));
-        setLoading(false);
+      setLoading(false);
     } catch (error) {
       console.error("Error updating game:", error);
     }
   };
 
+  useEffect(() => {
+    // Assuming `image` must not be empty to enable the submit button
+    if (image) {
+      setSubmitButtonEnable(true);
+    } else {
+      setSubmitButtonEnable(false);
+    }
+  }, [image]); // Dependency on `image` ensures this runs every time `image` changes
+
+  const handleImageChange = (e) => {
+    if (e.target.files[0]) {
+      setImage(e.target.files[0]); // Update the image state with the new file
+    }
+  };
+
   // delete game using game id
-  const handleDelete = (id) => {
+
+  const promptDelete = (id) => {
+    setitemId(id); // Set the item ID when the delete prompt is initiated
+    setIsDeleteWarning(true); // Show the delete warning modal
+  };
+
+  const handleDelete = () => {
+    if (!itemId) return; // Guard clause if itemId is somehow unset
+
     axios
-      .delete("http://localhost:3001/deleteGame/" + id)
+      .delete(`http://localhost:3001/deleteGame/${itemId}`)
       .then((res) => {
-        console.log(res);
-        window.location.reload();
+        console.log("Game deleted:", res);
+        setDeleteSuccessMessagechecked(true); // Show success message
+        setIsDeleteWarning(false); // Close the warning modal
+        window.location.reload(); // Refresh or use a better state management
       })
-      .catch((errr) => console.log(errr));
+      .catch((error) => {
+        console.error("Failed to delete game:", error);
+        setIsDeleteWarning(false); // Ensure modal closes on error too
+      });
+  };
+
+  const handleDeleteCloseSuccessPopup = () => {
+    setDeleteSuccessMessagechecked(false);
   };
 
   const gamesSearch = () => {
@@ -293,39 +334,39 @@ export default function GameManagement() {
     setGameSearchResultArr(gameSearchResult);
   };
 
-  const handlePriceChange = (e) => {
-    const enteredPrice = e.target.value;
-    const isValid = /^\d*\.?\d*$/.test(enteredPrice); // Check if input contains only numbers
+  // const handlePriceChange = (e) => {
+  //   const enteredPrice = e.target.value;
+  //   const isValid = /^\d*\.?\d*$/.test(enteredPrice); // Check if input contains only numbers
 
-    if (!isValid) {
-      setSubmitButtonEnable(false);
-      setPriceError("Price cannot contain letters");
-      document.getElementById("gameAddSubmit").disabled = true;
-    } else {
-      setPriceError("");
-      document.getElementById("gameAddSubmit").disabled = false;
-      setSubmitButtonEnable(true);
-    }
+  //   if (!isValid) {
+  //     setSubmitButtonEnable(false);
+  //     setPriceError("Price cannot contain letters");
+  //     document.getElementById("gameAddSubmit").disabled = true;
+  //   } else {
+  //     setPriceError("");
+  //     document.getElementById("gameAddSubmit").disabled = false;
+  //     setSubmitButtonEnable(true);
+  //   }
 
-    setPrice(enteredPrice);
-  };
+  //   setPrice(enteredPrice);
+  // };
 
-  const handleUpdatePriceChange = (e) => {
-    const enteredPrice = e.target.value;
-    const isValid = /^\d*\.?\d*$/.test(enteredPrice); // Check if input contains only numbers
+  // const handleUpdatePriceChange = (e) => {
+  //   const enteredPrice = e.target.value;
+  //   const isValid = /^\d*\.?\d*$/.test(enteredPrice); // Check if input contains only numbers
 
-    if (!isValid) {
-      setSubmitButtonEnable(false);
-      setPriceError("Price cannot contain letters");
-      document.getElementById("gameUpdateSubmit").disabled = true;
-    } else {
-      setSubmitButtonEnable(true);
-      setPriceError("");
-      document.getElementById("gameUpdateSubmit").disabled = false;
-    }
+  //   if (!isValid) {
+  //     setSubmitButtonEnable(false);
+  //     setPriceError("Price cannot contain letters");
+  //     document.getElementById("gameUpdateSubmit").disabled = true;
+  //   } else {
+  //     setSubmitButtonEnable(true);
+  //     setPriceError("");
+  //     document.getElementById("gameUpdateSubmit").disabled = false;
+  //   }
 
-    setitemPrice(enteredPrice);
-  };
+  //   setitemPrice(enteredPrice);
+  // };
 
   const handleDeveloperChange = (e) => {
     const enteredDeveloper = e.target.value;
@@ -797,7 +838,7 @@ export default function GameManagement() {
                 </select>
               </div>
 
-              <div className="w-[30%]">
+              {/* <div className="w-[30%]">
                 <label>Price</label>
                 <br />
                 <input
@@ -812,6 +853,25 @@ export default function GameManagement() {
                 {priceError && (
                   <span className="text-red-500">{priceError}</span>
                 )}
+              </div> */}
+
+              <div className="w-[30%]">
+                <label>Price</label>
+                <br />
+                <input
+                  className={`w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 ${
+                    priceError ? "border-red-500" : "border-[#D8DAE3]"
+                  } border-opacity-20 mt-2`}
+                  type="text" // Change type to text
+                  value={price}
+                  onChange={(e) => {
+                    const input = e.target.value;
+                    // Filter out non-numeric characters
+                    const filteredInput = input.replace(/[^0-9]/g, "");
+                    setPrice(filteredInput);
+                  }}
+                  required
+                />
               </div>
             </div>
 
@@ -850,7 +910,7 @@ export default function GameManagement() {
               </div>
 
               <div className="w-[30%]">
-                <label>Release date</label>
+                <label>Released date</label>
                 <input
                   className={`w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 ${
                     releaseDateError ? "border-red-500" : "border-[#D8DAE3]"
@@ -973,17 +1033,15 @@ export default function GameManagement() {
                 <label>Price</label>
                 <br />
                 <input
-                  className={`w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 ${
-                    priceError ? "border-red-500" : "border-[#D8DAE3]"
-                  } border-opacity-20 mt-2`}
+                  className={`w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2`}
                   type="text"
                   value={itemprice}
-                  onChange={handleUpdatePriceChange}
+                  onChange={(event) => {
+                    const enteredPrice = event.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+                    setitemPrice(enteredPrice); // Update the price state with the sanitized value
+                  }}
                   required
                 />
-                {priceError && (
-                  <span className="text-red-500">{priceError}</span>
-                )}
               </div>
             </div>
 
@@ -1022,7 +1080,7 @@ export default function GameManagement() {
               </div>
 
               <div className="w-[30%]">
-                <label>Release date</label>
+                <label>Released date</label>
                 <input
                   className={`w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 ${
                     releaseDateError ? "border-red-500" : "border-[#D8DAE3]"
@@ -1032,6 +1090,7 @@ export default function GameManagement() {
                   onChange={handleUpdateReleaseDateChange}
                   required
                 />
+
                 {releaseDateError && (
                   <span className="text-red-500">{releaseDateError}</span>
                 )}
@@ -1047,9 +1106,8 @@ export default function GameManagement() {
                   className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
                   type="file"
                   accept="image/*"
-                  id="image"
-                  value={itemgameImageUrl}
-                  onChange={(e) => setitemImage(e.target.files[0])}
+                  onChange={handleImageChange}
+                  required
                 />
               </div>
               <img className="h-[70px] ml-5" src={itemgameImageUrl} />
@@ -1223,11 +1281,60 @@ export default function GameManagement() {
                 Upgrade
               </button>
               <button
-                onClick={(e) => handleDelete(itemId)}
-                className=" bg-[#FE7804] hover:bg-[#FF451D] rounded-lg px-5 py-2 text-[16px] font-bold ml-5"
+                onClick={() => promptDelete(itemId)}
+                className="bg-[#FE7804] hover:bg-[#FF451D] rounded-lg px-5 py-2 text-[16px] font-bold ml-5"
               >
                 Delete
               </button>
+
+              {isDeleteWarning && (
+                <div className="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen bg-black bg-opacity-80">
+                  <div className=" flex flex-col justify-center items-center w-[28%] border-2 border-[#FE7804] border-opacity-50 rounded-lg bg-[#1B1E20]">
+                    <div className="mt-6">
+                      <video autoPlay loop className="w-[150px] h-auto">
+                        <source src={DeleteWorning} type="video/webm" />
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                    <h1 className=" text-[#FE7804] text-[32px] font-bold">
+                      Warning!
+                    </h1>
+                    <p className=" mt-5 text-center text-[#b6b6b6] text-base">
+                      Once you delete record, thre's no getting it back.
+                      <br />
+                      Make suer you want to do this.
+                    </p>
+                    <div className="flex justify-end w-full px-8 mt-12 mb-5 ">
+                      <button
+                        onClick={() => setIsDeleteWarning(false)}
+                        className=" bg-transparent border-2 border-[#FE7804] text-[#FE7804] hover:bg-[#FE7804] hover:text-white rounded-lg py-2 px-5 mr-4 font-semibold"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleDelete}
+                        className="bg-[#FE7804] border-2 border-[#FE7804] hover:bg-[#FF451D] hover:border-[#FF451D] rounded-lg py-2 px-5 text-white font-semibold"
+                      >
+                        Confirm
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {loading && (
+                <div className="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen bg-black bg-opacity-50 ">
+                  <HashLoader size="75" color="#FE7804" />
+                </div>
+              )}
+
+              {deleteSuccessMessagechecked && (
+                <SuccessPopup
+                  type="Delete"
+                  item="Community post"
+                  onClose={handleDeleteCloseSuccessPopup}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -1311,7 +1418,7 @@ export default function GameManagement() {
                     <img
                       src={game.gameImageUrl}
                       alt="Game Image"
-                      style={{ width: "100%", maxHeight: "100px" }}
+                      style={{ width: "100%", maxHeight: "200px" }}
                     />
                   </td>
                   <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">
