@@ -106,8 +106,10 @@ export default function StreamDetailsPage() {
     const viewCount = bdviewcount + 1;
     console.log("Current view count:", bdviewcount);
     console.log("Updated view count:", viewCount);
+    //Get User Id
+    const userId = localStorage.getItem('userId');
     axios
-      .put(`http://localhost:3001/updateViewCount/${streamid}`, { viewCount })
+      .put(`http://localhost:3001/updateViewCount/${streamid}`, { viewCount, userId })
       .then((result) => {
         console.log("Update result:", result);
         setNewViewCount(viewCount);

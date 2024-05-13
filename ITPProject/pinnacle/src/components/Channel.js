@@ -153,7 +153,8 @@ export default function Channel(props) {
       const thumbnailUrl = thumbnail
         ? await uploadFile("image", thumbnail, "stream")
         : null;
-
+      //Get User Id
+      const userId = localStorage.getItem('userId');
       // Send backend API request
       const response = await axios.post("http://localhost:3001/createStream", {
         name,
@@ -165,7 +166,17 @@ export default function Channel(props) {
         channel_ID: channelDetails._id,
         secretVideoCode,
         gameType,
+        userId
       });
+      //-------dasun notification
+      const newStream = response.data; // Assuming response contains the created stream details
+  
+      // Send notification to all users about the new stream
+      await axios.post("http://localhost:3001/api/sendStreamNotification", newStream);
+  
+      console.log("Stream created and notification sent successfully:", newStream);
+  
+      //----dasun notification ends
       console.log("Stream created successfully:", response.data);
       // window.location.reload();
       setLoading(false);
@@ -178,6 +189,9 @@ export default function Channel(props) {
       setType("action");
       setSecretVideoCode("");
       setGameType("other");
+
+      props.setReloadCount(prevCount => prevCount + 1);
+
     } catch (error) {
       console.error("Error creating stream:", error);
     }
