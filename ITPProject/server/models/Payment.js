@@ -7,7 +7,9 @@ const PaymentSchema = new mongoose.Schema({
     discount: Number,
     crystaldiscount: Number,
     date: Date,
-    memberid: String
+    memberid: String,
+    email: String,
+    type: String
 })
 
 const PaymentModel = mongoose.model("payment", PaymentSchema)

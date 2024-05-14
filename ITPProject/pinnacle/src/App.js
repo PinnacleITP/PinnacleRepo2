@@ -13,6 +13,9 @@ import Myaccount from './pages/Myaccount';
 import Payment from './pages/Payment';
 import GameDetailsPage from './pages/GameDetailsPage';
 import StreamDetailsPage from './pages/StreamDetailsPage';
+import Register from './pages/Register';
+import Login from './pages/Login';
+import Leaderboardminigames from './pages/Leaderboardminigames';
 
 
 function App() {
@@ -32,6 +35,9 @@ function App() {
           <Route path='/premiumplanes' element={<Premiumplanes/>}></Route>
           <Route path='/account' element={<Myaccount/>}></Route>
           <Route path='/payment' element={<Payment/>}></Route>
+          <Route path="/register" element={<Register />}></Route>
+          <Route path="/login" element={<Login />}></Route>
+          <Route path='/leaderboardminigame' element={<Leaderboardminigames/>}></Route>
         </Routes>
       </BrowserRouter>
     </div>
