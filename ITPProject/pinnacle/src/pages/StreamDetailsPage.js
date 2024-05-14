@@ -12,6 +12,8 @@ import Swal from 'sweetalert2';
 export default function StreamDetailsPage() {
   const userId = localStorage.getItem("userId");
   var memberID = userId;
+  var readstream = "stream";
+
   
   const [streamMoreDetails, setStreamMoreDetails] = useState([]);
   const location = useLocation();
@@ -22,6 +24,15 @@ export default function StreamDetailsPage() {
   const [alreadySubscribed, setAlreadySubscribed] = useState(false);
   const [createSuccessMessagechecked, setCreateSuccessMessagechecked] =
     useState(false);
+  const [streamDetailsCard, setStreamDetailsCard] = useState([]);
+
+   //read all stream details
+   useEffect(() => {
+    axios
+      .get(`http://localhost:3001/${readstream}`)
+      .then((result) => setStreamDetailsCard(result.data))
+      .catch((err) => console.log(err));
+  }, [readstream]);
 
   // useEffect(() => {
   //   axios
@@ -386,7 +397,8 @@ const filteredFeedbacks = feedbacks.filter(feedback =>
           </div>
         </div>
         <div className="flex justify-between w-11/12 px-4 mx-auto mt-10 ">
-        <div className=" w-[65%] bg-[#00000075] rounded-lg py-5 px-7">
+        <div className=" w-[65%] bg-[#00000075] rounded-lg py-5 px-7 mb-6">
+
             {/* <h1 className=" font-bold text-[18px]">54 Comments</h1> */}
             {/* feedbacks */}
             <div className="container py-8 mx-auto">
@@ -487,10 +499,27 @@ const filteredFeedbacks = feedbacks.filter(feedback =>
           <div className=" w-[31%] p-2">
             <h1 className=" font-bold text-[20px]">Recommended Videos</h1>
             <div className="w-full mt-5 h-[900px] overflow-y-auto scrollbar-hide">
-              <Stream_Display_Card />
-              <Stream_Display_Card />
-              <Stream_Display_Card />
-              <Stream_Display_Card />
+            {streamDetailsCard.slice(0,4).map((item) => {
+                return (
+                  <div className="w-[100%] ">
+                    <Link
+                      to={`/streamdetail?streamid=${item._id}&channel=${item.channel_ID}`}
+                    >
+                      <Stream_Display_Card
+                        name={item.name}
+                        videoUrl={item.videoUrl}
+                        thumbnailUrl={item.thumbnailUrl}
+                        description={item.description}
+                        viewCount={item.viewCount}
+                        type={item.type}
+                        channel_ID={item.channel_ID}
+                        secretVideoCode={item.secretVideoCode}
+                      />
+                    </Link>
+                  </div>
+                );
+              })}
+
             </div>
           </div>
         </div>
