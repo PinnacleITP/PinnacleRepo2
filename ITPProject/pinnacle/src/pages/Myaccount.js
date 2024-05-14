@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import axios from "axios";
 import { HashLoader } from "react-spinners";
 import DeleteWorning from "../assets/payment/deleteanimation.webm";
@@ -14,17 +14,42 @@ import LegendIcon from "../assets/myAccount/legend.png";
 import Payment_history_card from "../components/Payment_history_card";
 import Game_download_card from "../components/Game_download_card";
 import Channel from "../components/Channel";
+import Subscribers from "../components/Subscribers";
 import Footer from "../components/Footer";
 import SuccessPopup from "../components/SuccessPopup";
+import useSWR from 'swr';
+import { useNavigate } from 'react-router-dom';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import RookieLeague from "../assets/myAccount/rookie_league.png";
+import MasterLeague from "../assets/myAccount/master_league.png";
+import LegendaryLeague from "../assets/myAccount/legendary_league.png";
 
 export default function Myaccount() {
-  var memberID ="66118d9104fb9c92e1c7d980";
+
+  const userEmail = localStorage.getItem('userEmail');
+  const userId = localStorage.getItem('userId');
+  //var memberID = "66118d9104fb9c92e1c7d980";
+  var memberID = userId;
   // var memberID ="66202ae130ee8bb8602d92b6";
 
+  const navigate = useNavigate();
+  const imageInputRef = useRef(null);
   const [selectedDiv, setSelectedDiv] = useState("Dashboard");
   const [channelDiv, setChannelDiv] = useState("MyChannels");
   const [loading, setLoading] = useState(false);
   const [deleteSuccessMessagechecked, setDeleteSuccessMessagechecked] = useState(false);
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
+
+  const [profileImage, setProfileImage] = useState(null);
+
+  const [allUserData, setAllUserData] = useState([]);
+
+  const [userData, setUserData] = useState('');
+  const [reloadCount, setReloadCount] = useState(0);
 
   const handleDivClick = (divId) => {
     setSelectedDiv(divId === selectedDiv ? null : divId);
@@ -39,6 +64,375 @@ export default function Myaccount() {
   const handleDeleteCloseSuccessPopup = () => {
     setDeleteSuccessMessagechecked(false);
   };
+  {
+    /* ################################################################### User management ######################################*/
+  }
+
+  const getCurrentDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    let month = today.getMonth() + 1;
+    let day = today.getDate();
+
+    // Add leading zero if month or day is less than 10
+    month = month < 10 ? '0' + month : month;
+    day = day < 10 ? '0' + day : day;
+
+    return `${year}-${month}-${day}`;
+  };
+// backend password update
+  // const onClickChangePass = async () => {
+  //   const passValue = document.getElementById('newPassword').value;
+  //   const confirmPassValue = document.getElementById('confirmPassword').value;
+
+  //   if(passValue == '' || confirmPassValue == ''){
+  //     alert('Fields cannot be empty.');
+  //   }else if (passValue != confirmPassValue){
+  //     alert('Passwords not matched. Please Check.')
+  //   }else{
+  //     let formData = {
+  //       username : data?.user.username,
+  //       email : data?.user.email,
+  //       newPass : passValue,
+  //       detail : "changePass"
+  //     }
+  //     try {
+  //       const response = await axios.put(
+  //         'http://localhost:3001/api/changeData',
+  //         formData,
+  //       );
+  //       console.log('Response:', response.data);
+  //       alert("Password Changed Successfully");
+  //       setTimeout(() => {
+  //         navigate('/login');
+  //       }, 1000);
+  //     } catch (error) {
+  //       alert( error.response.data.error);
+  //       console.error('Error:', error);
+  //     }
+  //   }
+  // }
+  //--new pasword validation start
+  const onClickChangePass = async () => {
+    const passValue = document.getElementById('newPassword').value;
+    const confirmPassValue = document.getElementById('confirmPassword').value;
+
+    // Regular expression to check the password strength
+    const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{5,}$/;
+
+    if (passValue === '' || confirmPassValue === '') {
+        alert('Fields cannot be empty.');
+    } else if (passValue !== confirmPassValue) {
+        alert('Passwords do not match. Please check.');
+    } else if (!passwordRegex.test(passValue)) {
+        alert('Password must be at least 5 characters long and contain at least one number and one symbol character.');
+    } else {
+        let formData = {
+            username: data?.user.username,
+            email: data?.user.email,
+            newPass: passValue,
+            detail: "changePass"
+        }
+        try {
+            const response = await axios.put(
+                'http://localhost:3001/api/changeData',
+                formData,
+            );
+            console.log('Response:', response.data);
+            alert("Password Changed Successfully");
+            setTimeout(() => {
+                navigate('/login');
+            }, 1000);
+        } catch (error) {
+            alert(error.response.data.error);
+            console.error('Error:', error);
+        }
+    }
+}
+
+  //--new pasword validation end
+
+  // const onClickUpdateDetails = async () => {
+
+  //   const firstname = document.getElementById('firstName').value;
+  //   const lastname = document.getElementById('lastName').value;
+
+  //   if(firstname == '' || lastname == ''){
+  //     alert('Fields cannot be empty.');
+  //   }else{
+  //     let updatedob = dateOfBirth == '' ? data?.user.dob : dateOfBirth;
+  //     let formData = {
+  //       username : data?.user.username,
+  //       email : data?.user.email,
+  //       firstName : firstname,
+  //       lastName : lastname,
+  //       dob : updatedob,
+  //       detail : "updateDetails"
+  //     }
+  //     try {
+  //       const response = await axios.put(
+  //         'http://localhost:3001/api/changeData',
+  //         formData,
+  //       );
+  //       console.log('Response:', response.data);
+  //       alert("User Details Changed Successfully");
+  //       setTimeout(() => {
+  //         setReloadCount(reloadCount + 1);
+  //       }, 1000);
+  //     } catch (error) {
+  //       alert( error.response.data.error);
+  //       console.error('Error:', error);
+  //     }
+  //   }
+  // }
+
+  // ----- new firstname and lastname validation start
+  const onClickUpdateDetails = async () => {
+    const firstname = document.getElementById('firstName').value.trim();
+    const lastname = document.getElementById('lastName').value.trim();
+
+    // Regular expression to validate that the name fields contain only letters
+    const nameRegex = /^[a-zA-Z]+$/;
+
+    if (firstname === '' || lastname === '') {
+        alert('Fields cannot be empty.');
+    } else if (!nameRegex.test(firstname) || !nameRegex.test(lastname)) {
+        alert('Names can only include alphabet letters.');
+    } else {
+        let updatedob = dateOfBirth === '' ? data?.user.dob : dateOfBirth;
+        let formData = {
+            username: data?.user.username,
+            email: data?.user.email,
+            firstName: firstname,
+            lastName: lastname,
+            dob: updatedob,
+            detail: "updateDetails"
+        }
+        try {
+            const response = await axios.put(
+                'http://localhost:3001/api/changeData',
+                formData,
+            );
+            console.log('Response:', response.data);
+            alert("User Details Changed Successfully");
+            setTimeout(() => {
+                setReloadCount(reloadCount + 1);
+            }, 1000);
+        } catch (error) {
+            alert(error.response.data.error);
+            console.error('Error:', error);
+        }
+    }
+}// ----- new firstname and lastname validation end
+
+
+  const onClickLogout = () => {
+    navigate('/login');
+  }
+
+  const onClickDelete = async () => {
+
+    const isConfirmed = window.confirm("Are you sure you want to delete?");
+
+    // Check user's response
+    if (isConfirmed) {
+      console.log("Deleting...");
+
+      try {
+        const response = await axios.delete(
+          'http://localhost:3001/api/deleteAccount',
+          {
+            data: {
+              username: data?.user.username,
+              email: data?.user.email,
+            }
+          }
+        );
+        console.log('Response:', response.data);
+        alert("User Deleted Successfully");
+        setTimeout(() => {
+          navigate('/login');
+        }, 1000);
+      } catch (error) {
+        alert( error.response.data.error);
+        console.error('Error:', error);
+      }
+    } else {
+      console.log("Delete cancelled.");
+    }
+  }
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setProfileImage(file);
+  };
+
+  const handleUpload = async () => {
+    console.log("Selected image:", profileImage);
+
+    const imageUrl = profileImage ? await uploadFile("image", profileImage ) : null;
+    await updateProfileImage(imageUrl);
+  };
+
+  const updateProfileImage = async (imageUrl) => {
+    try {
+
+      let formData = {
+        username : data?.user.username,
+        email : data?.user.email,
+        url: imageUrl,
+        detail : "updateProfileImage"
+      }
+
+      const response = await axios.put('http://localhost:3001/api/changeData', formData);
+
+      alert("User Image Updated Successfully");
+      setTimeout(() => {
+        imageInputRef.current.value = '';
+        setReloadCount(reloadCount + 1);
+      }, 1000);
+      
+
+    }catch (error) {
+      console.error("Error creating game:", error);
+      alert(error);
+    }
+  }
+  
+
+  const uploadFile = async (type, file) => {
+    const data = new FormData();
+    data.append("file", file);
+    data.append(
+      "upload_preset",
+      type === "image" ? "userProfile_Preset" : "Stream_Preset"
+    );
+
+    try {
+      let cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
+      console.log("Cloudinary cloud name:", cloudName);
+      let resourceType = type === "image" ? "image" : "video";
+      let api = `https://api.cloudinary.com/v1_1/dg8cpnx1m/${resourceType}/upload`;
+
+      const res = await axios.post(api, data);
+      const { secure_url } = res.data;
+      console.log(`${type} uploaded successfully:`, secure_url);
+
+      return secure_url;
+    } catch (error) {
+      console.error(
+        "Error uploading file to Cloudinary:",
+        error.response?.data
+      );
+      throw new Error("Failed to upload file to Cloudinary");
+    }
+  };
+
+  const generatePDF = () => {
+
+    const input = document.getElementById('pdf-table');
+  
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF();
+      const imgWidth = 210;
+      const pageHeight = 297;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+  
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+  
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+  
+      pdf.save('All Users.pdf');
+    });
+  }
+
+  useEffect(() => {
+    setTimeout(() => {
+      const userEmail = data?.user.email;
+      if (userEmail) { 
+        console.log(userEmail);
+
+        const fetchData = async () => {
+          try {
+            const response = await axios.get('http://localhost:3001/api/getuser?email=' + userEmail);
+            setUserData(response.data);
+          } catch (error) {
+            console.error("Error fetching data:", error);
+            alert(error.message);
+          }
+        };
+
+        fetchData();
+      }
+  }, 1000);
+  }, [reloadCount,selectedDiv]);
+  
+
+  const { data, isLoading } = useSWR('api/me');
+
+  useEffect(() => {
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/api/allUsers');
+        setAllUserData(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        alert(error.message);
+      }
+    };
+
+    fetchData();
+
+  }, [])
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedField, setSelectedField] = useState('username');
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value.toLowerCase());
+  };
+
+  const handleFieldChange = (event) => {
+    setSelectedField(event.target.value);
+  };
+
+  const filteredData = allUserData.filter(user => {
+    if (!user[selectedField]) return false;
+    return user[selectedField].toString().toLowerCase().includes(searchQuery);
+  });
+  //Updated by Ishan
+  useEffect(() => {
+    setTimeout(() => {
+      const userEmail = data?.user.email;
+      const userId = data?.user.id;
+      
+      if (userEmail) { 
+        const fetchData = async () => {
+          try {
+            const response = await axios.get('http://localhost:3001/api/getuser?email=' + userEmail);
+            setUserData(response.data);
+          } catch (error) {
+            console.error("Error fetching data:", error);
+            alert(error.message);
+          }
+        };
+
+        fetchData();
+      }
+  }, 1000);
+  }, [reloadCount,selectedDiv]);
+  
+  
 
   {
     /* ##################################################################### Payment management ######################################*/
@@ -53,6 +447,7 @@ export default function Myaccount() {
   const [isLargAmountCkecked, setIsLargAmountCkecked] = useState(false);
   const [isLowestAmountCkecked, setIsLowestAmountCkecked] = useState(false);
   const [AllDeleteConfirmMessage, setAllDeleteConfirmMessage] = useState(false);
+  const [userDetails, setUserDetails] = useState([]);
 
   const sortedPaymentsDateAsc = purchaseHistory
     .slice()
@@ -96,7 +491,6 @@ export default function Myaccount() {
     const intervalId = setInterval(fetchPaymentData, 5000);
     return () => clearInterval(intervalId);
   }, [memberID]);
-  
 
   const handleAllPaymentHistoryDelete = (id) => {
     setLoading(true);
@@ -107,8 +501,17 @@ export default function Myaccount() {
         setLoading(false);
       })
       .catch((errr) => console.log(errr));
-      setDeleteSuccessMessagechecked(true);
+    setDeleteSuccessMessagechecked(true);
   };
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:3001/getMemberById/${memberID}`)
+      .then((result) => {
+        setUserDetails(result.data);
+      })
+      .catch((err) => console.log(err));
+  }, [memberID]);
 
   {
     /* ################################################################### download management ######################################*/
@@ -161,32 +564,36 @@ export default function Myaccount() {
       })
       .catch((err) => console.log(err));
   };
+  const inputClasses = "bg-zinc-700 border-b border-orange-600 text-white p-2 w-full mt-3";
+  const buttonClasses = "text-white font-bold py-2 px-4 bg-gradient-to-r from-[#FE7804] to-[#FF451D] rounded-lg";
 
+  var xpPoints = 40;
   return (
     <div>
-      <Header navid="home" />
+      <Header navid="home" key={`${reloadCount}-${selectedDiv}`}/>
       <div className="h-1/4 p-8 flex flex-row justify-center">
         <div className="flex justify-center">
-          <img
-            className="h-32 w-32"
-            src="https://img.icons8.com/ios-filled/100/FD7E14/user-male-circle.png"
-            alt="user-male-circle"
+        <img
+            className="h-32 w-32 rounded-full"
+            src={userData ? (userData.image !== '' ? userData.image : 'https://cdn-icons-png.flaticon.com/512/149/149071.png') : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}
+            alt="user"
           />
         </div>
         <div className="px-5">
           <h1 className="font-bold text-[40px] text-white">
-            Jonathan durairaj
+          {userData ? userData?.firstname : ''}{" "}
+          {userData ? userData?.lastname : ''}
           </h1>
           <span className="bg-gradient-to-b from-[#FF451D] to-[#FE7804] text-white px-2 py-1 rounded-2xl text-[14px]">
             Primium
           </span>
-          <span className="text-[20px] text-[#ffffff8d] ml-2">Member</span>
+          <span className="text-[20px] text-[#ffffff8d] ml-2">{userData?userData?.accountType:''}</span>
           <div className="pt-2">
             <span className="text-[16px] text-[#ffffff8d] font-bold ">
-              Level 4
+            Level {userData?.memberLevel}
             </span>
             <span className="text-[16px] text-[#ffffff8d] float-right">
-              440 xp
+            {userData?.xpCount} xp
             </span>
           </div>
           <div className="relative">
@@ -310,55 +717,82 @@ export default function Myaccount() {
               Settings
             </label>
           </div>
+          {/* dasun admin part*/}
+          {data?.user.type == 'admin' ? 
+            <div
+              className={`py-2 px-5 rounded-t-[10px]  ${
+                selectedDiv === 'AllUsers'
+                  ? 'bg-gradient-to-t from-[#FF451D] to-[#FE7804]'
+                  : ''
+              }`}
+            >
+              <input type="checkbox" id="AllUsers" />
+              <label
+                htmlFor="AllUsers"
+                className="text-white font-medium hover:text-[#FF451D] cursor-pointer"
+                onClick={() => handleDivClick('AllUsers')}
+              >
+                All Users
+              </label>
+            </div>
+            :
+            null
+          }
         </div>
       </div>
 
-      {/* ######################### Dashboard ########################   */}
-      {selectedDiv === "Dashboard" && (
+            {/* ######################### Dashboard ########################   */}
+            {selectedDiv === "Dashboard" && (
         <div className=" flex w-11/12 mx-auto">
           <div className=" w-2/5 ">
             <div className="bg-[#ffffff1a] rounded-3xl mt-9 flex flex-col items-center pt-9 pb-5">
               <img
                 className="h-[200px] w-[225px]"
-                src={Mastre3Icon}
+                src={
+                  userData?.memberLevel >= 1 &&  userData?.memberLevel < 5 ? RookieLeague :
+                  userData?.memberLevel >= 5 &&  userData?.memberLevel < 10 ? MasterLeague :
+                  LegendaryLeague
+                }
                 alt="rank-icon"
               />
               <span className=" text-[#FE7804] text-3xl font-bold mt-6">
-                Master III
+                  {userData?.memberLevel >= 1 &&  userData?.memberLevel < 5? "Rookie" :
+                  userData?.memberLevel >= 5 &&  userData?.memberLevel < 10? "Master" :
+                  "Legendary"}
               </span>
               <span className=" text-[#ffffff8d] text-xl">League</span>
               <div className="mt-9 w-full px-9">
                 <span className=" text-white text-lg font-bold w-full">
-                  Next Targets
+                  Leagues
                 </span>
                 <div className="flex items-center mt-5">
                   <img
                     className="h-[55px] w-[62px]"
-                    src={Mastre3Icon}
+                    src={RookieLeague}
                     alt="rank-icon"
                   />
                   <span className=" text-[#ffffff92] font-bold text-base pl-8">
-                    Master II
+                    Rookie(Lv 1 - Lv4)
                   </span>
                 </div>
                 <div className="flex items-center mt-5">
                   <img
                     className="h-[55px] w-[62px]"
-                    src={Mastre1Icon}
+                    src={MasterLeague}
                     alt="rank-icon"
                   />
                   <span className=" text-[#ffffff92] font-bold text-base pl-8">
-                    Master I
+                    Master(Lv 5 - Lv9)
                   </span>
                 </div>
                 <div className="flex items-center mt-5">
                   <img
                     className="h-[55px] w-[62px]"
-                    src={LegendIcon}
+                    src={LegendaryLeague}
                     alt="rank-icon"
                   />
                   <span className=" text-[#ffffff92] font-bold text-base pl-8">
-                    Legend
+                    Legendary(Lv 10 +)
                   </span>
                 </div>
               </div>
@@ -377,7 +811,7 @@ export default function Myaccount() {
                   Ranking
                 </span>
                 <div className="w-2/3 h-[2px] bg-[#ffffff50]"></div>
-                <span className="text-[18px] text-white my-7">Level 4</span>
+                <span className="text-[18px] text-white my-7">Level {userData?.memberLevel}</span>
               </div>
 
               <div className=" bg-[#ffffff1a] w-5/12 flex flex-col items-center py-8 mt-9 rounded-3xl">
@@ -386,11 +820,11 @@ export default function Myaccount() {
                   Experience Points
                 </span>
                 <div className="w-2/3 h-[2px] bg-[#ffffff50]"></div>
-                <span className="text-[18px] text-white my-7">440 Points</span>
+                <span className="text-[18px] text-white my-7">{userData?.xpCount} Points</span>
                 <div className="w-2/3">
-                  <span className="text-[13px] text-[#ffffff8d]">400 xp</span>
+                  <span className="text-[13px] text-[#ffffff8d]">{userData?.xpCount} xp</span>
                   <span className="text-[13px] text-[#ffffff8d] float-right">
-                    500 xp
+                    Next Level
                   </span>
                 </div>
                 <div className="relative w-2/3">
@@ -411,7 +845,9 @@ export default function Myaccount() {
                   Crystals
                 </span>
                 <div className="w-2/3 h-[2px] bg-[#ffffff50]"></div>
-                <span className="text-[18px] text-white my-7">30 Crystals</span>
+                <span className="text-[18px] text-white my-7">
+                  {userData?.crystalCount} Crystals
+                </span>
               </div>
 
               <div className=" bg-[#ffffff1a] w-5/12 flex flex-col items-center py-8 mt-9 rounded-3xl">
@@ -451,15 +887,14 @@ export default function Myaccount() {
             {/* ######################### MyChannels ########################   */}
             {channelDiv === "MyChannels" && (
               <div className="text-white px-5 mt-3">
-                <Channel memberID={memberID}/>
-
+                <Channel reloadCount={reloadCount} setReloadCount={setReloadCount} memberID={memberID} />
               </div>
             )}
 
             {/* ######################### MySubcriptions ########################   */}
             {channelDiv === "MySubcriptions" && (
               <div className="text-white px-5 mt-3">
-                <h1>MySubcriptions</h1>
+              <Subscribers memberID={memberID} />
               </div>
             )}
           </div>
@@ -602,8 +1037,8 @@ export default function Myaccount() {
                     amount={item.officialprice}
                     date={item.date}
                     crystaldiscount={item.crystaldiscount}
-                      discount={item.discount}
-                      paidamount={item.paidamount}
+                    discount={item.discount}
+                    paidamount={item.paidamount}
                   />
                 );
               })}
@@ -620,8 +1055,8 @@ export default function Myaccount() {
                     amount={item.officialprice}
                     date={item.date}
                     crystaldiscount={item.crystaldiscount}
-                      discount={item.discount}
-                      paidamount={item.paidamount}
+                    discount={item.discount}
+                    paidamount={item.paidamount}
                   />
                 );
               })}
@@ -638,8 +1073,8 @@ export default function Myaccount() {
                     amount={item.officialprice}
                     date={item.date}
                     crystaldiscount={item.crystaldiscount}
-                      discount={item.discount}
-                      paidamount={item.paidamount}
+                    discount={item.discount}
+                    paidamount={item.paidamount}
                   />
                 );
               })}
@@ -656,8 +1091,8 @@ export default function Myaccount() {
                     amount={item.officialprice}
                     date={item.date}
                     crystaldiscount={item.crystaldiscount}
-                      discount={item.discount}
-                      paidamount={item.paidamount}
+                    discount={item.discount}
+                    paidamount={item.paidamount}
                   />
                 );
               })}
@@ -775,14 +1210,140 @@ export default function Myaccount() {
         </div>
       )}
 
-      {/* ######################### Settings ########################   */}
-      {selectedDiv === "Settings" && (
+      {/* ######################### Settings dasun ########################   */}
+      {selectedDiv === 'Settings' && (
         <div className="w-11/12 mx-auto mt-3">
-          <h1>Settings</h1>
+          <div className="text-white font-sans p-8">
+            <div className="max-w-4xl mx-auto">
+                <h1 className="text-2xl font-bold mb-6">My Profile</h1>
+                
+                <div className="mb-8">
+                    <div className="flex justify-between items-center mb-4">
+                        <div className="w-[48%]">
+                            <label htmlFor="firstName" className="block text-sm font-medium">First Name</label>
+                            <input onChange={(e)=> setFirstName(e.target.value)} type="text" id="firstName" value={firstName == '' ? userData?.firstname : firstName} className={inputClasses} />
+                        </div>
+                        <div className="w-[48%]">
+                            <label htmlFor="lastName" className="block text-sm font-medium">Last Name</label>
+                            <input onChange={(e)=> setLastName(e.target.value)} type="text" id="lastName" value={lastName == '' ? userData?.lastname : lastName} className={inputClasses} />
+                        </div>
+                    </div>
+                    <div className="mb-6">
+                        <label htmlFor="email" className="block text-sm font-medium">Email</label>
+                        <input readOnly type="email" id="email" defaultValue={data ? data?.user.email : ''} className={inputClasses} />
+                    </div>
+                    <div className="mb-6">
+                        <label htmlFor="dateOfBirth" className="block text-sm font-medium">Date of Birth</label>
+                        <input onChange={(e)=> setDateOfBirth(e.target.value)} type="date" id="dateOfBirth" value={dateOfBirth == '' ? userData?.dob : dateOfBirth} className={inputClasses} max={getCurrentDate()}/>
+                    </div>
+                    <button onClick={onClickUpdateDetails} className={`mt-4 bg-red-600 hover:bg-red-700 ${buttonClasses}`}>Update Details</button>
+                </div>
+
+                <hr/><br/>
+
+                <div className="mb-8">
+                    <h2 className="text-xl font-semibold mb-4">Change Password</h2>
+                    <div className="flex justify-between items-center">
+                        <div className="w-full mr-4">
+                            <label htmlFor="newPassword" className="block text-sm font-medium">Create Password</label>
+                            <input type="password" id="newPassword" className={inputClasses}/>
+                        </div>
+                        <div className="w-full ml-4">
+                            <label htmlFor="confirmPassword" className="block text-sm font-medium">Re-Enter Password</label>
+                            <input type="password" id="confirmPassword" className={inputClasses}/>
+                        </div>
+                    </div>
+                    <button onClick={onClickChangePass} className={`mt-8 bg-red-600 hover:bg-red-700 ${buttonClasses}`}>Change Password</button>
+                </div>
+
+                <hr/><br/>
+                  <h2 className="text-xl font-semibold mb-4">Change profile picture</h2>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className='border border-orange-600 text-white p-2'
+                    ref={imageInputRef}
+                  />
+                  <button onClick={handleUpload} className='bg-green-600 hover:bg-green-700 ml-10 text-white font-bold py-2 px-4 rounded-lg'>Upload Image</button>
+                  <br/><br/>
+                <hr/><br/>
+
+                <button onClick={onClickLogout} className={`bg-red-600 hover:bg-red-700 ${buttonClasses}`}>Log Out</button>
+                <button onClick={onClickDelete} className={`bg-red-600 hover:bg-red-700 ml-10 text-white font-bold py-2 px-4 rounded-lg`}>Delete Account</button>
+            </div>
+          </div>
         </div>
       )}
 
-      <Footer />
+      {/* ######################### All Users ########################   */}
+      {selectedDiv === 'AllUsers' && (
+      <div className="w-11/12 mx-auto mt-5">
+      <h1 className="text-white text-2xl font-bold mb-6">All Users</h1>
+      <div className="mb-8 flex gap-4 items-center">
+  <button onClick={generatePDF} className="float-right bg-gradient-to-tr from-[#FF451D] to-[#FE7804] px-4 py-2 text-[18px] font-semibold rounded-lg text-white">
+    Generate PDF
+  </button>
+
+  <input
+    type="text"
+    className="bg-[#262628] text-[#FE7804] flex-grow px-4 py-2 rounded-lg placeholder-[#FE7804] h-10"
+    placeholder="Search..."
+    onChange={handleSearchChange}
+  />
+
+<select onChange={handleFieldChange} onFocus={(e) => e.target.style.backgroundColor = '#ff7f50'} // Change to your desired color on focus
+  onBlur={(e) => e.target.style.backgroundColor = '#FF451D'}  // Reset to default color on blur
+  style={{
+    padding: '8px 16px', 
+    borderRadius: '12px',
+    backgroundImage: 'linear-gradient(to top right, #FF451D, #FE7804)',
+    height: '40px', 
+    color: 'white',
+    borderColor: '#ddd' // Default border color, change as needed
+  }} className="px-4 py-2 rounded-lg bg-gradient-to-tr from-[#FF451D] to-[#FE7804] h-10 text-white">
+    <option value="username">Username</option>
+    <option value="email">Email</option>
+    <option value="firstname">First Name</option>
+    <option value="lastname">Last Name</option>
+    <option value="dob">DOB</option>
+    <option value="accountType">Role</option>
+  </select>
+</div>
+
+      
+      <div id="pdf-table" className="overflow-x-auto">
+        <table className="table-auto w-full border-collapse border border-gray-800">
+          <thead>
+            <tr>
+              <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Username</th>
+              <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Email</th>
+              <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">First Name</th>
+              <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Last Name</th>
+              <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">DOB</th>
+              <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredData.map((user) => (
+              <tr key={user._id}>
+                <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{user.username}</td>
+                <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{user.email}</td>
+                <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{user.firstname}</td>
+                <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{user.lastname}</td>
+                <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{user.dob}</td>
+                <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{user.accountType}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+      )}
+
+      <div className=" mt-10">
+        <Footer />
+      </div>
 
       {loading && (
         <div className=" z-50 fixed top-0 left-0 w-full h-screen flex justify-center bg-black bg-opacity-50 items-center">
@@ -790,11 +1351,13 @@ export default function Myaccount() {
         </div>
       )}
 
-{deleteSuccessMessagechecked && (
-  <SuccessPopup  type="Delete" item="Community post" onClose={handleDeleteCloseSuccessPopup} /> 
-)}
+      {deleteSuccessMessagechecked && (
+        <SuccessPopup
+          type="Delete"
+          item="Community post"
+          onClose={handleDeleteCloseSuccessPopup}
+        />
+      )}
     </div>
-
-
   );
 }

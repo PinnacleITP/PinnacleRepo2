@@ -7,17 +7,47 @@ import SecondPlaseMedel from "../assets/leaderBoard/scondplace.png";
 import ThirdPlaseMedel from "../assets/leaderBoard/thirdplace.png";
 import Footer from "../components/Footer";
 import Leaderboard_rank_card from "../components/Leaderboard_rank_card";
+import { Link } from "react-router-dom";
 
 export default function Leaderboardpage() {
-  var pageid='LeaderBoard'
+  var pageid = "LeaderBoard";
   const [leaderBoardDetails, setLeaderBoardDetails] = useState([]);
+
+  // useEffect(() => {
+  //   axios
+  //     .get(`http://localhost:3001/getChannelbyViewCount`)
+  //     .then((result) => setLeaderBoardDetails(result.data))
+  //     .catch((err) => console.log(err));
+  // }, []);
 
   useEffect(() => {
     axios
       .get(`http://localhost:3001/${pageid}`)
       .then((result) => setLeaderBoardDetails(result.data))
       .catch((err) => console.log(err));
-  }, [pageid]);
+
+    axios
+      .delete("http://localhost:3001/deleteAllLeaderboardRecords/")
+      .then((res) => {
+        console.log(res);
+        leaderBoardDetails.forEach((detail) => {
+          axios
+            .post("http://localhost:3001/createLeaderboard", {
+              ChannelID: detail._id,
+              viewcount: detail.viewCount,
+              channelname: detail.channelName,
+              subscribercount: detail.subscribercount,
+            })
+            .then((result) => {
+              console.log(result);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        });
+      })
+      .catch((errr) => console.log(errr));  
+  }, [pageid, leaderBoardDetails]);
 
 
 
@@ -25,9 +55,16 @@ export default function Leaderboardpage() {
     <div>
       <Header navid="home" />
       <div className="w-11/12 mt-5 mx-auto h-1/2">
+      
         <h1 className="text-white text-[32px] font-bold ">
           Streamers Leaderboard
+          <Link to="/leaderboardminigame"><span className=" text-[16px] text-[#FE7804] rounded-xl px-6 py-2 font-semibold float-right border-2 border-[#FE7804] hover:text-white hover:bg-[#FE7804]">
+              Fun Games
+            </span></Link>
         </h1>
+        
+        
+  
         <h1 className="text-[#FE7804] text-[20px] font-bold text-center mt-5">
           Last month's Standout Stars
         </h1>
@@ -40,15 +77,13 @@ export default function Leaderboardpage() {
           >
             <div className=" bg-gradient-to-t from-[#876415] to-[#C9AA64] p-1 mx-auto w-[102px] rounded-full my-10">
               <img
-                src={levinho}
+                src={leaderBoardDetails[1]?.channelDp}
                 alt="trash--v1"
-                width="100"
-                height="100"
-                className="rounded-full "
+                className="rounded-full w-[100px] h-[95px] "
               />
             </div>
             <h1 className=" text-white text-[25px] text-center font-bold">
-            {leaderBoardDetails[1]?.channelname}
+              {leaderBoardDetails[1]?.channelName}
             </h1>
             <h1 className="text-[85px] text-[#F1CA71] font-extrabold text-center">
               2
@@ -70,15 +105,13 @@ export default function Leaderboardpage() {
           >
             <div className=" bg-gradient-to-t from-[#876415] to-[#C9AA64] p-1 mx-auto w-[102px] rounded-full my-10">
               <img
-                src={levinho}
+                src={leaderBoardDetails[0]?.channelDp}
                 alt="trash--v1"
-                width="100"
-                height="100"
-                className="rounded-full "
+                className="rounded-full w-[100px] h-[95px] "
               />
             </div>
             <h1 className=" text-white text-[25px] text-center font-bold">
-            {leaderBoardDetails[0]?.channelname}
+              {leaderBoardDetails[0]?.channelName}
             </h1>
             <h1 className="text-[96px] text-[#F1CA71] font-extrabold text-center">
               1
@@ -100,15 +133,13 @@ export default function Leaderboardpage() {
           >
             <div className=" bg-gradient-to-t from-[#876415] to-[#C9AA64] p-1 mx-auto w-[102px] rounded-full my-10">
               <img
-                src={levinho}
+                src={leaderBoardDetails[2]?.channelDp}
                 alt="trash--v1"
-                width="100"
-                height="100"
-                className="rounded-full "
+                className="rounded-full w-[100px] h-[95px] "
               />
             </div>
             <h1 className=" text-white text-[25px] text-center font-bold">
-            {leaderBoardDetails[2]?.channelname}
+              {leaderBoardDetails[2]?.channelName}
             </h1>
             <h1 className="text-[81px] text-[#F1CA71] font-extrabold text-center">
               3
@@ -141,11 +172,15 @@ export default function Leaderboardpage() {
             <div className="w-[15%]">Subscribers</div>
           </div>
           {leaderBoardDetails.map((item, index) => {
-              return (
-                <Leaderboard_rank_card rank={index+1} streamer={item.channelname} views={item.viewcount} subscribers={item.subscribercount}/>
-              );
-            })}
-          
+            return (
+              <Leaderboard_rank_card
+                rank={index + 1}
+                streamer={item.channelName}
+                views={item.viewCount}
+                subscribers={item.subscribercount}
+              />
+            );
+          })}
         </div>
       </div>
       <Footer />

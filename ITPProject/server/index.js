@@ -1,14 +1,20 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const pdf = require('html-pdf');
 const cors = require("cors");
 const { resolve } = require('path');
+
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+const multer = require('multer');
+
 const env = require('dotenv').config({ path: './.env' });
 const bodyParser = require('body-parser');
 const stripe = require('stripe')('sk_test_51P0Ggb02NNbm5WjcvAZ8IAsOgpidQiTfSeqewumWezdCAORzNCcfATJXnNGG0CIMHcqOcFsjigLKuKgMrJJHMNhW00vtdgHWvv');
 const BankCardModel = require("./models/BankCards");
 const PrimiumPlanModel = require("./models/PremiumPlan");
 const CartModel = require("./models/Cart");
-const MemberModel = require("./models/Member");
+const MemberModel = require("./models/User");
 const LeaderBoardModel = require("./models/LeaderBoard");
 const GameModel = require("./models/Game");
 const PaymentModel = require("./models/Payment");
@@ -16,19 +22,74 @@ const DownloadModel = require("./models/Downloads");
 const CommunityModel = require("./models/Community");
 const StreamModel = require("./models/Stream");
 const ChannelModel = require("./models/Channel");
+const SeasonModel = require("./models/Season");
+const SubscriberModel = require("./models/Subscribers");
+
+//feedback and faq
+const FeedbackModel =require('./models/Feedback')
+const FaqModel  =require('./models/faqs')
+
+const pdfTemplate = require('./documents');
+
+const UserModel = require('./models/User');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+
+const store = session.MemoryStore();
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: ['http://localhost:3000', 'http://localhost:3002'],
+    credentials: true,
+  })
+);
 app.use(express.json());
+app.use(cookieParser());
+app.use(
+  session({
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      sameSite: false,
+      secure: false,
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60,
+    },
+    store,
+  })
+);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 mongoose.connect(
-  "mongodb+srv://pinnacleitp:pinnacle123@crud.vsshiuj.mongodb.net/?retryWrites=true&w=majority&appName=crud"
+  "mongodb+srv://pinnacleitp:pinnacle123@crud.vsshiuj.mongodb.net/?retryWrites=true&w=majority&appName=crud",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
 );
 
 // mongoose.connect("mongodb://127.0.0.1:27017/pinnacle")
 
+//if conflict remove
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => console.log('Connected to MongoDB'));
+
+// Multer setup for file uploads
+const storage = multer.diskStorage({
+  destination: './uploads/',
+  filename: function (req, file, cb) {
+    cb(null, uuidv4() + path.extname(file.originalname));
+  },
+});
+const upload = multer({ storage: storage });
+
+// Serve static files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+//----------multer end
 //create new bank card details
 app.post("/createBankCard", (req, res) => {
   BankCardModel.create(req.body)
@@ -78,7 +139,7 @@ app.delete("/deleteCardDeatils/:id", (req, res) => {
     .catch((err) => res.json(err));
 });
 
-//create premium plan 
+//create premium plan
 app.post("/createPremiumPlane", (req, res) => {
   PrimiumPlanModel.create(req.body)
     .then((premiumplan) => res.json(premiumplan))
@@ -104,6 +165,13 @@ app.get("/getPlanById/:id", (req, res) => {
 //     .then(ItemDetails => res.json(ItemDetails))
 //     .catch(err => res.json(err))
 // })
+
+//create new bank card details
+app.post("/createCartItem", (req, res) => {
+  CartModel.create(req.body)
+    .then((carts) => res.json(carts))
+    .catch((err) => res.json(err));
+});
 
 //get cart details related to member
 app.get("/getCartItemByMemberID/:id", (req, res) => {
@@ -132,29 +200,40 @@ app.get("/getCartItemById/:id", (req, res) => {
 });
 
 //delete cart items
-app.delete("/deleteItem/:id", (req, res) => {
+app.delete("/deleteCartItem/:id", (req, res) => {
   const id = req.params.id;
   CartModel.findByIdAndDelete({ _id: id })
     .then((ItemDetails) => res.json(ItemDetails))
     .catch((err) => res.json(err));
 });
 
+//delete cart when a game is deleted items
+app.delete("/deleteCartItemWhenGameUnavailable/:id", (req, res) => {
+  const id = req.params.id;
+  CartModel.deleteMany({ gameID: id })
+    .then(() => res.json({ message: "All related cart items deleted successfully" }))
+    .catch((err) => res.json(err));
+});
 
 app.get("/:id", (req, res) => {
   const id = req.params.id;
 
   //get leaderboard details
   if (id === "LeaderBoard") {
-    LeaderBoardModel.find({})
-    .sort({ viewcount: -1 }) // Sorting by viewcount column in descending order
-    .then((LeaderboardDetails) => res.json(LeaderboardDetails))
+    // LeaderBoardModel.find({})
+    // .sort({ viewcount: -1 }) // Sorting by viewcount column in descending order
+    // .then((LeaderboardDetails) => res.json(LeaderboardDetails))
+    // .catch((err) => res.json(err));
+    ChannelModel.find({})
+    .sort({ viewCount: -1 }) // Sorting by viewcount column in descending order
+    .then((channel) => res.json(channel))
     .catch((err) => res.json(err));
   } 
   //get all the premium plan details
   else if (id === "premiumplan") {
-      PrimiumPlanModel.find({})
-        .then((premiumplan) => res.json(premiumplan))
-        .catch((err) => res.json(err));
+    PrimiumPlanModel.find({})
+      .then((premiumplan) => res.json(premiumplan))
+      .catch((err) => res.json(err));
   }
   //get all the premium plan details
   else if (id === "game") {
@@ -174,56 +253,94 @@ app.get("/:id", (req, res) => {
       .then((stream) => res.json(stream))
       .catch((err) => res.json(err));
   }
+   //get all the cart details
+   else if (id === "cart") {
+    CartModel.find({})
+      .then((carts) => res.json(carts))
+      .catch((err) => res.json(err));
+  }
+  else if (id === "Aleaderboard") {
+    LeaderBoardModel.find({})
+    .then((LeaderboardDetails) => res.json(LeaderboardDetails))
+    .catch((err) => res.json(err));
+  }
+
+  //feddback and faq 
+  else if (id === "fblist") {
+    FeedbackModel.find({})
+    .then(feedbacks =>res.json(feedbacks))
+    .catch(err => res.json(err))
+  }
+  else if (id === "faq") {
+    FaqModel.find({})
+    .then(faqs =>res.json(faqs))
+    .catch(err => res.json(err))
+  }
 });
 
-app.put("/updateViewCount/:id", (req, res) => {
-  const id = req.params.id;
-  StreamModel.findByIdAndUpdate({ _id: id },
-    {
-      viewCount: req.body.viewCount,
-    }
-  )
-    .then((stream) => res.json(stream))
+//deled all leaderboard
+app.delete("/deleteAllLeaderboardRecords", (req, res) => {
+  LeaderBoardModel.deleteMany({})
+    .then(() => res.json({ message: "All records deleted successfully." }))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+//create leaderboard 
+app.post("/createLeaderboard", (req, res) => {
+  LeaderBoardModel.create(req.body)
+    .then((leaderboard) => res.json(leaderboard))
     .catch((err) => res.json(err));
 });
 
 
+// app.put("/updateViewCount/:id", (req, res) => {
+//   const id = req.params.id;
+//   StreamModel.findByIdAndUpdate({ _id: id },
+//     {
+//       viewCount: req.body.viewCount,
+//     }
+//   )
+//     .then((stream) => res.json(stream))
+//     .catch((err) => res.json(err));
+// });
+
+
+
 //get member details using member id
-app.get("/getMemberById/:id", (req, res) => {
+app.get("/getmemberbyid/:id", (req, res) => {
   const id = req.params.id;
-  MemberModel.findById(id)
-    .then((Member) => {
-      if (Member) {
-        res.json(Member);
+  UserModel.findById({ _id: id })
+    .then((user) => {
+      if (user) {
+        res.json(user);
       } else {
-        res.status(404).json({ message: "No plan found for the given ID" });
+        res.status(404).json({ message: "No game found for the given ID" });
       }
     })
     .catch((err) => res.status(500).json({ message: "Internal Server Error" }));
 });
 
-app.post('/api/payment', async (req, res) => {
+app.post("/api/payment", async (req, res) => {
   try {
     const { payment_method_id, subtotal, description } = req.body;
 
     // Create a PaymentIntent on the server using the Stripe API
     const paymentIntent = await stripe.paymentIntents.create({
       payment_method: payment_method_id,
-      amount: subtotal*100, // Amount in cents
-      currency: 'usd',
+      amount: subtotal * 100, // Amount in cents
+      currency: "usd",
       description: description,
       confirm: true,
-      return_url: 'http://localhost:3000/account',
+      return_url: "http://localhost:3000/account",
     });
 
     // PaymentIntent was successful
     res.json({ success: true, paymentIntent });
   } catch (error) {
-    console.error('Error processing payment:', error);
+    console.error("Error processing payment:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
-
 
 // create new game
 app.post("/createGame", (req, res) => {
@@ -235,7 +352,7 @@ app.post("/createGame", (req, res) => {
 // get game details using id
 app.get("/getGamebyID/:id", (req, res) => {
   const id = req.params.id;
-  GameModel.findById({_id : id})
+  GameModel.findById({ _id: id })
     .then((game) => {
       if (game) {
         res.json(game);
@@ -253,7 +370,7 @@ app.put("/updateGame/:id", (req, res) => {
     { _id: id },
     {
       name: req.body.itemname,
-      image: req.body.itemgameImageUrl,
+      gameImageUrl: req.body.itemgameImageUrl,
       configurations: req.body.itemconfigurations,
       description: req.body.itemdescription,
       price: req.body.itemprice,
@@ -261,13 +378,12 @@ app.put("/updateGame/:id", (req, res) => {
       type: req.body.itemtype,
       developer: req.body.itemdeveloper,
       publisher: req.body.itempublisher,
-      releasdate: req.body.itemreleasdate
+      releasdate: req.body.itemreleasdate,
     }
   )
     .then((game) => res.json(game))
     .catch((err) => res.json(err));
 });
-
 
 //delete game by id
 app.delete("/deleteGame/:id", (req, res) => {
@@ -281,6 +397,12 @@ app.post("/createPaymnetRecod", (req, res) => {
   PaymentModel.create(req.body)
     .then((payment) => res.json(payment))
     .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+app.get("/api/adminAllPayment", (req, res) => {
+    PaymentModel.find({})
+      .then((payment) => res.json(payment))
+      .catch((err) => res.json(err));
 });
 
 //get payment details related to member
@@ -322,15 +444,17 @@ app.delete("/deletePaymentHistory/:id", (req, res) => {
 app.delete("/deletePaymentHistoryRelatedToMember/:id", (req, res) => {
   const memberId = req.params.id;
   PaymentModel.deleteMany({ memberid: memberId })
-    .then(() => res.json({ message: "All payment records deleted successfully." }))
+    .then(() =>
+      res.json({ message: "All payment records deleted successfully." })
+    )
     .catch((err) => res.status(500).json({ error: err.message }));
 });
 
-app.post("/createdounloadRecod", (req, res) => {
-  DownloadModel.create(req.body)
-    .then((download) => res.json(download))
-    .catch((err) => res.status(500).json({ error: err.message }));
-});
+// app.post("/createdounloadRecod", (req, res) => {
+//   DownloadModel.create(req.body)
+//     .then((download) => res.json(download))
+//     .catch((err) => res.status(500).json({ error: err.message }));
+// });
 
 app.get("/getDownloadbyMemberid/:id", (req, res) => {
   const id = req.params.id;
@@ -352,6 +476,31 @@ app.delete("/deleteDownloadGame/:id", (req, res) => {
     .catch((err) => res.json(err));
 });
 
+//update CrystalCount
+app.put("/updateCrystalCount/:id", (req, res) => {
+  const id = req.params.id;
+  MemberModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      crystalCount: req.body.newCrystalcount,
+    }
+  )
+    .then((member) => res.json(member))
+    .catch((err) => res.json(err));
+});
+
+app.put("/updatedownloadcount/:id", (req, res) => {
+  const id = req.params.id;
+  GameModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      downloadCount: req.body.newDownloadcount,
+    }
+  )
+    .then((game) => res.json(game))
+    .catch((err) => res.json(err));
+});
+
 
 app.post("/createCommunityPost", (req, res) => {
   CommunityModel.create(req.body)
@@ -368,7 +517,7 @@ app.put("/updateCommunityPost/:id", (req, res) => {
       description: req.body.description,
       name: req.body.name,
       releasedate: req.body.releasedate,
-      type: req.body.type
+      type: req.body.type,
     }
   )
     .then((community) => res.json(community))
@@ -382,13 +531,13 @@ app.delete("/deleteCommunityPost/:id", (req, res) => {
     .then((game) => res.json(game))
     .catch((err) => res.json(err));
 });
-// create new stream
-app.post("/createStream", (req, res) => {
-  StreamModel.create(req.body)
-    .then((stream) => res.json(stream))
-    .catch((err) => res.status(500).json({ error: err.message }));
 
-});
+//create new stream
+// app.post("/createStream", (req, res) => {
+//   StreamModel.create(req.body)
+//     .then((stream) => res.json(stream))
+//     .catch((err) => res.status(500).json({ error: err.message }));
+// });
 
 //delete stream by id
 app.delete("/deleteStream/:id", (req, res) => {
@@ -412,7 +561,7 @@ app.put("/updateStream/:id", (req, res) => {
       type: req.body.type,
       channel_ID: req.body.channel_ID,
       secretVideoCode: req.body.secretVideoCode,
-      gameType: req.body.gameType
+      gameType: req.body.gameType,
     }
   )
     .then((stream) => res.json(stream))
@@ -429,7 +578,7 @@ app.get("/getStream/:id", (req, res) => {
 
 app.get("/getStreamByChannelID/:channelID", (req, res) => {
   const channelID = req.params.channelID;
-  StreamModel.find({ channel_ID: channelID }) 
+  StreamModel.find({ channel_ID: channelID })
     .then((stream) => res.json(stream))
     .catch((err) => res.status(500).json({ error: err.message }));
 });
@@ -439,12 +588,11 @@ app.post("/createChannel", (req, res) => {
   ChannelModel.create(req.body)
     .then((stream) => res.json(stream))
     .catch((err) => res.status(500).json({ error: err.message }));
-
 });
 
 app.get("/getChannelByMemberID/:memberID", (req, res) => {
   const memberId = req.params.memberID;
-  ChannelModel.findOne({ memberID: memberId }) 
+  ChannelModel.findOne({ memberID: memberId })
     .then((channel) => res.json(channel))
     .catch((err) => res.status(500).json({ error: err.message }));
 });
@@ -456,6 +604,55 @@ app.get("/getChannelByStreamID/:channelid", (req, res) => {
     .then((channel) => res.json(channel))
     .catch((err) => res.json(err));
 });
+
+app.get("/getChannelbyid/:id", (req, res) => {
+  const id = req.params.id;
+  ChannelModel.findById({ _id: id })
+    .then((channel) => res.json(channel))
+    .catch((err) => res.json(err));
+});
+
+app.put("/updateChannelViewCount/:id", (req, res) => {
+  const id = req.params.id;
+  ChannelModel.findByIdAndUpdate({ _id: id },
+    {
+      viewCount: req.body.channelviewCount,
+    }
+  )
+    .then((channel) => res.json(channel))
+    .catch((err) => res.json(err));
+});
+
+app.get("/getChannelbyViewCount", (req, res) => {
+  ChannelModel.find({})
+    .sort({ viewcount: -1 }) // Sorting by viewcount column in descending order
+    .then((channel) => res.json(channel))
+    .catch((err) => res.json(err));
+  } 
+);
+
+//update game by id
+app.put("/updateChannelData/:id", (req, res) => {
+  const id = req.params.id;
+  ChannelModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      channelName: req.body.channelName,
+      channelDescription: req.body.channelDescription,
+      channelDp: req.body.channelDp,
+    }
+  )
+    .then((channel) => res.json(channel))
+    .catch((err) => res.json(err));
+});
+//delete stream by id
+app.delete("/deleteChannel/:id", (req, res) => {
+  const id = req.params.id;
+  ChannelModel.findByIdAndDelete({ _id: id })
+    .then((stream) => res.json(stream))
+    .catch((err) => res.json(err));
+});
+
 
 app.get('/api/streams', async (req, res) => {
   try {
@@ -545,8 +742,6 @@ app.get('/api/streams/count-by-type', async (req, res) => {
       res.status(500).json({ error: err.message });
   }
 });
-
-
 
 app.get('/api/channels', async (req, res) => {
   try {
@@ -1183,6 +1378,7 @@ app.post("/createStream", (req, res) => {
 });
 
 //----------levelling system code end ----------
+
 const sgMail = require('@sendgrid/mail');
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -1302,7 +1498,6 @@ app.post('/api/sendStreamNotification', async (req, res) => {
 });
 
 //::::::::::::::::::::::::::::::::::::::::::::::Special Function Stream::::::::::::::::::::::::::::::::::::::::::::::
-
 
 
 app.listen(3001, () => {

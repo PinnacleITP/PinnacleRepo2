@@ -13,11 +13,12 @@ const stripePromise = loadStripe(
 );
 
 export default function Payment() {
-  // User id
-  var userid = "66118d9104fb9c92e1c7d980";
-
+  const userEmail = localStorage.getItem('userEmail');
+  const userId = localStorage.getItem('userId');
+  var userid = userId;
+  // var userid = "6640a771b7b3a8d3156eb377";
   //usestate for read card details
-  const [memberID, setMemberID] = useState();
+  const [memberID, setMemberID] = useState('');
   const [cardNumber, setCardNumber] = useState();
   const [CardName, setCardName] = useState();
   const [expDate, setEXPDate] = useState();
@@ -39,24 +40,37 @@ export default function Payment() {
 
   const [officialPrice, setOfficialPrice] = useState(0);
   const [paymentDescription, setPaymentDescription] = useState("");
+  const [paymentCategary, setPaymentCategary] = useState("");
   const [discount, setDiscount] = useState(0);
   const [subTotal, setSubTotal] = useState(0);
   const [crystalCount, setCrystalCount] = useState(0);
   const [crystalDiscount, setCrystalDiscount] = useState(0);
   const [userDetails, setUserDetails] = useState([]);
 
-  //set memberid to usestate
+  //validation usestate
+  const [paymentEmail, setPaymentEmail] = useState("");
+  const [paymentName, setPaymentName] = useState("");
+  const [paymentCountry, setPaymentCountry] = useState("");
+  const [payBtnEnable, setPayBtnEnable] = useState(false);
+  const [emaiIsValid, setEmaiIsValid] = useState(false);
+  const [cardNameIsValide, setCardNameIsValide] = useState(false);
+  const [countryIsValide, setCuntryIsValide] = useState(false);
+  const [clickemail, setclickemail] = useState(false);
+  const [clickname, setclickname] = useState(false);
+  const [clickcountry, setclickcountry] = useState(false);
+
+  // set memberid to usestate
   useEffect(() => {
     setMemberID(userid);
   }, []);
 
   //read card data from db
-  useEffect(() => {
-    axios
-      .get("http://localhost:3001/getBankCardByUserID/" + userid)
-      .then((result) => setCreditCards(result.data))
-      .catch((err) => console.log(err));
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .get("http://localhost:3001/getBankCardByUserID/" + userid)
+  //     .then((result) => setCreditCards(result.data))
+  //     .catch((err) => console.log(err));
+  // }, []);
 
   //get details related to the url details
   useEffect(() => {
@@ -74,7 +88,7 @@ export default function Payment() {
           setCartItem(result.data);
         })
         .catch((err) => console.log(err));
-    }else if (page == "G") {
+    } else if (page == "G") {
       axios
         .get(`http://localhost:3001/getGamebyID/${itemId}`)
         .then((result) => {
@@ -97,13 +111,16 @@ export default function Payment() {
     if (page === "P") {
       setOfficialPrice(premiumPlan.price);
       setPaymentDescription(premiumPlan.planType);
+      setPaymentCategary(premiumPlan.planType)
     } else if (page === "C") {
       setOfficialPrice(cartItem.price);
       setPaymentDescription(cartItem.game);
-    }else if (page === "G") {
+      
+    } else if (page === "G") {
       setOfficialPrice(gameItem.price);
       setPaymentDescription(gameItem.name);
-    }else if (page === "CS") {
+      setPaymentCategary(gameItem.type)
+    } else if (page === "CS") {
       setOfficialPrice(parseFloat(itemsTotalPrice));
       setPaymentDescription(SelectedItems);
     }
@@ -120,7 +137,7 @@ export default function Payment() {
       typeof crystalCount === "number" &&
       typeof crystalDiscount === "number"
     ) {
-      setSubTotal(officialPrice - (discount + crystalDiscount));
+      setSubTotal((officialPrice - (discount + crystalDiscount)).toFixed(2));
     }
   };
 
@@ -259,6 +276,31 @@ export default function Payment() {
     setEXPDate(formattedExpiryDate);
   };
 
+  // email validation
+  const emailValidater = () => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    setEmaiIsValid(emailPattern.test(paymentEmail));
+    setclickemail(!emailPattern.test(paymentEmail));
+  };
+
+  // card validation
+  const cardNameValidater = () => {
+    const onlyLettersRegex = /^[A-Za-z]+$/;
+    setCardNameIsValide(onlyLettersRegex.test(paymentName));
+    setclickname(!onlyLettersRegex.test(paymentName));
+
+  };
+
+  // card validation
+  const countryValidater = () => {
+    const lettersWithSpacesRegex = /^[A-Za-z\s]+$/;
+    setCuntryIsValide(lettersWithSpacesRegex.test(paymentCountry));
+    setclickcountry(!lettersWithSpacesRegex.test(paymentCountry));
+
+  };
+
+  // ###################### payment submit ##############################
+
   const [submitHandler, setSubmitHandler] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -306,19 +348,24 @@ export default function Payment() {
               </lable>
               <br />
               <input
-                className="text-white h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50"
+                id="paymentEmail"
+                className={` h-[45px] w-full bg-[#4f5153d2] border-[#D8DAE3] border-2 border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50 ${
+                  emaiIsValid ? "text-black" : "text-red-500"
+                }`}
                 type="email"
                 name="paymentemail"
                 placeholder="abc@gmail.com"
-                required
+                onChange={(e) => setPaymentEmail(e.target.value)}
+                onKeyUp={emailValidater}
+                onClick={() => setclickemail(true)}
               />
-              <br />
+              {clickemail && (<p className=" text-[14px] text-red-500 pl-1 pt-1">Invalid email!</p>)}
             </div>
 
             <div className="mb-5 ">
               <span className="mx-1 my-2 text-lg text-white">Card Details</span>
               <br />
-              <div className="text-white h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50">
+              <div className="!text-white h-[45px] w-full bg-[#4f5153d2] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50">
                 <Elements stripe={stripePromise}>
                   <PaymentForm
                     subtotal={subTotal}
@@ -329,6 +376,10 @@ export default function Payment() {
                     memberid={memberID}
                     pageid={page}
                     itemid={itemId}
+                    email={paymentEmail}
+                    crystalcount ={crystalCount}
+                    name={paymentName}
+                    type={paymentCategary}
                     handlePaymentProcess={handlePaymentProcess}
                   />
                 </Elements>
@@ -345,12 +396,15 @@ export default function Payment() {
                 </lable>
                 <br />
                 <input
-                  className="text-white pl-3 placeholder-[#9D9191] placeholder-opacity-50 h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px]"
+                  className={` pl-3 placeholder-[#9D9191] placeholder-opacity-50 h-[45px] w-full bg-[#4f5153d2] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] ${cardNameIsValide ? "text-black" : " text-red-500"}`}
                   type="text"
                   name="cardname"
                   placeholder="jonathan"
-                  required
+                  onChange={(e) => setPaymentName(e.target.value)}
+                  onKeyUp={cardNameValidater}
+                  onClick={() => setclickname(true)}
                 />
+                {clickname && (<p className=" text-[14px] text-red-500 pl-1 pt-1">Invalid input!</p>)}
                 <br />
               </div>
 
@@ -363,12 +417,15 @@ export default function Payment() {
                 </lable>
                 <br />
                 <input
-                  className="text-white h-[45px] pl-3 placeholder-[#9D9191] placeholder-opacity-50 w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] "
+                  className={` h-[45px] pl-3 placeholder-[#9D9191] placeholder-opacity-50 w-full bg-[#4f5153d2] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] ${countryIsValide ? "text-black" : " text-red-500"} `}
                   type="text"
                   name="country"
                   placeholder="Sri Lanka"
-                  required
+                  onChange={(e) => setPaymentCountry(e.target.value)}
+                  onKeyUp={countryValidater}
+                  onClick={() => setclickcountry(true)}
                 />
+                {clickcountry && (<p className=" text-[14px] text-red-500 pl-1 pt-1">Invalid input!</p>)}
                 <br />
               </div>
             </div>
@@ -402,7 +459,10 @@ export default function Payment() {
               <div className="mb-1 text-[18px] font-semibold text-[#D9D9D9]">
                 <span>Official Price</span>
                 <span className="float-right">
-                  ${" "}{typeof officialPrice === "number" ? officialPrice.toFixed(2) : ""}
+                  ${" "}
+                  {typeof officialPrice === "number"
+                    ? officialPrice.toFixed(2)
+                    : ""}
                 </span>
               </div>
               <div className="px-4 mb-3">
@@ -418,14 +478,12 @@ export default function Payment() {
               </div>
 
               <div className="mb-1 font-semibold text-[18px]">
-                <span className="text-[#D9D9D9]">Discount</span>
+                <span className="text-[#D9D9D9]">Seasonal Discount</span>
                 <span className="float-right text-[#D9D9D9]">$ 0.00</span>
               </div>
               {isCheckedCrystals && (
                 <div className="mb-1 font-semibold text-[18px]">
-                  <span className="text-[#FE7804]">
-                    Crystal Discount
-                  </span>
+                  <span className="text-[#FE7804]">Crystal Discount</span>
                   <span className="float-right text-[#FE7804]">
                     ${" "}
                     {typeof crystalDiscount === "number"
@@ -455,20 +513,28 @@ export default function Payment() {
               </div>
 
               <div className="mb-5 ">
-                <span className="text-[28px] font-bold text-white">Sub Total</span>
+                <span className="text-[28px] font-bold text-white">
+                  Sub Total
+                </span>
                 <span className="float-right text-[28px] font-bold text-white">
                   $ {subTotal}
                 </span>
               </div>
-              <button
+              {emaiIsValid && cardNameIsValide && countryIsValide && (<button
+                id="MakePaymentbtn"
                 onClick={handleSubmit}
                 className="bg-gradient-to-b from-[#FF451D] to-[#FE7804] text-white w-full h-10 rounded-[10px] text-lg font-bold"
               >
                 Make Payment
-              </button>
+              </button>)}
+              {!(emaiIsValid && cardNameIsValide && countryIsValide) && (<button
+                className="bg-gradient-to-b from-[#6a6966] to-[#E8E8E7] text-[#545353] w-full h-10 rounded-[10px] text-lg font-bold"
+              >
+                Make Payment
+              </button>)}
             </div>
           </div>
-          <div>
+          {/* <div>
             <h1 className="text-white text-[30px] font-bold">Saved Cards</h1>
             <div className="bg-[#202022] rounded-xl my-4 p-5">
               {creditCards.map((card) => {
@@ -488,11 +554,11 @@ export default function Payment() {
                 Add New Card
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
-      {showForm && (
+      {/* {showForm && (
         <div className="absolute top-0 left-0 z-40 flex items-center justify-center w-full h-full backdrop-blur-lg">
           <form
             onSubmit={SubmitCard}
@@ -600,9 +666,9 @@ export default function Payment() {
             </div>
           </form>
         </div>
-      )}
+      )} */}
 
-      <Footer/>
+      <Footer />
     </div>
   );
 }

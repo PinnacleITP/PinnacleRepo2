@@ -311,6 +311,7 @@ export default function StreamEditBlock(props) {
               </button>
               <button
               onClick={() => setIsDeleteWarning(true)}
+                // onClick={(e) => handleDelete(props.id)}
                 className=" bg-[#FE7804] hover:bg-[#FF451D] rounded-lg px-5 py-2 text-[16px] font-bold ml-5"
               >
                 Delete
