@@ -176,9 +176,8 @@ export default function Channel(props) {
   
       console.log("Stream created and notification sent successfully:", newStream);
   
-      //----dasun notification ends
-      console.log("Stream created successfully:", response.data);
-      // window.location.reload();
+
+      // Reset form state
       setLoading(false);
       setCreateSuccessMessagechecked(true);
       handleChannelfunction("channelVideos");
@@ -189,11 +188,11 @@ export default function Channel(props) {
       setType("action");
       setSecretVideoCode("");
       setGameType("other");
-
-      props.setReloadCount(prevCount => prevCount + 1);
-
+      //props.setReloadCount(prevCount => prevCount + 1);
+  
     } catch (error) {
-      console.error("Error creating stream:", error);
+      console.error("Error creating stream or sending notification:", error);
+      setLoading(false);
     }
   };
 

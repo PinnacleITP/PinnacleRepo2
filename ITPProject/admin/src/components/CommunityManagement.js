@@ -125,7 +125,20 @@ export default function CommunityManagement() {
         }
       );
 
-      console.log("Community post created successfully:", response.data);
+      const newPost = response.data; // Assuming response contains the created post details
+
+      // Send notification to all users about the new post
+      await axios.post(
+        "http://localhost:3001/api/sendCommunityPostNotification",
+        newPost
+      );
+
+      console.log(
+        "Community post created and notification sent successfully:",
+        newPost
+      );
+
+      // Reset form state
       setLoading(false);
       setIsPostAddFormChecked(false);
       setCreateSuccessMessagechecked(true);
@@ -134,10 +147,12 @@ export default function CommunityManagement() {
       setName("");
       setType("");
       setReleasedate("");
-
-      // window.location.reload();
     } catch (error) {
-      console.error("Error creating community post:", error);
+      console.error(
+        "Error creating community post or sending notification:",
+        error
+      );
+      setLoading(false);
     }
   };
 
