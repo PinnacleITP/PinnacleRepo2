@@ -52,7 +52,7 @@ export default function Payment_history_card(props) {
 
   //pdf
 const createAndDownloadPdf = () => {
-  axios.post('http://localhost:3001/api/create-pdf', { name, email, description, officialpice, crystal, discount, pid, date, subtotal})
+  axios.post('http://localhost:3001/api/create-pdf/index', { name, email, description, officialpice, crystal, discount, pid, date, subtotal})
     .then(() => axios.get('http://localhost:3001/api/fetch-pdf', { responseType: 'blob' }))
     .then((res) => {
       const pdfBlob = new Blob([res.data], { type: 'application/pdf' });

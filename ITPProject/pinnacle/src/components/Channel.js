@@ -153,7 +153,8 @@ export default function Channel(props) {
       const thumbnailUrl = thumbnail
         ? await uploadFile("image", thumbnail, "stream")
         : null;
-
+      //Get User Id
+      const userId = localStorage.getItem('userId');
       // Send backend API request
       const response = await axios.post("http://localhost:3001/createStream", {
         name,
@@ -169,6 +170,7 @@ export default function Channel(props) {
       });
 
       crystalCountUpdater();
+
       //-------dasun notification
       const newStream = response.data; // Assuming response contains the created stream details
   
@@ -189,8 +191,11 @@ export default function Channel(props) {
       setType("action");
       setSecretVideoCode("");
       setGameType("other");
+      //props.setReloadCount(prevCount => prevCount + 1);
+  
     } catch (error) {
-      console.error("Error creating stream:", error);
+      console.error("Error creating stream or sending notification:", error);
+      setLoading(false);
     }
   };
 
@@ -440,7 +445,7 @@ export default function Channel(props) {
               <label className="block text-white">Name:</label>
               <input
                 type="text"
-                value={name}
+                value={name} 
                 onChange={(e) => setName(e.target.value)}
                 required
                 className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"

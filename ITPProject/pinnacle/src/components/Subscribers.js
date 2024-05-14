@@ -19,7 +19,7 @@ export default function SubscriberCard(props) {
         <div>
           {subscriptionDetails.map((item) => (
             <SubscriptionCard
-              key={item.id} 
+              subscriberID={item._id} 
               memberID={item.memberID} 
               channelID={item.channelID}
             />

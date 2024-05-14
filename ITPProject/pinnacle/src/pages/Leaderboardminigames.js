@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import Header from "../components/Header";
 import PongGame from "../minigames/PongGame";
 import TicTacToe from "../minigames/TicTacToe"
+
 import tikimage from "../assets/leaderBoard/tictactor.png"
 import Cards from '../minigames/Cards'; 
 import Rockpaper from "../minigames/Rockpaper";
@@ -10,6 +11,7 @@ export default function Leaderboardminigames() {
   const [pongGameChecked, setPongGameChecked] = useState(false);
   const [ticTacToeGameChecked, setTicTacToeGameChecked] = useState(false);
   const [memoryGameChecked, setMemoryGameChecked] = useState(false);
+
 
 
 return(
@@ -35,7 +37,9 @@ return(
                 className=" w-[30%]"
                 src={tikimage}
                 alt="mastercard"
+
                 onClick={() => setMemoryGameChecked(true)}
+
               />
             </div>
 
@@ -50,6 +54,7 @@ return(
             <span onClick={() => setTicTacToeGameChecked(false)} className=' className=" text-[#FAB005] w-[30%]" ml-2 text-[18px] cursor-pointer'>Back</span>
             </div>
             <TicTacToe/>
+
             </div>)}
            
             {memoryGameChecked && (<div className=" fixed bg-black bg-opacity-90 top-0 left-0 z-50 w-full h-screen">
@@ -68,6 +73,7 @@ return(
             </div>
             <h1>Memory Game - React</h1>
             <Rockpaper/>
+
             </div>)}
     </div>
 )

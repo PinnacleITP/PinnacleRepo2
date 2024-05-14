@@ -5,6 +5,11 @@ import { HashLoader } from "react-spinners";
 import SearchError from "../assets/animations/searchnotfound.webm";
 import SuccessPopup from "./SuccessPopup";
 
+
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+
+
 export default function CommunityManagement() {
   var pageid = "Community";
   const [isFilterBtnChecked, setIsFilterBtnChecked] = useState(false);
@@ -22,6 +27,10 @@ export default function CommunityManagement() {
   const [CommunityPosts, setCommunityPosts] = useState([]);
   const [filteredCommunityPosts, setFilterdCommunityPosts] = useState([]);
   const [searchedCommunityPosts, setSearchedCommunityPosts] = useState([]);
+
+  const [releaseDateError, setReleaseDateError] = useState("");
+  const [descriptionError, setDescriptionError] = useState("");
+  const [nameError, setNameError] = useState("");
 
   const filterhandler = (type) => {
     setIsFilterChecked(true);
@@ -94,6 +103,18 @@ export default function CommunityManagement() {
     e.preventDefault();
     try {
       setLoading(true);
+
+      // Check if name field is empty
+    if (!name.trim()) {
+      // Set error message if name is empty
+      setNameError("Post name cannot be empty");
+      setLoading(false);
+      return; // Return to prevent further execution
+    }
+
+    // Reset name error if it was previously set
+    setNameError("");
+
       // Upload image file
       const postUrl = image ? await uploadFile("image", image) : null;
 
@@ -109,7 +130,20 @@ export default function CommunityManagement() {
         }
       );
 
-      console.log("Community post created successfully:", response.data);
+      const newPost = response.data; // Assuming response contains the created post details
+
+      // Send notification to all users about the new post
+      await axios.post(
+        "http://localhost:3001/api/sendCommunityPostNotification",
+        newPost
+      );
+
+      console.log(
+        "Community post created and notification sent successfully:",
+        newPost
+      );
+
+      // Reset form state
       setLoading(false);
       setIsPostAddFormChecked(false);
       setCreateSuccessMessagechecked(true);
@@ -118,16 +152,86 @@ export default function CommunityManagement() {
       setName("");
       setType("");
       setReleasedate("");
-
-      // window.location.reload();
     } catch (error) {
-      console.error("Error creating community post:", error);
+      console.error(
+        "Error creating community post or sending notification:",
+        error
+      );
+      setLoading(false);
     }
   };
 
   const handleCreateCloseSuccessPopup = () => {
     setCreateSuccessMessagechecked(false);
   };
+
+  const handleReleaseDateChange = (e) => {
+    const selectedDate = e.target.value;
+    const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+
+    if (selectedDate < today) {
+      setReleaseDateError("Please select a future date");
+      setReleasedate("");
+    } else {
+      setReleaseDateError("");
+      setReleasedate(selectedDate);
+    }
+  };
+
+  const handleDescriptionChange = (e) => {
+    const enteredDescription = e.target.value;
+    if (enteredDescription.length > 150) {
+      setDescriptionError('Maximum 150 characters allowed');
+    } else {
+      setDescriptionError('');
+      setDescription(enteredDescription);
+    }
+  };
+
+
+  const [searchQuery, setSearchQuery] = useState("");
+const [selectedField, setSelectedField] = useState("name");
+
+const generatePDF = () => {
+  const input = document.getElementById("pdf-table");
+  html2canvas(input, { useCORS: true }).then((canvas) => {
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF();
+    const imgWidth = 210;
+    const pageHeight = 297;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft >= 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    pdf.save("All Community Posts.pdf");
+  });
+};
+
+const handleSearchChange = (e) => {
+  setSearchQuery(e.target.value.toLowerCase());
+};
+
+const handleFieldChange = (e) => {
+  setSelectedField(e.target.value);
+};
+
+// Filtered or searched posts
+const filteredPosts = searchQuery
+  ? CommunityPosts.filter(post => post[selectedField]?.toString().toLowerCase().includes(searchQuery))
+  : CommunityPosts;
+  
+
+
 
   return (
     <div className="py-5 px-7 text-white ">
@@ -315,6 +419,7 @@ export default function CommunityManagement() {
                   alt="multiply"
                 />
               </div>
+              <div className="py-5 px-7 text-white "></div>
               <div className="w-[90%] mx-auto mt-5">
                 <label>Post Name</label>
                 <br />
@@ -323,7 +428,9 @@ export default function CommunityManagement() {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  required
                 />
+                 {nameError && <p className="text-red-500">{nameError}</p>}
               </div>
               <div className="w-[90%] mx-auto mt-5 flex justify-between">
                 <div className=" w-[45%]">
@@ -333,8 +440,11 @@ export default function CommunityManagement() {
                     className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
                     type="date"
                     value={releasedate}
-                    onChange={(e) => setReleasedate(e.target.value)}
+                    onChange={handleReleaseDateChange}
+                    min={new Date().toISOString().split("T")[0]} // Set min attribute to current date
+                    required
                   />
+                   {releaseDateError && <p className="text-red-500">{releaseDateError}</p>}
                 </div>
                 <div className=" w-[45%]">
                   <label>Game Type</label>
@@ -343,6 +453,7 @@ export default function CommunityManagement() {
                     value={type}
                     onChange={(e) => setType(e.target.value)}
                     className="w-full px-1 py-[6px] text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
+                    required
                   >
                     <option value="action">Action</option>
                     <option value="adventure">Adventure</option>
@@ -361,6 +472,7 @@ export default function CommunityManagement() {
                   accept="image/*"
                   id="image"
                   onChange={(e) => setImage(e.target.files[0])}
+                  required
                 />
               </div>
               <div className="w-[90%] mx-auto mt-5">
@@ -370,9 +482,10 @@ export default function CommunityManagement() {
                   className="w-full p-1 text-[16px] rounded-lg bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 mt-2"
                   type="file"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={handleDescriptionChange}
+                  required
                 ></textarea>
-
+{descriptionError && <p className="text-red-500">{descriptionError}</p>}
                 <button
                   type="submit"
                   className=" mt-8 float-right bg-transparent text-[#FE7804] border-2 border-[#FE7804] hover:bg-[#FE7804] hover:text-white rounded-lg px-5 py-2 text-[16px] font-bold"
@@ -394,6 +507,72 @@ export default function CommunityManagement() {
 {createSuccessMessagechecked && (
   <SuccessPopup  type="Create" item="Community post" onClose={handleCreateCloseSuccessPopup} /> 
 )}
+    <div className="w-11/12 mx-auto mt-5">
+        <h1 className="mb-6 text-2xl font-bold text-white">Manage Community Posts</h1>
+        <div className="flex items-center gap-4 mb-8">
+        <button onClick={generatePDF} className="float-right bg-gradient-to-tr from-[#FF451D] to-[#FE7804] px-4 py-2 text-[18px] font-semibold rounded-lg">
+          Generate PDF
+        </button>
+        <input
+          type="text"
+          placeholder="Search Posts..."
+          onChange={handleSearchChange}
+          className="bg-[#262628] text-[#FE7804] rounded-2xl flex-grow px-4 py-2 rounded-lg placeholder-[#FE7804] h-10 text-white  px-3 py-2"
+        />
+        <select onChange={handleFieldChange}
+            onFocus={(e) => (e.target.style.backgroundColor = "#ff7f50")} // Change to your desired color on focus
+            onBlur={(e) => (e.target.style.backgroundColor = "#FF451D")} // Reset to default color on blur
+            style={{
+              padding: "8px 16px",
+              borderRadius: "12px",
+              backgroundImage:
+                "linear-gradient(to top right, #FF451D, #FE7804)",
+              height: "40px",
+              color: "white",
+              borderColor: "#ddd", // Default border color, change as needed
+            }}
+            className="px-4 py-2 rounded-lg bg-gradient-to-tr from-[#FF451D] to-[#FE7804] h-10 text-white">
+          <option value="name">Name</option>
+          <option value="name">Description</option>
+          <option value="type">Type</option>
+          <option value="releaseDate">Release Date</option>
+        </select>
+
+        </div>
+        <div id="pdf-table" className="overflow-x-auto">
+        <table id="community-table" className="w-full border border-collapse border-gray-800 table-auto">
+          <thead>
+            <tr>
+              <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Name</th>
+              <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Post Image</th>
+              <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Description</th>
+              <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Type</th>
+              <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Release Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredPosts.map((post, index) => (
+              <tr key={index}>
+                <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{post.name}</td>
+                <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">
+                    <img
+                      src={post.postUrl}
+                      alt="Post Image"
+                      style={{ width: "100%", maxHeight: "100px" }}
+                    />
+                  </td>
+                <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{post.description}</td>
+                <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{post.type}</td>
+                <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{new Date(post.releasedate).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+{/*::::::::::::::::::::::::::::::::::::::::::::::Community Table::::::::::::::::::::::::::::::::::::::::::::::*/}
+
     </div>
   );
 }

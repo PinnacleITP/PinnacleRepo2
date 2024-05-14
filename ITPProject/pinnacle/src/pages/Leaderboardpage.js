@@ -7,6 +7,7 @@ import SecondPlaseMedel from "../assets/leaderBoard/scondplace.png";
 import ThirdPlaseMedel from "../assets/leaderBoard/thirdplace.png";
 import Footer from "../components/Footer";
 import Leaderboard_rank_card from "../components/Leaderboard_rank_card";
+import { Link } from "react-router-dom";
 
 export default function Leaderboardpage() {
   var pageid = "LeaderBoard";
@@ -54,9 +55,16 @@ export default function Leaderboardpage() {
     <div>
       <Header navid="home" />
       <div className="w-11/12 mt-5 mx-auto h-1/2">
+      
         <h1 className="text-white text-[32px] font-bold ">
           Streamers Leaderboard
+          <Link to="/leaderboardminigame"><span className=" text-[16px] text-[#FE7804] rounded-xl px-6 py-2 font-semibold float-right border-2 border-[#FE7804] hover:text-white hover:bg-[#FE7804]">
+              Fun Games
+            </span></Link>
         </h1>
+        
+        
+  
         <h1 className="text-[#FE7804] text-[20px] font-bold text-center mt-5">
           Last month's Standout Stars
         </h1>

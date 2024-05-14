@@ -21,6 +21,9 @@ import useSWR from 'swr';
 import { useNavigate } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import RookieLeague from "../assets/myAccount/rookie_league.png";
+import MasterLeague from "../assets/myAccount/master_league.png";
+import LegendaryLeague from "../assets/myAccount/legendary_league.png";
 
 export default function Myaccount() {
 
@@ -406,6 +409,27 @@ export default function Myaccount() {
     if (!user[selectedField]) return false;
     return user[selectedField].toString().toLowerCase().includes(searchQuery);
   });
+  //Updated by Ishan
+  useEffect(() => {
+    setTimeout(() => {
+      const userEmail = data?.user.email;
+      const userId = data?.user.id;
+      
+      if (userEmail) { 
+        const fetchData = async () => {
+          try {
+            const response = await axios.get('http://localhost:3001/api/getuser?email=' + userEmail);
+            setUserData(response.data);
+          } catch (error) {
+            console.error("Error fetching data:", error);
+            alert(error.message);
+          }
+        };
+
+        fetchData();
+      }
+  }, 1000);
+  }, [reloadCount,selectedDiv]);
   
   
 
@@ -567,10 +591,10 @@ export default function Myaccount() {
           <span className="text-[20px] text-[#ffffff8d] ml-2">{userData?userData?.accountType:''}</span>
           <div className="pt-2">
             <span className="text-[16px] text-[#ffffff8d] font-bold ">
-              Level 4
+            Level {userData?.memberLevel}
             </span>
             <span className="text-[16px] text-[#ffffff8d] float-right">
-              440 xp
+            {userData?.xpCount} xp
             </span>
           </div>
           <div className="relative">
@@ -718,52 +742,58 @@ export default function Myaccount() {
         </div>
       </div>
 
-      {/* ######################### Dashboard ########################   */}
-      {selectedDiv === "Dashboard" && (
+            {/* ######################### Dashboard ########################   */}
+            {selectedDiv === "Dashboard" && (
         <div className=" flex w-11/12 mx-auto">
           <div className=" w-2/5 ">
             <div className="bg-[#ffffff1a] rounded-3xl mt-9 flex flex-col items-center pt-9 pb-5">
               <img
                 className="h-[200px] w-[225px]"
-                src={Mastre3Icon}
+                src={
+                  userData?.memberLevel >= 1 &&  userData?.memberLevel < 5 ? RookieLeague :
+                  userData?.memberLevel >= 5 &&  userData?.memberLevel < 10 ? MasterLeague :
+                  LegendaryLeague
+                }
                 alt="rank-icon"
               />
               <span className=" text-[#FE7804] text-3xl font-bold mt-6">
-                Master III
+                  {userData?.memberLevel >= 1 &&  userData?.memberLevel < 5? "Rookie" :
+                  userData?.memberLevel >= 5 &&  userData?.memberLevel < 10? "Master" :
+                  "Legendary"}
               </span>
               <span className=" text-[#ffffff8d] text-xl">League</span>
               <div className="mt-9 w-full px-9">
                 <span className=" text-white text-lg font-bold w-full">
-                  Next Targets
+                  Leagues
                 </span>
                 <div className="flex items-center mt-5">
                   <img
                     className="h-[55px] w-[62px]"
-                    src={Mastre3Icon}
+                    src={RookieLeague}
                     alt="rank-icon"
                   />
                   <span className=" text-[#ffffff92] font-bold text-base pl-8">
-                    Master II
+                    Rookie(Lv 1 - Lv4)
                   </span>
                 </div>
                 <div className="flex items-center mt-5">
                   <img
                     className="h-[55px] w-[62px]"
-                    src={Mastre1Icon}
+                    src={MasterLeague}
                     alt="rank-icon"
                   />
                   <span className=" text-[#ffffff92] font-bold text-base pl-8">
-                    Master I
+                    Master(Lv 5 - Lv9)
                   </span>
                 </div>
                 <div className="flex items-center mt-5">
                   <img
                     className="h-[55px] w-[62px]"
-                    src={LegendIcon}
+                    src={LegendaryLeague}
                     alt="rank-icon"
                   />
                   <span className=" text-[#ffffff92] font-bold text-base pl-8">
-                    Legend
+                    Legendary(Lv 10 +)
                   </span>
                 </div>
               </div>
@@ -782,7 +812,7 @@ export default function Myaccount() {
                   Ranking
                 </span>
                 <div className="w-2/3 h-[2px] bg-[#ffffff50]"></div>
-                <span className="text-[18px] text-white my-7">Level 4</span>
+                <span className="text-[18px] text-white my-7">Level {userData?.memberLevel}</span>
               </div>
 
               <div className=" bg-[#ffffff1a] w-5/12 flex flex-col items-center py-8 mt-9 rounded-3xl">
@@ -791,11 +821,11 @@ export default function Myaccount() {
                   Experience Points
                 </span>
                 <div className="w-2/3 h-[2px] bg-[#ffffff50]"></div>
-                <span className="text-[18px] text-white my-7">440 Points</span>
+                <span className="text-[18px] text-white my-7">{userData?.xpCount} Points</span>
                 <div className="w-2/3">
-                  <span className="text-[13px] text-[#ffffff8d]">400 xp</span>
+                  <span className="text-[13px] text-[#ffffff8d]">{userData?.xpCount} xp</span>
                   <span className="text-[13px] text-[#ffffff8d] float-right">
-                    500 xp
+                    Next Level
                   </span>
                 </div>
                 <div className="relative w-2/3">
@@ -817,7 +847,7 @@ export default function Myaccount() {
                 </span>
                 <div className="w-2/3 h-[2px] bg-[#ffffff50]"></div>
                 <span className="text-[18px] text-white my-7">
-                  {userDetails.crystalCount} Crystals
+                  {userData?.crystalCount} Crystals
                 </span>
               </div>
 
@@ -859,6 +889,7 @@ export default function Myaccount() {
             {channelDiv === "MyChannels" && (
               <div className="text-white px-5 mt-3">
                 <Channel reloadCount={reloadCount} setReloadCount={setReloadCount} memberID={memberID} crystalcount={userData?.crystalCount}/>
+
               </div>
             )}
 
