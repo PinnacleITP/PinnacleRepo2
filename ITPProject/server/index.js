@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const pdf = require('html-pdf');
 const cors = require("cors");
 const { resolve } = require('path');
+const nodeMailer = require("nodemailer");
 
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
@@ -24,6 +25,11 @@ const StreamModel = require("./models/Stream");
 const ChannelModel = require("./models/Channel");
 const SeasonModel = require("./models/Season");
 const SubscriberModel = require("./models/Subscribers");
+const ViewBatleModel = require("./models/Viewsbatle");
+
+//feedback and faq
+const FeedbackModel =require('./models/Feedback')
+const FaqModel  =require('./models/faqs')
 
 //feedback and faq
 const FeedbackModel =require('./models/Feedback')
@@ -87,6 +93,34 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
+
+const transporter = nodeMailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth:{
+    user: 'nilinduwara2001.08.02@gmail.com',
+    pass: 'vhhffcblqgwtorfw'
+  }
+});
+
+app.post('/send-paymentemail', async (req, res) => {
+  const { to, subject, html } = req.body;
+
+  try {
+    const info = await transporter.sendMail({
+      from: 'nilinduwara2001.08.02@gmail.com',
+      to: to,
+      subject: subject,
+      html: html,
+    });
+    res.send("Email sent successfully!");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Failed to send email.");
+  }
+});
+
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 //----------multer end
@@ -97,7 +131,13 @@ app.post("/createBankCard", (req, res) => {
     .catch((err) => res.json(err));
 });
 
-//get all the bank card details
+app.post("/createViewBatle", (req, res) => {
+  ViewBatleModel.create(req.body)
+    .then((batle) => res.json(batle))
+    .catch((err) => res.json(err));
+});
+
+// get all the bank card details
 // app.get('/', (req, res) => {
 //     BankCardModel.find({})
 //     .then(bankcards => res.json(bankcards))
@@ -288,6 +328,11 @@ app.get("/:id", (req, res) => {
   else if (id === "faq") {
     FaqModel.find({})
     .then(faqs =>res.json(faqs))
+    .catch(err => res.json(err))
+  }
+  else if (id === "views") {
+    ViewBatleModel.find({})
+    .then(batle =>res.json(batle))
     .catch(err => res.json(err))
   }
 });
@@ -503,7 +548,7 @@ app.put("/updateCrystalCount/:id", (req, res) => {
     .catch((err) => res.json(err));
 });
 
-app.put("/updatedownloadcount/:id", (req, res) => {
+app.put("/updateDownloadCount/:id", (req, res) => {
   const id = req.params.id;
   GameModel.findByIdAndUpdate(
     { _id: id },
@@ -511,7 +556,7 @@ app.put("/updatedownloadcount/:id", (req, res) => {
       downloadCount: req.body.newDownloadcount,
     }
   )
-    .then((game) => res.json(game))
+    .then((member) => res.json(member))
     .catch((err) => res.json(err));
 });
 
@@ -1046,10 +1091,6 @@ app.get('/api/getuser', (req, res) => {
     .catch((err) => res.status(500).json({ message: 'Internal Server Error' }));
 });
 
-//------dasun part end----
-
-
-//Dasun - New..............
 
 // pdf genaration
 // app.post('/api/create-pdf', (req, res) => {

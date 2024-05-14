@@ -32,7 +32,6 @@ export default function Myaccount() {
   //var memberID = "66118d9104fb9c92e1c7d980";
   var memberID = userId;
   // var memberID ="66202ae130ee8bb8602d92b6";
-
   const navigate = useNavigate();
   const imageInputRef = useRef(null);
   const [selectedDiv, setSelectedDiv] = useState("Dashboard");
@@ -513,6 +512,8 @@ export default function Myaccount() {
       .catch((err) => console.log(err));
   }, [memberID]);
 
+  
+
   {
     /* ################################################################### download management ######################################*/
   }
@@ -568,6 +569,7 @@ export default function Myaccount() {
   const buttonClasses = "text-white font-bold py-2 px-4 bg-gradient-to-r from-[#FE7804] to-[#FF451D] rounded-lg";
 
   var xpPoints = 40;
+  var pusername = userData ? userData.firstname + " " + userData.lastname : '';
   return (
     <div>
       <Header navid="home" key={`${reloadCount}-${selectedDiv}`}/>
@@ -581,8 +583,7 @@ export default function Myaccount() {
         </div>
         <div className="px-5">
           <h1 className="font-bold text-[40px] text-white">
-          {userData ? userData?.firstname : ''}{" "}
-          {userData ? userData?.lastname : ''}
+          {pusername}
           </h1>
           <span className="bg-gradient-to-b from-[#FF451D] to-[#FE7804] text-white px-2 py-1 rounded-2xl text-[14px]">
             Primium
@@ -887,7 +888,8 @@ export default function Myaccount() {
             {/* ######################### MyChannels ########################   */}
             {channelDiv === "MyChannels" && (
               <div className="text-white px-5 mt-3">
-                <Channel reloadCount={reloadCount} setReloadCount={setReloadCount} memberID={memberID} />
+                <Channel reloadCount={reloadCount} setReloadCount={setReloadCount} memberID={memberID} crystalcount={userData?.crystalCount}/>
+
               </div>
             )}
 
@@ -1010,6 +1012,7 @@ export default function Myaccount() {
                       crystaldiscount={item.crystaldiscount}
                       discount={item.discount}
                       paidamount={item.paidamount}
+                      name={userData ? `${userData.firstname} ${userData.lastname}` : ''}
                     />
                   ))}
                 </div>
@@ -1039,6 +1042,7 @@ export default function Myaccount() {
                     crystaldiscount={item.crystaldiscount}
                     discount={item.discount}
                     paidamount={item.paidamount}
+                    name={pusername}
                   />
                 );
               })}
