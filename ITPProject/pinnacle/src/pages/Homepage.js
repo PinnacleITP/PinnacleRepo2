@@ -71,8 +71,9 @@ export default function Homepage() {
           Welcome
         </h1>
         <p className=" text-[#969595] text-center mb-6">
-        From discovery to purchase to gameplay - Pinnacle delivers a seamless  
-          <br />gaming experience every step of the way!
+          From discovery to purchase to gameplay - Pinnacle delivers a seamless
+          <br />
+          gaming experience every step of the way!
         </p>
         <div className=" border-b-2 border-dashed border-[#616060] w-[60%] mx-auto"></div>
         <div className=" w-full mt-[4%] relative">
@@ -82,16 +83,17 @@ export default function Homepage() {
             alt="Wallpaper"
           ></img>
           <div className=" border-2 border-white p-10 absolute top-[17%] w-[30%] right-[20%]">
-          <div className=" bg-gradient-to-tr from-[#FF451D] to-[#FE7804]  py-5 px-8">
-            <h1 className=" text-center text-[32px] text-[#383737] font-semibold mb-3">
-              About Us
-            </h1>
-            <p className=" text-justify text-[#ffffffcd]">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
-              at placerat ante. Praesent nulla nunc, pretium dapibus efficitur
-              in, auctor eget elit. Lorem ipsum dolor sit amet
-            </p>
-          </div>
+            <div className=" bg-gradient-to-tr from-[#FF451D] to-[#FE7804]  py-5 px-8">
+              <h1 className=" text-center text-[32px] text-[#383737] font-semibold mb-3">
+                About Us
+              </h1>
+              <p className=" text-justify text-[#ffffffcd]">
+                Welcome to our Pinnacle, where you can immerse yourself
+                in endless entertainment! Join our community to stream your
+                gameplay and connect with fellow gamers, or explore our curated
+                collection of games available for purchase. Begin Today!
+              </p>
+            </div>
           </div>
         </div>
       </div>

@@ -18,14 +18,14 @@ export default function Game_Edition_Card(props) {
 
         <div className="mt-6 flex flex-col items-center">
           <span className=" bg-gradient-to-tr from-[#FF451D] to-[#FE7804] py-2 px-12 rounded-lg">
-            <img
+            {/* <img
               className=" inline-block mr-3"
               hight="20"
               width="20"
               src="https://img.icons8.com/pastel-glyph/64/FFFFFF/shopping-cart--v1.png"
               alt="shopping-cart--v1"
-            />
-            <span className=" font-bold">Add to cart</span>
+            /> */}
+            <span className=" font-bold">View More</span>
           </span>
         </div>
       </div>

@@ -203,6 +203,28 @@ app.delete("/deleteCartItem/:id", (req, res) => {
     .catch((err) => res.json(err));
 });
 
+//delete cart when a game is deleted items
+app.delete("/deleteCartItemWhenGameUnavailable/:id", (req, res) => {
+  const id = req.params.id;
+  CartModel.deleteMany({ gameID: id })
+    .then(() => res.json({ message: "All related cart items deleted successfully" }))
+    .catch((err) => res.json(err));
+});
+
+// app.get('/getSuggestedGameIds/:genres', async (req, res) => {
+//   try {
+//     const genres = req.params.genres.split(',');
+//     const suggestedGames = await GameModel.find({ genre: { $in: genres } }).select('_id');
+//     const gameIds = suggestedGames.map(game => game._id); 
+
+//     res.json(gameIds);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// });
+// // console.log(suggestedGames);
+
 app.get("/:id", (req, res) => {
   const id = req.params.id;
 
@@ -1001,13 +1023,26 @@ app.get('/api/getuser', (req, res) => {
 //Dasun - New..............
 
 // pdf genaration
-app.post('/api/create-pdf', (req, res) => {
+// app.post('/api/create-pdf', (req, res) => {
+//   pdf.create(pdfTemplate(req.body), {}).toFile('result.pdf', (err) => {
+//       if(err) {
+//           res.status(500).send('Error creating PDF');
+//           return;
+//       }
+//       res.status(200).send('PDF created successfully');
+//   });
+// });
+
+app.post('/api/create-pdf/:templateName', (req, res) => {
+  const { templateName } = req.params;
+  const pdfTemplate = require(`./documents/${templateName}`);
+
   pdf.create(pdfTemplate(req.body), {}).toFile('result.pdf', (err) => {
-      if(err) {
-          res.status(500).send('Error creating PDF');
-          return;
-      }
-      res.status(200).send('PDF created successfully');
+    if(err) {
+      res.status(500).send('Error creating PDF');
+      return;
+    }
+    res.status(200).send('PDF created successfully');
   });
 });
 

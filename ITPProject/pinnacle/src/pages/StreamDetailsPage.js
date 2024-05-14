@@ -11,7 +11,8 @@ import SuccessPopup from "../components/SuccessPopup";
 export default function StreamDetailsPage() {
   const userId = localStorage.getItem("userId");
   var memberID = userId;
-
+  var readstream = "stream";
+  
   const [streamMoreDetails, setStreamMoreDetails] = useState([]);
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -21,6 +22,15 @@ export default function StreamDetailsPage() {
   const [alreadySubscribed, setAlreadySubscribed] = useState(false);
   const [createSuccessMessagechecked, setCreateSuccessMessagechecked] =
     useState(false);
+  const [streamDetailsCard, setStreamDetailsCard] = useState([]);
+
+   //read all stream details
+   useEffect(() => {
+    axios
+      .get(`http://localhost:3001/${readstream}`)
+      .then((result) => setStreamDetailsCard(result.data))
+      .catch((err) => console.log(err));
+  }, [readstream]);
 
   // useEffect(() => {
   //   axios
@@ -271,17 +281,128 @@ export default function StreamDetailsPage() {
             </div>
           </div>
         </div>
-        <div className=" w-11/12 mx-auto flex justify-between px-4 mt-10">
-          <div className=" w-[65%] bg-[#00000075] rounded-lg py-5 px-7">
-            <h1 className=" font-bold text-[18px]">54 Comments</h1>
+        <div className="flex justify-between w-11/12 px-4 mx-auto mt-10 ">
+        <div className=" w-[65%] bg-[#00000075] rounded-lg py-5 px-7 mb-6">
+            {/* <h1 className=" font-bold text-[18px]">54 Comments</h1> */}
+            {/* feedbacks */}
+            <div className="container py-8 mx-auto">
+                <h1 className="text-xl font-bold">{filteredFeedbacks.length} Comments</h1>
+                <input
+                    type="text"
+                    placeholder="Search comments"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full px-3 py-2 mt-4 mb-8 text-white bg-[#2A2B2F] border border-gray-300 rounded"
+                />
+
+
+                  <div className="flex flex-col space-y-4">
+                  {filteredFeedbacks.map((feedback, index) => (
+                        <div key={feedback._id} className={`p-6 rounded-lg shadow-md ${feedback._id === memberID ? 'bg-gradient-to-r from-orange-600 to-orange-400' : 'bg-[#2A2B2F]'} border-2 border-orange-500 ${index !== filteredFeedbacks.length - 1 ? 'mb-4' : ''}`}>
+            <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                    {/* <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="orange" className="w-6 h-6 mr-2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                    </svg> */}
+                    <img src={memberDetails.image} className=" h-[45px] w-[45px] rounded-full"></img>
+                    <h3 className="ml-2 text-lg font-semibold">{feedback.name}</h3>
+                </div>
+                {feedback._id === memberID && (
+                    <button onClick={() => toggleMenu(feedback._id)} className="text-white">
+                        {/* Three-dot menu icon */}
+                        <span className="text-3xl">&#8230;</span>
+                    </button>
+                )}
+            </div>
+            <p className='text-xs'>{feedback.email}</p>
+            <p className='text-xl'>Feedback: {feedback.feedback}</p>
+            {selectedFeedback === feedback._id && (
+                <div className="mt-4">
+                    <Link to={`/updatefeedback/${feedback._id}`} className="inline-block px-4 py-2 mr-2 text-white bg-blue-500 border border-blue-500 rounded hover:bg-blue-600">
+                        Update
+                    </Link>
+                    <button onClick={() => handleDelete(feedback._id)} className="inline-block px-4 py-2 text-white bg-red-500 border border-red-500 rounded hover:bg-red-600">
+                        Delete
+                    </button>
+                </div>
+            )}
+        </div>
+    ))}
+</div>
+
+                <div className="mt-8">
+                    <form onSubmit={handleSubmit}>
+                        <h2 className="mb-4 text-xl">Add Comment</h2>
+                        {/* <p>stream id:{streamid}</p> */}
+                        <div className="hidden mb-4 ">
+                            <label htmlFor="name">Name</label>
+                            <input
+                                type='text'
+                                id="name"
+                                placeholder='Name'
+                                className="w-full px-3 py-2 mt-1 text-white bg-[#2A2B2F] border rounded"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                            />
+                            {errors.name && <p className="text-red-500">{errors.name}</p>}
+                        </div>
+                        <div className="hidden mb-4 ">
+                            <label htmlFor="email">Email</label>
+                            <input
+                                type='email'
+                                id="email"
+                                placeholder='Email'
+                                className="w-full px-3 py-2 mt-1 text-white bg-[#2A2B2F] border rounded"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                            {errors.email && <p className="text-red-500">{errors.email}</p>}
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor='feedback'>Comment</label>
+                            <input
+                                type='text'
+                                id="feedback"
+                                placeholder='Comment'
+                                className="w-full px-3 py-2 mt-1 text-white bg-[#2A2B2F] border rounded"
+                                value={feedback}
+                                onChange={(e) => setFeedback(e.target.value)}
+                            />
+                            {errors.feedback && <p className="text-red-500">{errors.feedback}</p>}
+                        </div>
+                        <button
+                            type='submit'
+                            className="px-4 py-2 text-orange-500 border border-orange-500 rounded hover:bg-orange-500 hover:text-white hover:border-range-600">
+                            Submit
+                        </button>
+                    </form>
+                </div>
+            </div>
           </div>
           <div className=" w-[31%] p-2">
             <h1 className=" font-bold text-[20px]">Recommended Videos</h1>
             <div className="w-full mt-5 h-[900px] overflow-y-auto scrollbar-hide">
-              <Stream_Display_Card />
-              <Stream_Display_Card />
-              <Stream_Display_Card />
-              <Stream_Display_Card />
+            {streamDetailsCard.slice(0,4).map((item) => {
+                return (
+                  <div className="w-[100%] ">
+                    <Link
+                      to={`/streamdetail?streamid=${item._id}&channel=${item.channel_ID}`}
+                    >
+                      <Stream_Display_Card
+                        name={item.name}
+                        videoUrl={item.videoUrl}
+                        thumbnailUrl={item.thumbnailUrl}
+                        description={item.description}
+                        viewCount={item.viewCount}
+                        type={item.type}
+                        channel_ID={item.channel_ID}
+                        secretVideoCode={item.secretVideoCode}
+                      />
+                    </Link>
+                  </div>
+                );
+              })}
+
             </div>
           </div>
         </div>

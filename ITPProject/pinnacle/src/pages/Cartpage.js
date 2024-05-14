@@ -3,11 +3,13 @@ import Header from "../components/Header";
 import CartItem from "../components/CartItem";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import Footer from "../components/Footer";
 import SearchError from "../assets/animations/searchnotfound.webm";
+import Game_Block_Card from "../components/Game_Block_Card";
 
 export default function Cartpage() {
-  const userEmail = localStorage.getItem('userEmail');
-  const userId = localStorage.getItem('userId');
+  const userEmail = localStorage.getItem("userEmail");
+  const userId = localStorage.getItem("userId");
   const [selectedItems, setSelectedItems] = useState([]);
   const [ItemDetails, setItemDetails] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
@@ -18,12 +20,61 @@ export default function Cartpage() {
   const [isSearchCartChecked, setIsSearchCartChecked] = useState(false);
   const [searchedCart, setSearchedCart] = useState([]);
   const [checkAllButtonClicked, setcheckAllButtonClicked] = useState(false);
+  const [genreCounts, setGenreCounts] = useState([]);
+  const [mostCommonGenres, setMostCommonGenres] = useState([]);
+  const [suggestedGames, setSuggestedGames] = useState([]);
+  const [gameDetails, setGameDetails] = useState([]);
+
+  const actionGames = gameDetails.filter((game) => game.type === "action");
+  const adventureGames = gameDetails.filter(
+    (game) => game.type === "adventure"
+  );
+  const racingGames = gameDetails.filter((game) => game.type === "racing");
+  const shooterGames = gameDetails.filter((game) => game.type === "shooter");
+  const sportsGames = gameDetails.filter((game) => game.type === "sports");
 
   let selecteditemsdescription = "";
 
+  const handleSuggestion = (favGenres) => {
+    const suggestedGames = [];
+
+    favGenres.forEach((genre) => {
+      switch (genre) {
+        case "action":
+          suggestedGames.push(...actionGames);
+          break;
+        case "adventure":
+          suggestedGames.push(...adventureGames);
+          break;
+        case "racing":
+          suggestedGames.push(...racingGames);
+          break;
+        case "shooter":
+          suggestedGames.push(...shooterGames);
+          break;
+        case "sports":
+          suggestedGames.push(...sportsGames);
+          break;
+        default:
+          break;
+      }
+    });
+
+    setSuggestedGames(suggestedGames);
+  };
+
+  var suggestid = "game";
+  //read all game details
+  useEffect(() => {
+    axios
+      .get(`http://localhost:3001/${suggestid}`)
+      .then((result) => setGameDetails(result.data))
+      .catch((err) => console.log(err));
+  }, [suggestid]);
+
   // var memberID = "66118d9104fb9c92e1c7d980";
   // var memberID = "66202ae130ee8bb8602d92b6";
-// var memberID = userId;
+  // var memberID = userId;
   // const itemseter = () => {
   //   selectedItems.forEach((item, index) => {
   //     selecteditemsdescription += `${item.game} - ${item.price}`;
@@ -72,9 +123,52 @@ export default function Cartpage() {
   useEffect(() => {
     axios
       .get(`http://localhost:3001/getCartItemByMemberID/${userId}`)
-      .then((result) => setItemDetails(result.data))
+      .then((result) => {
+        setItemDetails(result.data);
+
+        // Calculate genre counts
+        const counts = {};
+        result.data.forEach((item) => {
+          counts[item.ganre] = (counts[item.ganre] || 0) + 1;
+        });
+        setGenreCounts(counts);
+
+        let maxCount = 0;
+        let genresWithMaxCount = [];
+        for (const genre in counts) {
+          const count = counts[genre];
+          if (count > maxCount) {
+            maxCount = count;
+            genresWithMaxCount = [genre];
+          } else if (count === maxCount) {
+            genresWithMaxCount.push(genre);
+          }
+        }
+        setMostCommonGenres(genresWithMaxCount);
+        handleSuggestion(mostCommonGenres);
+      })
       .catch((err) => console.log(err));
   }, [userId]);
+
+  useEffect(() => {
+    handleSuggestion(mostCommonGenres); // Call handleSeggestion when mostCommonGenres changes
+  }, [mostCommonGenres]);
+
+  // useEffect(() => {
+  //   if (mostCommonGenres.length > 0) {
+  //     axios
+  //       .get(
+  //         `http://localhost:3001/getSuggestedGameIds/${mostCommonGenres.join(",")}`
+  //       )
+  //       .then((result) => {
+  //         setSuggestedGames(result.data);
+  //       })
+  //       .catch((err) => console.log(err));
+  //   }
+  // }, [mostCommonGenres]);
+
+  console.log(mostCommonGenres);
+  console.log(suggestedGames);
 
   // Function to handle checkbox change and update selected items
   const handleCheckboxChange = (itemId, isChecked, price, game) => {
@@ -227,7 +321,6 @@ export default function Cartpage() {
                     {console.log(
                       "all check button clicked" + checkAllButtonClicked
                     )}
-                    
                   </div>
                 )}
                 {isFilterChecked && (
@@ -248,7 +341,6 @@ export default function Cartpage() {
                     {console.log(
                       "all check button clicked" + checkAllButtonClicked
                     )}
-                    
                   </div>
                 )}
               </div>
@@ -345,10 +437,34 @@ export default function Cartpage() {
                 )}
               </div>
             </div>
+            <div>
+              <div className=" w-[100%] mt-5 ">
+                <h1 className="py-3 font-bold  text-[20px]">
+                  Suggestions for your favourite Genre
+                </h1>
+                {suggestedGames.length > 0 ? (
+                  suggestedGames.slice(0, 2).map((game) => (
+                    <div key={game._id} className="p-0 m-0 w-[100%] rounded-lg">
+                      <Link to={`/gamedetail?gameid=${game._id}`}>
+                        <Game_Block_Card
+                          price={game.price}
+                          image={game.gameImageUrl}
+                          imgsize="30"
+                        />
+                      </Link>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-[#D9D9D9] text-opacity-65 text-center pl-3 pr-7 pb-5" >
+                  Add items to your cart to receive personalized game recommendations.
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
+      <Footer />
     </div>
-    
   );
 }
