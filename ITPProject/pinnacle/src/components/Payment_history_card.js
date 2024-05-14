@@ -79,13 +79,13 @@ const createAndDownloadPdf = () => {
       </div>
       
 
-      {expanDivTage && (<div className="py-5 px-10 bg-[#0000001c] rounded-b-xl text-white leading-7">
+      {expanDivTage && (<div className="py-5 px-10 bg-[#0000001c] rounded-b-xl text-white leading-7 relative">
         <p className=" font-bold"><img className=" inline-block mr-3" width="12" height="12" src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png" alt="checkmark" /><span className=" font-normal mr-2">Transaction no:</span>pi_{props.id}</p>
         <p className=" font-bold"><img className=" inline-block mr-3" width="12" height="12" src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png" alt="checkmark" /><span className=" font-normal mr-2">Official Price:</span>${" "}{typeof props.amount === "number" ? props.amount.toFixed(2) : ""}</p>
         <p className=" font-bold"><img className=" inline-block mr-3" width="12" height="12" src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png" alt="checkmark" /><span className=" font-normal mr-2">Discount:</span>${" "}{typeof props.discount === "number" ? props.discount.toFixed(2) : ""}</p>
         <p className=" font-bold"><img className=" inline-block mr-3" width="12" height="12" src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png" alt="checkmark" /><span className=" font-normal mr-2">Crystal Discount:</span>${" "}{typeof props.crystaldiscount === "number" ? props.crystaldiscount.toFixed(2) : ""}</p>
-        <img onClick={createAndDownloadPdf} className=" float-right" width="23" height="23" src="https://img.icons8.com/ios-filled/50/FD7E14/pdf--v1.png" alt="pdf--v1"/>
         <p className=" font-bold"><img className=" inline-block mr-3" width="12" height="12" src="https://img.icons8.com/tiny-glyph/32/FD7E14/checkmark.png" alt="checkmark" /><span className=" font-normal mr-2">Paid Amount:</span>${" "}{typeof props.paidamount === "number" ? props.paidamount.toFixed(2) : ""}</p>
+        <div onClick={createAndDownloadPdf} className=" cursor-pointer absolute bottom-4 right-4 border-2 border-[#FD7E14] py-1 px-4 rounded-md"><img className=" inline-block"  width="23" height="23" src="https://img.icons8.com/ios-filled/50/FD7E14/pdf--v1.png" alt="pdf--v1"/><span className=" text-[#FD7E14] ml-2">Download invoice</span></div>
       </div>)}
       
 

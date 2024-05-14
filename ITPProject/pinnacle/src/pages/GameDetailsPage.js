@@ -9,13 +9,9 @@ import axios from "axios";
 import SuccessPopup from "../components/SuccessPopup";
 
 export default function GameDetailsPage() {
-  // var memberID = "66118d9104fb9c92e1c7d980";
-  // var memberID = "66202ae130ee8bb8602d92b6";
-  // var memberID ="66284ca400dccbb3e5725868";
   const userEmail = localStorage.getItem('userEmail');
   const userId = localStorage.getItem('userId');
   var memberID = userId;
-
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const gameId = queryParams.get("gameid");
@@ -23,6 +19,8 @@ export default function GameDetailsPage() {
   const [downloads, setDownloads] = useState([]);
   const [buyBtnEnable, setBuyBtnEnable] = useState(true);
   const [payError, setPayError] = useState(false);
+  const [gameDetails, setGameDetails] = useState([]);
+  const [filteredGames, setFilteredGames] = useState([]);
 
   const [gameName, setGameName] = useState("");
   const [gamePrice, setGamePrice] = useState(0);
@@ -48,6 +46,13 @@ export default function GameDetailsPage() {
   }, [gameId]);
 
   useEffect(() => {
+    axios
+      .get(`http://localhost:3001/${"game"}`)
+      .then((result) => setGameDetails(result.data))
+      .catch((err) => console.log(err));
+  }, []);
+
+  useEffect(() => {
     const fetchDownloadData = () => {
       axios
         .get(`http://localhost:3001/getDownloadbyMemberid/${memberID}`)
@@ -71,9 +76,13 @@ export default function GameDetailsPage() {
     downloads.forEach((item) => {
       if (item.gameid == gameId) {
         setBuyBtnEnable(false);
+        setCartAvailability(true);
       }
     });
-  }, [gameId, downloads]);
+
+    const filtered = gameDetails.filter((game) =>game.name.toLowerCase().startsWith(gamedetail.name.toLowerCase()));
+    setFilteredGames(filtered);
+  }, [gameId, downloads, gameDetails]);
 
   const paymentValidationMessage = () => {
     setPayError(true);
@@ -112,7 +121,7 @@ export default function GameDetailsPage() {
     e.preventDefault();
 
     if (cartAvailability === true) {
-      alert("This game is already in your cart.");
+      alert("This game is already in your cart or already Downloaded.");
       return;
     }
 
@@ -185,7 +194,7 @@ export default function GameDetailsPage() {
             <div className="my-4 mx-auto flex justify-around">
               <div
                 onClick={AddtoCartByID}
-                className=" bg-[#c2bbb4] py-2 px-10 rounded-md mx-4 w-2/5 text-center font-semibold"
+                className=" bg-[#a7a29d] py-2 px-10 rounded-md mx-4 w-2/5 text-center font-semibold"
               >
                 Add to Cart
               </div>
@@ -515,38 +524,33 @@ export default function GameDetailsPage() {
           <h1 className=" font-bold text-[28px]">65 Reviews</h1>
         </div>
 
-        <div className=" w-11/12 mx-auto my-10">
-          <h1 className=" font-bold text-[28px]">Editions</h1>
-          <div className="flex justify-around my-4">
-            <div className="w-[25%]">
-              <Game_Edition_Card
-                name="Call of Duty - Modern Warefire I"
-                price={10}
-              />
-            </div>
-            <div className="w-[25%]">
-              <Game_Edition_Card
-                name="Call of Duty - Modern Warefire II"
-                price={20}
-              />
-            </div>
-            <div className="w-[25%]">
-              <Game_Edition_Card
-                name="Call of Duty - Modern Warefire III"
-                price={30}
-              />
-            </div>
-          </div>
-        </div>
-        {createSuccessMessagechecked && (
+      <div className=" w-11/12 mx-auto my-10">
+        <h1 className=" font-bold text-[28px]">Editions</h1>
+        {filteredGames.length > 0 ? (
+        <div className="flex justify-start my-4">
+          {filteredGames.map((item) => {
+              return (
+                <div className="w-[25%] mx-[4%]">
+                  <Game_Edition_Card
+                    name={item.name}
+                    price={item.price}
+                    image={item.gameImageUrl}
+                  />
+                </div>
+              );
+            })}</div>) : (<div className="flex justify-around my-4">
+              <span className=" text-[#7e7a7a]">Currenly one edition available</span>
+            </div>)}
+
+      </div>
+      {createSuccessMessagechecked && (
           <SuccessPopup
             type="Adde"
             item="Cart"
             onClose={handleCreateCloseSuccessPopup}
           />
         )}
-        <Footer />
-      </div>
-    
+      <Footer />
+    </div>
   );
 }

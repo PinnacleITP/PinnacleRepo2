@@ -191,7 +191,7 @@ export default function StreamManagement() {
                   <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Description</th>
                   <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">View Count</th>
                   <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Type</th>
-                  <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Channel ID</th>
+                  {/* <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Channel ID</th>  */}
                   <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Secret Video Code</th>
                   <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Channel Name</th>
                 </tr>
@@ -209,9 +209,9 @@ export default function StreamManagement() {
                     <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{stream.description}</td>
                     <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{stream.viewCount}</td>
                     <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{stream.type}</td>
-                    <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">
+                    {/* <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">
                       {stream.channel_ID ? stream.channel_ID._id : 'No Channel'}
-                    </td>
+                    </td>  */}
                     <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">{stream.secretVideoCode}</td>
                     <td className="border px-4 py-2 bg-[#262628] text-white border-[#1F2937]">
                       {stream.channel_ID ? stream.channel_ID.channelName : 'No Channel'}

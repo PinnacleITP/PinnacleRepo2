@@ -138,6 +138,8 @@ const PaymentForm = ({
   const downloadRecodHandler = () => {
     const date = new Date();
     const gameid = itemid;
+    //Get User Id
+    const userId = localStorage.getItem('userId');
     setTimeout(() => {
       axios
       .get(`http://localhost:3001/getlatestPayment/${memberid}`)
@@ -151,6 +153,7 @@ const PaymentForm = ({
             gameid,
             paymentid,
             date,
+            userId
           })
           .then((result) => {
             console.log(result);
