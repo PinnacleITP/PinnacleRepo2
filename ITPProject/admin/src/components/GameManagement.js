@@ -309,6 +309,7 @@ export default function GameManagement() {
       .delete(`http://localhost:3001/deleteGame/${itemId}`)
       .then((res) => {
         console.log("Game deleted:", res);
+        handleDeleteGameinCart(itemId);
         setDeleteSuccessMessagechecked(true); // Show success message
         setIsDeleteWarning(false); // Close the warning modal
         window.location.reload(); // Refresh or use a better state management
@@ -322,6 +323,17 @@ export default function GameManagement() {
   const handleDeleteCloseSuccessPopup = () => {
     setDeleteSuccessMessagechecked(false);
   };
+  
+  const handleDeleteGameinCart = (id) => {
+    axios
+      .delete("http://localhost:3001/deleteCartItemWhenGameUnavailable/" + id)
+      .then((res) => {
+        console.log(res);
+        window.location.reload();
+      })
+      .catch((err) => console.log(err));
+  };
+
 
   const gamesSearch = () => {
     setGameSearch(true);

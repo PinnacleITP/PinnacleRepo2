@@ -161,7 +161,7 @@ export default function StreamDetailsPage() {
         console.log(result);
         setCreateSuccessMessagechecked(true);
         setAlreadySubscribed(true);
-        // updateSubscriberCountofChannel(channelDetails.subscribercount);
+        updateSubscriberCountofChannel(channelDetails.subscribercount);
       })
       .catch((err) => console.log(err));
   };
@@ -170,130 +170,130 @@ export default function StreamDetailsPage() {
     setCreateSuccessMessagechecked(false);
   };
 
-  // const updateSubscriberCountofChannel = (subcount) => {
-  //   const subscriberCount = subcount + 1;
-  //   console.log("Current subscribers count:", subcount);
-  //   console.log("Updated subscribers count:", subscriberCount);
-  //   axios
-  //     .put(
-  //       `http://localhost:3001/updateSubscriberCountofChannel/${channelDetails._id}`,
-  //       { subscriberCount }
-  //     )
-  //     .then((result) => {
-  //       console.log("Update result:", result);
-  //     })
-  //     .catch((err) => console.log(err));
-  // };
-  //feedback and faq
-  const pageid='fblist';
-  const [feedbacks, setFeedbacks] = useState([]); // State to hold feedback data
-  const [searchQuery, setSearchQuery] = useState(''); // State for search input
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [feedback, setFeedback] = useState('');
-  const [errors, setErrors] = useState({}); // State to manage form validation errors
-  const [selectedFeedback, setSelectedFeedback] = useState(null); // Track selected feedback
-  const navigate = useNavigate(); // Hook to enable navigation
-  const [memberDetails, setMemberDetails] = useState({});
+  const updateSubscriberCountofChannel = (subcount) => {
+    const subscriberCount = subcount + 1;
+    console.log("Current subscribers count:", subcount);
+    console.log("Updated subscribers count:", subscriberCount);
+    axios
+      .put(
+        `http://localhost:3001/updateSubscriberCountofChannel/${channelDetails._id}`,
+        { subscriberCount }
+      )
+      .then((result) => {
+        console.log("Update result:", result);
+      })
+      .catch((err) => console.log(err));
+  };
+//feedback and faq
+const pageid='fblist';
+const [feedbacks, setFeedbacks] = useState([]); // State to hold feedback data
+const [searchQuery, setSearchQuery] = useState(''); // State for search input
+const [name, setName] = useState('');
+const [email, setEmail] = useState('');
+const [feedback, setFeedback] = useState('');
+const [errors, setErrors] = useState({}); // State to manage form validation errors
+const [selectedFeedback, setSelectedFeedback] = useState(null); // Track selected feedback
+const navigate = useNavigate(); // Hook to enable navigation
+const [memberDetails, setMemberDetails] = useState({});
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    // Validate form fields
-    const newErrors = {};
-    if (!name) {
-        newErrors.name = 'Name is required';
-    }
-    if (!email) {
-        newErrors.email = 'Email is required';
-    }
-    if (!feedback) {
-        newErrors.feedback = 'Feedback is required';
-    }
+  // Validate form fields
+  const newErrors = {};
+  if (!name) {
+      newErrors.name = 'Name is required';
+  }
+  if (!email) {
+      newErrors.email = 'Email is required';
+  }
+  if (!feedback) {
+      newErrors.feedback = 'Feedback is required';
+  }
 
-    // If there are errors, set them and prevent form submission
-    if (Object.keys(newErrors).length > 0) {
-        setErrors(newErrors);
-        return;
-    }
+  // If there are errors, set them and prevent form submission
+  if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+  }
 
-    // If no errors, submit the form
-      axios.post("http://localhost:3001/createfeedback", { name, email, feedback, streamid })
-        .then(result => {
-            console.log(result);
-            Swal.fire({
-                title: "Good job!",
-                text: "Comment submitted successfully!",
-                icon: "success"
-            }).then(() => {
-                // navigate('/fblist'); // Navigate to feedback list
-                window.location.reload(); // Reload the page to reflect changes
-            });
-        })
-        .catch(err => console.log(err));
+  // If no errors, submit the form
+    axios.post("http://localhost:3001/createfeedback", { name, email, feedback, streamid })
+      .then(result => {
+          console.log(result);
+          Swal.fire({
+              title: "Good job!",
+              text: "Comment submitted successfully!",
+              icon: "success"
+          }).then(() => {
+              // navigate('/fblist'); // Navigate to feedback list
+              window.location.reload(); // Reload the page to reflect changes
+          });
+      })
+      .catch(err => console.log(err));
 };
 
 // Fetch all feedbacks from the server on component mount
 useEffect(() => {
-    axios.get(`http://localhost:3001/${pageid}`)
-    .then(result => setFeedbacks(result.data.filter(feedback => feedback.streamid === streamid)))
-    .catch(err => console.log(err));
-    
-    axios.get(`http://localhost:3001/getmemberbyid/${memberID}`)
-    .then(result => {setMemberDetails(result.data);
-      setName(result.data.username);
-      setEmail(result.data.email);
-    })
-    .catch(err => console.log(err));
+  axios.get(`http://localhost:3001/${pageid}`)
+  .then(result => setFeedbacks(result.data.filter(feedback => feedback.streamid === streamid)))
+  .catch(err => console.log(err));
+  
+  axios.get(`http://localhost:3001/getmemberbyid/${memberID}`)
+  .then(result => {setMemberDetails(result.data);
+    setName(result.data.username);
+    setEmail(result.data.email);
+  })
+  .catch(err => console.log(err));
 }, [pageid, memberID]);
 
 
 // Function to handle feedback deletion
 const handleDelete = (id) => {
-    Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            axios.delete(`http://localhost:3001/deleteFeedback/${id}`)
-                .then(res => {
-                    Swal.fire({
-                        title: "Deleted!",
-                        text: "Your file has been deleted.",
-                        icon: "success"
-                    }).then(() => {
-                        window.location.reload(); // Reload the page after deletion
-                    });
-                })
-                .catch(err => {
-                    console.error("Error deleting feedback:", err);
-                    Swal.fire({
-                        title: "Error!",
-                        text: "Failed to delete feedback.",
-                        icon: "error"
-                    });
-                });
-        } 
-    });
+  Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+  }).then((result) => {
+      if (result.isConfirmed) {
+          axios.delete(`http://localhost:3001/deleteFeedback/${id}`)
+              .then(res => {
+                  Swal.fire({
+                      title: "Deleted!",
+                      text: "Your file has been deleted.",
+                      icon: "success"
+                  }).then(() => {
+                      window.location.reload(); // Reload the page after deletion
+                  });
+              })
+              .catch(err => {
+                  console.error("Error deleting feedback:", err);
+                  Swal.fire({
+                      title: "Error!",
+                      text: "Failed to delete feedback.",
+                      icon: "error"
+                  });
+              });
+      } 
+  });
 };
 
 // Function to toggle dropdown menu for each feedback item
 const toggleMenu = (feedbackId) => {
-    if (selectedFeedback === feedbackId) {
-        setSelectedFeedback(null); // Hide menu if already selected
-    } else {
-        setSelectedFeedback(feedbackId); // Show menu for the selected feedback
-    }
+  if (selectedFeedback === feedbackId) {
+      setSelectedFeedback(null); // Hide menu if already selected
+  } else {
+      setSelectedFeedback(feedbackId); // Show menu for the selected feedback
+  }
 };
 
 // Filter feedbacks based on search query
 const filteredFeedbacks = feedbacks.filter(feedback =>
-    feedback.name.toLowerCase().includes(searchQuery.toLowerCase())
+  feedback.name.toLowerCase().includes(searchQuery.toLowerCase())
 );
 
   return (
@@ -379,7 +379,7 @@ const filteredFeedbacks = feedbacks.filter(feedback =>
                     src="https://img.icons8.com/ios-glyphs/30/FD7E14/conference-call--v1.png"
                     alt="conference-call--v1"
                   />
-                  <span>57</span>
+                  <span>{channelDetails.subscribercount} Subscribers</span>
                 </div>
               </div>
             </div>

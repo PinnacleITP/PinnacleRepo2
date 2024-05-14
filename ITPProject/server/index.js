@@ -207,6 +207,14 @@ app.delete("/deleteCartItem/:id", (req, res) => {
     .catch((err) => res.json(err));
 });
 
+//delete cart when a game is deleted items
+app.delete("/deleteCartItemWhenGameUnavailable/:id", (req, res) => {
+  const id = req.params.id;
+  CartModel.deleteMany({ gameID: id })
+    .then(() => res.json({ message: "All related cart items deleted successfully" }))
+    .catch((err) => res.json(err));
+});
+
 app.get("/:id", (req, res) => {
   const id = req.params.id;
 
@@ -759,12 +767,12 @@ app.post("/createSubscription", (req, res) => {
 });
 app.put("/updateSubscriberCountofChannel/:id", (req, res) => {
   const id = req.params.id;
-  SubscriberModel.findByIdAndUpdate({ _id: id },
+  ChannelModel.findByIdAndUpdate({ _id: id },
     {
       subscribercount: req.body.subscriberCount,
     }
   )
-    .then((subscribers) => res.json(subscribers))
+    .then((channel) => res.json(channel))
     .catch((err) => res.json(err));
 });
 //get subscription details related to member - function was written to find if a member is already subscribed or not to a channel
@@ -792,6 +800,15 @@ app.get("/getSubscriptionsByMemberID/:id", (req, res) => {
     })
     .catch((err) => res.json(err));
 });
+
+//delete Subscription
+app.delete("/deleteSubscription/:id", (req, res) => {
+  const id = req.params.id;
+  SubscriberModel.findByIdAndDelete({ _id: id })
+    .then((subscription) => res.json(subscription))
+    .catch((err) => res.json(err));
+});
+
 
 //Dasun - New...............................................................................................................
 
