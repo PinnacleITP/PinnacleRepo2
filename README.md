@@ -20,6 +20,4 @@ Payment management: Secure payment processing for purchasing games or premium se
 
 Leaderboard management: Tracking and displaying user achievements and rankings.
 
-About Us
 
-We are a team of 8 members who are passionate about entertainment, particularly the immersive and interactive experience that gaming offers. This project is part of our coursework for the Information Technology Project (ITP) module in our year 2 semester 2 curriculum. As a growing entertainment company, we have set our sights on establishing a significant presence in the online game streaming and purchasing market. Our team is dedicated to curating a diverse range of content, from beloved classics to cutting-edge releases, ensuring that our platform caters to the diverse tastes of gamers worldwide. With a focus on convenience, accessibility, and variety, we strive to create a one-stop destination for gaming enthusiasts, offering not only a vast selection of games but also live streams, social engagement features, and premium account services. Join us as we embark on this journey to redefine the future of online entertainment!
