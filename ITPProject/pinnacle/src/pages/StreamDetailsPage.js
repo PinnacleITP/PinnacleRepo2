@@ -12,6 +12,8 @@ import Swal from 'sweetalert2';
 export default function StreamDetailsPage() {
   const userId = localStorage.getItem("userId");
   var memberID = userId;
+  var readstream = "stream";
+
   
   const [streamMoreDetails, setStreamMoreDetails] = useState([]);
   const location = useLocation();
@@ -22,6 +24,15 @@ export default function StreamDetailsPage() {
   const [alreadySubscribed, setAlreadySubscribed] = useState(false);
   const [createSuccessMessagechecked, setCreateSuccessMessagechecked] =
     useState(false);
+  const [streamDetailsCard, setStreamDetailsCard] = useState([]);
+
+   //read all stream details
+   useEffect(() => {
+    axios
+      .get(`http://localhost:3001/${readstream}`)
+      .then((result) => setStreamDetailsCard(result.data))
+      .catch((err) => console.log(err));
+  }, [readstream]);
 
   // useEffect(() => {
   //   axios
@@ -106,8 +117,10 @@ export default function StreamDetailsPage() {
     const viewCount = bdviewcount + 1;
     console.log("Current view count:", bdviewcount);
     console.log("Updated view count:", viewCount);
+    //Get User Id
+    const userId = localStorage.getItem('userId');
     axios
-      .put(`http://localhost:3001/updateViewCount/${streamid}`, { viewCount })
+      .put(`http://localhost:3001/updateViewCount/${streamid}`, { viewCount, userId })
       .then((result) => {
         console.log("Update result:", result);
         setNewViewCount(viewCount);
@@ -159,7 +172,7 @@ export default function StreamDetailsPage() {
         console.log(result);
         setCreateSuccessMessagechecked(true);
         setAlreadySubscribed(true);
-        // updateSubscriberCountofChannel(channelDetails.subscribercount);
+        updateSubscriberCountofChannel(channelDetails.subscribercount);
       })
       .catch((err) => console.log(err));
   };
@@ -168,131 +181,131 @@ export default function StreamDetailsPage() {
     setCreateSuccessMessagechecked(false);
   };
 
-  // const updateSubscriberCountofChannel = (subcount) => {
-  //   const subscriberCount = subcount + 1;
-  //   console.log("Current subscribers count:", subcount);
-  //   console.log("Updated subscribers count:", subscriberCount);
-  //   axios
-  //     .put(
-  //       `http://localhost:3001/updateSubscriberCountofChannel/${channelDetails._id}`,
-  //       { subscriberCount }
-  //     )
-  //     .then((result) => {
-  //       console.log("Update result:", result);
-  //     })
-  //     .catch((err) => console.log(err));
-  // };
-  //feedback and faq
-  const pageid='fblist';
-  const [feedbacks, setFeedbacks] = useState([]); // State to hold feedback data
-  const [searchQuery, setSearchQuery] = useState(''); // State for search input
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [feedback, setFeedback] = useState('');
-  const [errors, setErrors] = useState({}); // State to manage form validation errors
-  const [selectedFeedback, setSelectedFeedback] = useState(null); // Track selected feedback
-  const navigate = useNavigate(); // Hook to enable navigation
-  const [memberDetails, setMemberDetails] = useState({});
+  const updateSubscriberCountofChannel = (subcount) => {
+    const subscriberCount = subcount + 1;
+    console.log("Current subscribers count:", subcount);
+    console.log("Updated subscribers count:", subscriberCount);
+    axios
+      .put(
+        `http://localhost:3001/updateSubscriberCountofChannel/${channelDetails._id}`,
+        { subscriberCount }
+      )
+      .then((result) => {
+        console.log("Update result:", result);
+      })
+      .catch((err) => console.log(err));
+  };
+//feedback and faq
+const pageid='fblist';
+const [feedbacks, setFeedbacks] = useState([]); // State to hold feedback data
+const [searchQuery, setSearchQuery] = useState(''); // State for search input
+const [name, setName] = useState('');
+const [email, setEmail] = useState('');
+const [feedback, setFeedback] = useState('');
+const [errors, setErrors] = useState({}); // State to manage form validation errors
+const [selectedFeedback, setSelectedFeedback] = useState(null); // Track selected feedback
+const navigate = useNavigate(); // Hook to enable navigation
+const [memberDetails, setMemberDetails] = useState({});
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    // Validate form fields
-    const newErrors = {};
-    if (!name) {
-        newErrors.name = 'Name is required';
-    }
-    if (!email) {
-        newErrors.email = 'Email is required';
-    }
-    if (!feedback) {
-        newErrors.feedback = 'Feedback is required';
-    }
+  // Validate form fields
+  const newErrors = {};
+  if (!name) {
+      newErrors.name = 'Name is required';
+  }
+  if (!email) {
+      newErrors.email = 'Email is required';
+  }
+  if (!feedback) {
+      newErrors.feedback = 'Feedback is required';
+  }
 
-    // If there are errors, set them and prevent form submission
-    if (Object.keys(newErrors).length > 0) {
-        setErrors(newErrors);
-        return;
-    }
+  // If there are errors, set them and prevent form submission
+  if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+  }
 
-    // If no errors, submit the form
-      axios.post("http://localhost:3001/createfeedback", { name, email, feedback, streamid })
-        .then(result => {
-            console.log(result);
-            Swal.fire({
-                title: "Good job!",
-                text: "Comment submitted successfully!",
-                icon: "success"
-            }).then(() => {
-                // navigate('/fblist'); // Navigate to feedback list
-                window.location.reload(); // Reload the page to reflect changes
-            });
-        })
-        .catch(err => console.log(err));
+  // If no errors, submit the form
+    axios.post("http://localhost:3001/createfeedback", { name, email, feedback, streamid })
+      .then(result => {
+          console.log(result);
+          Swal.fire({
+              title: "Good job!",
+              text: "Comment submitted successfully!",
+              icon: "success"
+          }).then(() => {
+              // navigate('/fblist'); // Navigate to feedback list
+              window.location.reload(); // Reload the page to reflect changes
+          });
+      })
+      .catch(err => console.log(err));
 };
 
 // Fetch all feedbacks from the server on component mount
 useEffect(() => {
-    axios.get(`http://localhost:3001/${pageid}`)
-    .then(result => setFeedbacks(result.data.filter(feedback => feedback.streamid === streamid)))
-    .catch(err => console.log(err));
-    
-    axios.get(`http://localhost:3001/getmemberbyid/${memberID}`)
-    .then(result => {setMemberDetails(result.data);
-      setName(result.data.username);
-      setEmail(result.data.email);
-    })
-    .catch(err => console.log(err));
+  axios.get(`http://localhost:3001/${pageid}`)
+  .then(result => setFeedbacks(result.data.filter(feedback => feedback.streamid === streamid)))
+  .catch(err => console.log(err));
+  
+  axios.get(`http://localhost:3001/getmemberbyid/${memberID}`)
+  .then(result => {setMemberDetails(result.data);
+    setName(result.data.username);
+    setEmail(result.data.email);
+  })
+  .catch(err => console.log(err));
 }, [pageid, memberID]);
 
 
 
 // Function to handle feedback deletion
 const handleDelete = (id) => {
-    Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            axios.delete(`http://localhost:3001/deleteFeedback/${id}`)
-                .then(res => {
-                    Swal.fire({
-                        title: "Deleted!",
-                        text: "Your file has been deleted.",
-                        icon: "success"
-                    }).then(() => {
-                        window.location.reload(); // Reload the page after deletion
-                    });
-                })
-                .catch(err => {
-                    console.error("Error deleting feedback:", err);
-                    Swal.fire({
-                        title: "Error!",
-                        text: "Failed to delete feedback.",
-                        icon: "error"
-                    });
-                });
-        } 
-    });
+  Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+  }).then((result) => {
+      if (result.isConfirmed) {
+          axios.delete(`http://localhost:3001/deleteFeedback/${id}`)
+              .then(res => {
+                  Swal.fire({
+                      title: "Deleted!",
+                      text: "Your file has been deleted.",
+                      icon: "success"
+                  }).then(() => {
+                      window.location.reload(); // Reload the page after deletion
+                  });
+              })
+              .catch(err => {
+                  console.error("Error deleting feedback:", err);
+                  Swal.fire({
+                      title: "Error!",
+                      text: "Failed to delete feedback.",
+                      icon: "error"
+                  });
+              });
+      } 
+  });
 };
 
 // Function to toggle dropdown menu for each feedback item
 const toggleMenu = (feedbackId) => {
-    if (selectedFeedback === feedbackId) {
-        setSelectedFeedback(null); // Hide menu if already selected
-    } else {
-        setSelectedFeedback(feedbackId); // Show menu for the selected feedback
-    }
+  if (selectedFeedback === feedbackId) {
+      setSelectedFeedback(null); // Hide menu if already selected
+  } else {
+      setSelectedFeedback(feedbackId); // Show menu for the selected feedback
+  }
 };
 
 // Filter feedbacks based on search query
 const filteredFeedbacks = feedbacks.filter(feedback =>
-    feedback.name.toLowerCase().includes(searchQuery.toLowerCase())
+  feedback.name.toLowerCase().includes(searchQuery.toLowerCase())
 );
 
   return (
@@ -378,14 +391,15 @@ const filteredFeedbacks = feedbacks.filter(feedback =>
                     src="https://img.icons8.com/ios-glyphs/30/FD7E14/conference-call--v1.png"
                     alt="conference-call--v1"
                   />
-                  <span>57</span>
+                  <span>{channelDetails.subscribercount} Subscribers</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div className="flex justify-between w-11/12 px-4 mx-auto mt-10 ">
-        <div className=" w-[65%] bg-[#00000075] rounded-lg py-5 px-7">
+        <div className=" w-[65%] bg-[#00000075] rounded-lg py-5 px-7 mb-6">
+
             {/* <h1 className=" font-bold text-[18px]">54 Comments</h1> */}
             {/* feedbacks */}
             <div className="container py-8 mx-auto">
@@ -492,10 +506,27 @@ const filteredFeedbacks = feedbacks.filter(feedback =>
           <div className=" w-[31%] p-2">
             <h1 className=" font-bold text-[20px]">Recommended Videos</h1>
             <div className="w-full mt-5 h-[900px] overflow-y-auto scrollbar-hide">
-              <Stream_Display_Card />
-              <Stream_Display_Card />
-              <Stream_Display_Card />
-              <Stream_Display_Card />
+            {streamDetailsCard.slice(0,4).map((item) => {
+                return (
+                  <div className="w-[100%] ">
+                    <Link
+                      to={`/streamdetail?streamid=${item._id}&channel=${item.channel_ID}`}
+                    >
+                      <Stream_Display_Card
+                        name={item.name}
+                        videoUrl={item.videoUrl}
+                        thumbnailUrl={item.thumbnailUrl}
+                        description={item.description}
+                        viewCount={item.viewCount}
+                        type={item.type}
+                        channel_ID={item.channel_ID}
+                        secretVideoCode={item.secretVideoCode}
+                      />
+                    </Link>
+                  </div>
+                );
+              })}
+
             </div>
           </div>
         </div>

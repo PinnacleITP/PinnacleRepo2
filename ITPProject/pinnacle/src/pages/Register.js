@@ -17,7 +17,7 @@ export default function Register() {
     crystalCount:100,
     primium:'',
     xpCount:20,
-    memberLevel:0,
+    memberLevel:1,
     league:'Rookie',
 
   });
@@ -85,7 +85,10 @@ export default function Register() {
 
   const inputClasses = "bg-zinc-700 border-b border-orange-600 text-white p-2 w-full mt-3";
   const buttonClasses = "text-white font-bold py-2 px-4 bg-gradient-to-r from-[#FE7804] to-[#FF451D] rounded-lg";
-
+  
+  //date validation
+  const lastDayOfPreviousYear = new Date(new Date().getFullYear() - 1, 11, 31).toISOString().split('T')[0];
+  
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="w-full max-w-md">
@@ -107,7 +110,7 @@ export default function Register() {
           onChange={handleChange}
           required
           className={inputClasses + (field === 'email' && !emailValid ? ' border-red-500' : '')}
-
+          max={field === 'dob' ? lastDayOfPreviousYear : undefined} //date validation
         />
       </div>
     ))}

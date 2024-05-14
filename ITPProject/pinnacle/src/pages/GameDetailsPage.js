@@ -76,10 +76,11 @@ export default function GameDetailsPage() {
     downloads.forEach((item) => {
       if (item.gameid == gameId) {
         setBuyBtnEnable(false);
+        setCartAvailability(true);
       }
     });
 
-    const filtered = gameDetails.filter((game) =>game.name.toLowerCase().startsWith(gamedetail.name.toLowerCase()));
+    const filtered = gameDetails.filter((game) =>game.name.toLowerCase().startsWith(gamedetail.name.toLowerCase().slice(0, 6)));
     setFilteredGames(filtered);
   }, [gameId, downloads, gameDetails]);
 
@@ -120,7 +121,7 @@ export default function GameDetailsPage() {
     e.preventDefault();
 
     if (cartAvailability === true) {
-      alert("This game is already in your cart.");
+      alert("This game is already in your cart or already Downloaded.");
       return;
     }
 
@@ -193,7 +194,7 @@ export default function GameDetailsPage() {
             <div className="my-4 mx-auto flex justify-around">
               <div
                 onClick={AddtoCartByID}
-                className=" bg-[#c2bbb4] py-2 px-10 rounded-md mx-4 w-2/5 text-center font-semibold"
+                className=" bg-[#a7a29d] py-2 px-10 rounded-md mx-4 w-2/5 text-center font-semibold"
               >
                 Add to Cart
               </div>
@@ -542,7 +543,13 @@ export default function GameDetailsPage() {
             </div>)}
 
       </div>
-
+      {createSuccessMessagechecked && (
+          <SuccessPopup
+            type="Adde"
+            item="Cart"
+            onClose={handleCreateCloseSuccessPopup}
+          />
+        )}
       <Footer />
     </div>
   );

@@ -8,6 +8,7 @@ Chart.register(Tooltip, Title, ArcElement, LineElement, Legend);
 export default function PaymentManagement() {
   const [allPaymentHistory, setAllPaymentsHistory] = useState([]);
   const [allPayments, setAllPayments] = useState([]);
+  const [allUsers, setAllUserData] = useState([]);
   const [paymentTotalOfficialPrice, setPaymentTotalOfficialPrice] = useState(0);
   const [paymentTotalDiscount, setPaymentTotalDiscount] = useState(0);
   const [paymentTotalCrystalDiscount, setPaymentTotalCrystalDiscount] = useState(0);
@@ -77,6 +78,22 @@ export default function PaymentManagement() {
       const intervalId = setInterval(fetchPaymentData, 5000);
     return () => clearInterval(intervalId);
   }, []);
+
+  useEffect(() => {
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/api/allUsers');
+        setAllUserData(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        alert(error.message);
+      }
+    };
+
+    fetchData();
+
+  }, [])
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -207,6 +224,14 @@ export default function PaymentManagement() {
     ],
   });
 
+  const totalCrystal = allUsers.reduce((total, user) => {
+    const crystalCount = parseFloat(user.crystalCount);
+    if (!isNaN(crystalCount)) {
+        return total + crystalCount;
+    }
+    return total;
+}, 0);
+
   return (
     <div className="py-5 px-7 text-white ">
       <h1 className=" text-[25px] font-bold mb-3">Payment Management</h1>
@@ -302,9 +327,12 @@ export default function PaymentManagement() {
               />
             </div>
             <div className=" text-right">
-              <h1 className=" text-[30px] font-bold">500000</h1>
+              <h1 className=" text-[30px] font-bold">{totalCrystal}</h1>
               <span className=" text-[15px] font-semibold text-[#ffffff76]">
-                $ 500.00
+              ${" "}
+              {typeof totalCrystal === "number"
+                ? (totalCrystal/1000).toFixed(2)
+                : ""}
               </span>
             </div>
           </div>

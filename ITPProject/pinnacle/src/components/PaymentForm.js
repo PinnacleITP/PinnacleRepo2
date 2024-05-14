@@ -117,18 +117,30 @@ const PaymentForm = ({
       
   };
 
-  // const downloadCountUpdater = () => {
-  //   const newDownloadcount = downloads + 1;
-  //   axios.put(`http://localhost:3001/updateCrystalCount/${itemid}`, { newDownloadcount })
-  //     .then(result => {
-  //         console.log(result);
-  //     })
-  //     .catch(err => console.log(err));
-  // }
+  const [gamedetails, setGameDetails] = useState([]);
+
+  const downloadCountUpdater = () => {
+      axios
+      .get("http://localhost:3001/getGamebyID/" + itemid)
+      .then((result) => {
+        setGameDetails(result.data.downloadCount);
+        console.log(result.data.downloadCount);
+      })
+      .catch((err) => console.log(err));
+
+      const newDownloadcount = gamedetails + 1;
+    
+      axios.put("http://localhost:3001/updateDownloadCount/"+itemid, { newDownloadcount })
+      .then(result => {
+          console.log(result);
+      })
+      .catch(err => console.log(err));
+    
+  }
 
   const crystalCountUpdater = () => {
-    const newCrystalcount = crystalcount- (crystaldiscount*1000);
-    axios.put(`http://localhost:3001/updateCrystalCount/${memberid}`, { newCrystalcount })
+    const newCrystalcount = crystalcount- (crystaldiscount*1000) + officialprice;
+    axios.put(`http://localhost:3001/updateDownloadCount/${memberid}`, { newCrystalcount })
       .then(result => {
           console.log(result);
       })
@@ -138,6 +150,8 @@ const PaymentForm = ({
   const downloadRecodHandler = () => {
     const date = new Date();
     const gameid = itemid;
+    //Get User Id
+    const userId = localStorage.getItem('userId');
     setTimeout(() => {
       axios
       .get(`http://localhost:3001/getlatestPayment/${memberid}`)
@@ -151,28 +165,65 @@ const PaymentForm = ({
             gameid,
             paymentid,
             date,
+            userId
           })
           .then((result) => {
             console.log(result);
+            sendEmail();
+            downloadCountUpdater();
           })
           .catch((err) => console.log(err));
       })
       .catch((err) => console.log(err));
     }, 1000);
-    // downloadCountUpdater();
 };
 
-//pdf
-// const createAndDownloadPdf = () => {
-//   const date = new Date();
-//   axios.post('http://localhost:3001/api/create-pdf', { name, email, description, officialprice, crystaldiscount, discount, pid, date, subtotal})
-//     .then(() => axios.get('http://localhost:3001/api/fetch-pdf', { responseType: 'blob' }))
-//     .then((res) => {
-//       const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
-//       saveAs(pdfBlob, 'newPdf.pdf');
-//     })
-//     .catch((error) => console.error('Error occurred while creating or fetching PDF:', error));
-// };
+
+const date = new Date();
+const htmlContent = `<div>
+        <br/>
+        <div style="justify-content: center; display: flex;">     
+            <img  width="120px" height="120px" style="margin: 0 auto" src="https://res.cloudinary.com/dg8cpnx1m/image/upload/v1715580950/channelDP/xd5ojhpnhumimaqbkmzv.png" />
+        </div>
+        <br/>
+        <h1 style="color: green; text-align: center;">Payment Successful!</h1>
+        <div style="padding: 0 10%;">
+            <p>Your payment of <span style="font-weight: 600;">$`+officialprice+`.00</span> was Successfully processed.</p>
+            <br/>
+            <div style="padding: 0 15%; font-size: 17px;">
+                <pre ><span style="font-weight: 600;">Description:</span>                                   <span>`+description+`</span></pre>
+                <pre ><span style="font-weight: 600;">Amount Paid:</span>                                   <span>$ `+officialprice+`.00</span></pre>
+                <pre ><span style="font-weight: 600;">Payor Name:</span>                                    <span>`+name+`</span></pre>
+                <pre ><span style="font-weight: 600;">Payment Method:</span>                                <span>Visa</span></pre>
+                <pre ><span style="font-weight: 600;">Payment Date/Time:</span>                             <span>`+date+`</span></pre>
+                <br/>
+            </div>
+            <hr/>
+        </div>
+    </div>`;
+
+const sendEmail = async () => {
+  const userEmail = localStorage.getItem('userEmail');
+  
+  
+
+  try {
+    const response = await fetch('http://localhost:3001/send-paymentemail', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        to:  userEmail,
+        subject: 'Payment successful',
+        html: htmlContent
+      })
+    });
+    const result = await response.text();
+  } catch (error) {
+    console.error('Error sending email:', error);
+  }
+};
 
   return (
     <div className="text-white pt-3">

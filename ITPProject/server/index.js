@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const pdf = require('html-pdf');
 const cors = require("cors");
 const { resolve } = require('path');
+const nodeMailer = require("nodemailer");
 
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
@@ -24,6 +25,11 @@ const StreamModel = require("./models/Stream");
 const ChannelModel = require("./models/Channel");
 const SeasonModel = require("./models/Season");
 const SubscriberModel = require("./models/Subscribers");
+const ViewBatleModel = require("./models/Viewsbatle");
+
+//feedback and faq
+const FeedbackModel =require('./models/Feedback')
+const FaqModel  =require('./models/faqs')
 
 //feedback and faq
 const FeedbackModel =require('./models/Feedback')
@@ -87,6 +93,34 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
+
+const transporter = nodeMailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth:{
+    user: 'nilinduwara2001.08.02@gmail.com',
+    pass: 'vhhffcblqgwtorfw'
+  }
+});
+
+app.post('/send-paymentemail', async (req, res) => {
+  const { to, subject, html } = req.body;
+
+  try {
+    const info = await transporter.sendMail({
+      from: 'nilinduwara2001.08.02@gmail.com',
+      to: to,
+      subject: subject,
+      html: html,
+    });
+    res.send("Email sent successfully!");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Failed to send email.");
+  }
+});
+
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 //----------multer end
@@ -97,7 +131,13 @@ app.post("/createBankCard", (req, res) => {
     .catch((err) => res.json(err));
 });
 
-//get all the bank card details
+app.post("/createViewBatle", (req, res) => {
+  ViewBatleModel.create(req.body)
+    .then((batle) => res.json(batle))
+    .catch((err) => res.json(err));
+});
+
+// get all the bank card details
 // app.get('/', (req, res) => {
 //     BankCardModel.find({})
 //     .then(bankcards => res.json(bankcards))
@@ -207,6 +247,28 @@ app.delete("/deleteCartItem/:id", (req, res) => {
     .catch((err) => res.json(err));
 });
 
+//delete cart when a game is deleted items
+app.delete("/deleteCartItemWhenGameUnavailable/:id", (req, res) => {
+  const id = req.params.id;
+  CartModel.deleteMany({ gameID: id })
+    .then(() => res.json({ message: "All related cart items deleted successfully" }))
+    .catch((err) => res.json(err));
+});
+
+// app.get('/getSuggestedGameIds/:genres', async (req, res) => {
+//   try {
+//     const genres = req.params.genres.split(',');
+//     const suggestedGames = await GameModel.find({ genre: { $in: genres } }).select('_id');
+//     const gameIds = suggestedGames.map(game => game._id); 
+
+//     res.json(gameIds);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// });
+// // console.log(suggestedGames);
+
 app.get("/:id", (req, res) => {
   const id = req.params.id;
 
@@ -268,6 +330,11 @@ app.get("/:id", (req, res) => {
     .then(faqs =>res.json(faqs))
     .catch(err => res.json(err))
   }
+  else if (id === "views") {
+    ViewBatleModel.find({})
+    .then(batle =>res.json(batle))
+    .catch(err => res.json(err))
+  }
 });
 
 //deled all leaderboard
@@ -284,16 +351,19 @@ app.post("/createLeaderboard", (req, res) => {
     .catch((err) => res.json(err));
 });
 
-app.put("/updateViewCount/:id", (req, res) => {
-  const id = req.params.id;
-  StreamModel.findByIdAndUpdate({ _id: id },
-    {
-      viewCount: req.body.viewCount,
-    }
-  )
-    .then((stream) => res.json(stream))
-    .catch((err) => res.json(err));
-});
+
+// app.put("/updateViewCount/:id", (req, res) => {
+//   const id = req.params.id;
+//   StreamModel.findByIdAndUpdate({ _id: id },
+//     {
+//       viewCount: req.body.viewCount,
+//     }
+//   )
+//     .then((stream) => res.json(stream))
+//     .catch((err) => res.json(err));
+// });
+
+
 
 //get member details using member id
 app.get("/getmemberbyid/:id", (req, res) => {
@@ -439,11 +509,11 @@ app.delete("/deletePaymentHistoryRelatedToMember/:id", (req, res) => {
     .catch((err) => res.status(500).json({ error: err.message }));
 });
 
-app.post("/createdounloadRecod", (req, res) => {
-  DownloadModel.create(req.body)
-    .then((download) => res.json(download))
-    .catch((err) => res.status(500).json({ error: err.message }));
-});
+// app.post("/createdounloadRecod", (req, res) => {
+//   DownloadModel.create(req.body)
+//     .then((download) => res.json(download))
+//     .catch((err) => res.status(500).json({ error: err.message }));
+// });
 
 app.get("/getDownloadbyMemberid/:id", (req, res) => {
   const id = req.params.id;
@@ -478,7 +548,7 @@ app.put("/updateCrystalCount/:id", (req, res) => {
     .catch((err) => res.json(err));
 });
 
-app.put("/updatedownloadcount/:id", (req, res) => {
+app.put("/updateDownloadCount/:id", (req, res) => {
   const id = req.params.id;
   GameModel.findByIdAndUpdate(
     { _id: id },
@@ -486,7 +556,7 @@ app.put("/updatedownloadcount/:id", (req, res) => {
       downloadCount: req.body.newDownloadcount,
     }
   )
-    .then((game) => res.json(game))
+    .then((member) => res.json(member))
     .catch((err) => res.json(err));
 });
 
@@ -520,12 +590,13 @@ app.delete("/deleteCommunityPost/:id", (req, res) => {
     .then((game) => res.json(game))
     .catch((err) => res.json(err));
 });
-// create new stream
-app.post("/createStream", (req, res) => {
-  StreamModel.create(req.body)
-    .then((stream) => res.json(stream))
-    .catch((err) => res.status(500).json({ error: err.message }));
-});
+
+//create new stream
+// app.post("/createStream", (req, res) => {
+//   StreamModel.create(req.body)
+//     .then((stream) => res.json(stream))
+//     .catch((err) => res.status(500).json({ error: err.message }));
+// });
 
 //delete stream by id
 app.delete("/deleteStream/:id", (req, res) => {
@@ -755,12 +826,12 @@ app.post("/createSubscription", (req, res) => {
 });
 app.put("/updateSubscriberCountofChannel/:id", (req, res) => {
   const id = req.params.id;
-  SubscriberModel.findByIdAndUpdate({ _id: id },
+  ChannelModel.findByIdAndUpdate({ _id: id },
     {
       subscribercount: req.body.subscriberCount,
     }
   )
-    .then((subscribers) => res.json(subscribers))
+    .then((channel) => res.json(channel))
     .catch((err) => res.json(err));
 });
 //get subscription details related to member - function was written to find if a member is already subscribed or not to a channel
@@ -788,6 +859,15 @@ app.get("/getSubscriptionsByMemberID/:id", (req, res) => {
     })
     .catch((err) => res.json(err));
 });
+
+//delete Subscription
+app.delete("/deleteSubscription/:id", (req, res) => {
+  const id = req.params.id;
+  SubscriberModel.findByIdAndDelete({ _id: id })
+    .then((subscription) => res.json(subscription))
+    .catch((err) => res.json(err));
+});
+
 
 //Dasun - New...............................................................................................................
 
@@ -1011,19 +1091,28 @@ app.get('/api/getuser', (req, res) => {
     .catch((err) => res.status(500).json({ message: 'Internal Server Error' }));
 });
 
-//------dasun part end----
-
-
-//Dasun - New..............
 
 // pdf genaration
-app.post('/api/create-pdf', (req, res) => {
+// app.post('/api/create-pdf', (req, res) => {
+//   pdf.create(pdfTemplate(req.body), {}).toFile('result.pdf', (err) => {
+//       if(err) {
+//           res.status(500).send('Error creating PDF');
+//           return;
+//       }
+//       res.status(200).send('PDF created successfully');
+//   });
+// });
+
+app.post('/api/create-pdf/:templateName', (req, res) => {
+  const { templateName } = req.params;
+  const pdfTemplate = require(`./documents/${templateName}`);
+
   pdf.create(pdfTemplate(req.body), {}).toFile('result.pdf', (err) => {
-      if(err) {
-          res.status(500).send('Error creating PDF');
-          return;
-      }
-      res.status(200).send('PDF created successfully');
+    if(err) {
+      res.status(500).send('Error creating PDF');
+      return;
+    }
+    res.status(200).send('PDF created successfully');
   });
 });
 
@@ -1479,6 +1568,7 @@ app.post('/api/sendStreamNotification', async (req, res) => {
 //::::::::::::::::::::::::::::::::::::::::::::::Special Function Stream::::::::::::::::::::::::::::::::::::::::::::::
 
 
+
 app.get('/getallfeedbacks', (req, res) => {
   FeedbackModel.find()
     .then(feedbacks => {
@@ -1490,6 +1580,7 @@ app.get('/getallfeedbacks', (req, res) => {
       res.status(500).json({ error: err.message });
     });
 });
+
 
 
 

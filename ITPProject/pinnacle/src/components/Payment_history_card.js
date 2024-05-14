@@ -7,6 +7,8 @@ import { saveAs } from 'file-saver';
 
 
 export default function Payment_history_card(props) {
+  const userEmail = localStorage.getItem('userEmail');
+  const userId = localStorage.getItem('userId');
   var id = props.id;
   const [deleteConfirmMessage, setDeleteConfirmMessage] = useState(false);
   const [deleteSuccessMessagechecked, setDeleteSuccessMessagechecked] = useState(false);
@@ -28,8 +30,8 @@ export default function Payment_history_card(props) {
     setDeleteSuccessMessagechecked(false);
   };
 
-  const name = "user";
-  const email = "user@gmail.com";
+  const name = props.name;
+  const email = userEmail;
   const description = props.reason;
   const officialpice = props.amount;
   const crystal = props.crystaldiscount;
@@ -38,13 +40,23 @@ export default function Payment_history_card(props) {
   const date = props.date;
   const subtotal = props.paidamount;
 
+  var dateObject = new Date(props.date);
+    var year = dateObject.getFullYear();
+    var month = (dateObject.getMonth() + 1).toString().padStart(2, '0');
+    var day = dateObject.getDate().toString().padStart(2, '0');
+    var hours = dateObject.getHours().toString().padStart(2, '0');
+    var minutes = dateObject.getMinutes().toString().padStart(2, '0');
+    var seconds = dateObject.getSeconds().toString().padStart(2, '0');
+
+    var formattedDateTime = `${year}.${month}.${day} H${hours}:${minutes}:${seconds}`;
+
   //pdf
 const createAndDownloadPdf = () => {
-  axios.post('http://localhost:3001/api/create-pdf', { name, email, description, officialpice, crystal, discount, pid, date, subtotal})
+  axios.post('http://localhost:3001/api/create-pdf/index', { name, email, description, officialpice, crystal, discount, pid, date, subtotal})
     .then(() => axios.get('http://localhost:3001/api/fetch-pdf', { responseType: 'blob' }))
     .then((res) => {
       const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
-      saveAs(pdfBlob, 'newPdf.pdf');
+      saveAs(pdfBlob, 'Payment_' + pid + '_invoice.pdf');
     })
     .catch((error) => console.error('Error occurred while creating or fetching PDF:', error));
 };
@@ -58,7 +70,7 @@ const createAndDownloadPdf = () => {
           {props.reason}
         </span>
         <p className=" text-[#D9D9D9] text-opacity-60 text-base">
-          {props.date}
+          {formattedDateTime}
         </p>
       </div>
       <div className="flex">
