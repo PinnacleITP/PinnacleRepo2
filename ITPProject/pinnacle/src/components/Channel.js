@@ -145,8 +145,15 @@ export default function Channel(props) {
         secretVideoCode,
         gameType,
       });
-      console.log("Stream created successfully:", response.data);
-      // window.location.reload();
+      //-------dasun notification
+      const newStream = response.data; // Assuming response contains the created stream details
+  
+      // Send notification to all users about the new stream
+      await axios.post("http://localhost:3001/api/sendStreamNotification", newStream);
+  
+      console.log("Stream created and notification sent successfully:", newStream);
+  
+      // Reset form state
       setLoading(false);
       setCreateSuccessMessagechecked(true);
       handleChannelfunction("channelVideos");
@@ -157,9 +164,11 @@ export default function Channel(props) {
       setType("action");
       setSecretVideoCode("");
       setGameType("other");
-      
+      //props.setReloadCount(prevCount => prevCount + 1);
+  
     } catch (error) {
-      console.error("Error creating stream:", error);
+      console.error("Error creating stream or sending notification:", error);
+      setLoading(false);
     }
   };
 

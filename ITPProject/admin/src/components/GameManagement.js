@@ -108,19 +108,20 @@ export default function GameManagement() {
         releasdate,
       });
 
-      console.log("Game created successfully:", response.data);
+     // Send email notification
+      const newGame = response.data; // Assuming response contains created game details
+      await axios.post(
+        "http://localhost:3001/api/sendGameNotification",
+        newGame
+      );
+
+      console.log("Game created and notification sent successfully:", newGame);
+      setLoading(false);
       navigate("/");
       window.location.reload();
-
-      // Reset form fields and file inputs
-      //   setName("");
-      //   setVideo(null);
-      //   setThumbnail(null);
-      //   setDescription("");
-      // setViewCount(0);
-      //   setType("action");
     } catch (error) {
-      console.error("Error creating game:", error);
+      console.error("Error creating game or sending notification:", error);
+      setLoading(false);
     }
   };
 
