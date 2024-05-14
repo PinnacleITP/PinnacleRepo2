@@ -35,7 +35,8 @@ function UpdateFeedback() {
         try {
             // Send PUT request to update feedback with current state values
             await axios.put(`http://localhost:3001/updatefeedback/${id}`, { name, email, feedback });
-            navigate('/streamdetail'); // Redirect to feedback list page after successful update
+            navigate('/streamdetail');
+            // window.location.reload(); // Redirect to feedback list page after successful update
         } catch (error) {
             console.error('Error updating feedback:', error);
         }
@@ -54,21 +55,21 @@ function UpdateFeedback() {
                             <input 
                                 type="text" 
                                 id="name" 
-                                placeholder="Enter Name" 
                                 value={name} 
                                 onChange={(e) => setName(e.target.value)} 
                                 className="w-full p-2 mt-1 border rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                readOnly
                             />
                         </div>
                         <div className="mb-4">
                             <label htmlFor="email" className="block text-sm font-medium text-zinc-400">Email</label>
                             <input 
                                 type="email" 
-                                id="email" 
-                                placeholder="Enter Email" 
+                                id="email"                                
                                 value={email} 
                                 onChange={(e) => setEmail(e.target.value)} 
                                 className="w-full p-2 mt-1 border rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                readOnly
                             />
                         </div>
                         <div className="mb-4">
@@ -84,6 +85,7 @@ function UpdateFeedback() {
                         </div>
                         <button type="submit" className="px-4 py-2 text-orange-500 border border-orange-500 rounded hover:bg-orange-500 hover:text-white hover:border-range-600">Update</button>
                     </form>
+
                 </div>
             </div>
             <Footer/>

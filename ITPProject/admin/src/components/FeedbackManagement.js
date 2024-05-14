@@ -214,7 +214,7 @@ export default function FeedbackManagement() {
                                 <td className="px-6 py-4 text-center">
                                   {/* Link to update feedback */}
                                   <div className="inline-block mr-2">
-                                    <Link to={`/Adminfbupdate/${feedback._id}`} className="px-4 py-2 font-bold text-white bg-orange-600 rounded hover:bg-blue-700">
+                                  <Link to={`/Adminfbupdate/${feedback._id}`} className="px-4 py-2 font-bold text-white bg-orange-600 rounded hover:bg-blue-700">
                                       Update
                                     </Link>
                                     </div>

@@ -246,6 +246,7 @@ useEffect(() => {
 }, [pageid, memberID]);
 
 
+
 // Function to handle feedback deletion
 const handleDelete = (id) => {
     Swal.fire({
@@ -367,7 +368,7 @@ const filteredFeedbacks = feedbacks.filter(feedback =>
                     src="https://img.icons8.com/windows/32/FD7E14/chat-messages--v2.png"
                     alt="chat-messages--v2"
                   />
-                  <span>45</span>
+                  <span>{filteredFeedbacks.length}</span>
                 </div>
                 <div>
                   <img
@@ -388,38 +389,36 @@ const filteredFeedbacks = feedbacks.filter(feedback =>
             {/* <h1 className=" font-bold text-[18px]">54 Comments</h1> */}
             {/* feedbacks */}
             <div className="container py-8 mx-auto">
-                <h1 className="text-xl font-bold">{filteredFeedbacks.length} Comments</h1>
+            <h1 className="text-xl font-bold text-left">{filteredFeedbacks.length} Comments</h1>
                 <input
                     type="text"
                     placeholder="Search comments"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full px-3 py-2 mt-4 mb-8 text-white bg-[#2A2B2F] border border-gray-300 rounded"
+                    className=" text-left w-full px-3 py-2 mt-4 mb-8 text-white bg-[#2A2B2F] border border-gray-300 rounded"
                 />
-
-
                   <div className="flex flex-col space-y-4">
                   {filteredFeedbacks.map((feedback, index) => (
-                        <div key={feedback._id} className={`p-6 rounded-lg shadow-md ${feedback._id === memberID ? 'bg-gradient-to-r from-orange-600 to-orange-400' : 'bg-[#2A2B2F]'} border-2 border-orange-500 ${index !== filteredFeedbacks.length - 1 ? 'mb-4' : ''}`}>
+                        <div key={feedback._id} className={`p-6 rounded-lg shadow-md ${feedback.name === name ? 'bg-gradient-to-r from-orange-600 to-orange-400' : 'bg-[#2A2B2F]'} border-2 border-orange-500 ${index !== filteredFeedbacks.length - 1 ? 'mb-4' : ''}`}>
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                    {/* <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="orange" className="w-6 h-6 mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="orange" className="w-6 h-6 mr-2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                    </svg> */}
-                    <img src={memberDetails.image} className=" h-[45px] w-[45px] rounded-full"></img>
+                    </svg>
+                    {/* <img src={memberDetails.image} className=" h-[45px] w-[45px] rounded-full"></img> */}
                     <h3 className="ml-2 text-lg font-semibold">{feedback.name}</h3>
                 </div>
-                {feedback._id === memberID && (
+                {feedback.name === name && (
                     <button onClick={() => toggleMenu(feedback._id)} className="text-white">
                         {/* Three-dot menu icon */}
                         <span className="text-3xl">&#8230;</span>
                     </button>
                 )}
             </div>
-            <p className='text-xs'>{feedback.email}</p>
-            <p className='text-xl'>Feedback: {feedback.feedback}</p>
+            {/* <p className='text-xs'>{feedback.email}</p> */}
+            <p className='text-xl text-left'>{feedback.feedback}</p>
             {selectedFeedback === feedback._id && (
-                <div className="mt-4">
+                <div className="mt-4 text-left">
                     <Link to={`/updatefeedback/${feedback._id}`} className="inline-block px-4 py-2 mr-2 text-white bg-blue-500 border border-blue-500 rounded hover:bg-blue-600">
                         Update
                     </Link>
@@ -434,7 +433,7 @@ const filteredFeedbacks = feedbacks.filter(feedback =>
 
                 <div className="mt-8">
                     <form onSubmit={handleSubmit}>
-                        <h2 className="mb-4 text-xl">Add Comment</h2>
+                        {/* <h2 className="mb-4 text-xl">Add Comment</h2> */}
                         {/* <p>stream id:{streamid}</p> */}
                         <div className="hidden mb-4 ">
                             <label htmlFor="name">Name</label>
@@ -461,22 +460,30 @@ const filteredFeedbacks = feedbacks.filter(feedback =>
                             {errors.email && <p className="text-red-500">{errors.email}</p>}
                         </div>
                         <div className="mb-4">
-                            <label htmlFor='feedback'>Comment</label>
+                            {/* <label htmlFor='feedback'>Comment</label> */}
                             <input
                                 type='text'
                                 id="feedback"
-                                placeholder='Comment'
-                                className="w-full px-3 py-2 mt-1 text-white bg-[#2A2B2F] border rounded"
+                                placeholder=' Add a Comment...'
+                                className="w-full px-3 py-2 mt-1 text-white bg-[#2A2B2F] border rounded-3xl"
                                 value={feedback}
                                 onChange={(e) => setFeedback(e.target.value)}
                             />
                             {errors.feedback && <p className="text-red-500">{errors.feedback}</p>}
                         </div>
+                        <div className="flex justify-end">
                         <button
-                            type='submit'
-                            className="px-4 py-2 text-orange-500 border border-orange-500 rounded hover:bg-orange-500 hover:text-white hover:border-range-600">
-                            Submit
+                          type="submit"
+                          className="px-4 py-2 text-orange-500 border border-orange-500 rounded hover:bg-orange-500 hover:text-white hover:border-range-600">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="w-5 h-5">
+                            <path d="M2 21l21-9L2 3v7l15 2-15 2z" />
+                          </svg>
                         </button>
+                    </div>
                     </form>
                 </div>
             </div>
