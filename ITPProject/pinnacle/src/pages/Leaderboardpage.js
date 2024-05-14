@@ -8,10 +8,12 @@ import ThirdPlaseMedel from "../assets/leaderBoard/thirdplace.png";
 import Footer from "../components/Footer";
 import Leaderboard_rank_card from "../components/Leaderboard_rank_card";
 import { Link } from "react-router-dom";
+import TicTacToe from "../minigames/TicTacToe"
 
 export default function Leaderboardpage() {
   var pageid = "LeaderBoard";
   const [leaderBoardDetails, setLeaderBoardDetails] = useState([]);
+  const [ticTacToeGameChecked, setTicTacToeGameChecked] = useState(false);
 
   // useEffect(() => {
   //   axios
@@ -58,9 +60,9 @@ export default function Leaderboardpage() {
       
         <h1 className="text-white text-[32px] font-bold ">
           Streamers Leaderboard
-          <Link to="/leaderboardminigame"><span className=" text-[16px] text-[#FE7804] rounded-xl px-6 py-2 font-semibold float-right border-2 border-[#FE7804] hover:text-white hover:bg-[#FE7804]">
-              Fun Games
-            </span></Link>
+          <span onClick={() => setTicTacToeGameChecked(true)} className=" text-[16px] text-[#FE7804] rounded-xl px-6 py-2 font-semibold float-right border-2 border-[#FE7804] hover:text-white hover:bg-[#FE7804]">
+              Fun Game
+            </span>
         </h1>
         
         
@@ -184,6 +186,15 @@ export default function Leaderboardpage() {
         </div>
       </div>
       <Footer />
+
+      {ticTacToeGameChecked && (<div className=" fixed bg-black bg-opacity-90 top-0 left-0 z-50 w-full h-screen">
+            <div className=' absolute top-[50px] left-[50px]' >
+            <img onClick={() => setTicTacToeGameChecked(false)} className=' inline-block cursor-pointer' width="35" height="35" src="https://img.icons8.com/pulsar-line/48/FAB005/chevron-left.png" alt="chevron-left"/>
+            <span onClick={() => setTicTacToeGameChecked(false)} className=' className=" text-[#FAB005] w-[30%]" ml-2 text-[18px] cursor-pointer'>Back</span>
+            </div>
+            <TicTacToe/>
+
+            </div>)}
     </div>
   );
 }

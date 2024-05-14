@@ -31,9 +31,7 @@ const ViewBatleModel = require("./models/Viewsbatle");
 const FeedbackModel =require('./models/Feedback')
 const FaqModel  =require('./models/faqs')
 
-//feedback and faq
-const FeedbackModel =require('./models/Feedback')
-const FaqModel  =require('./models/faqs')
+
 
 const pdfTemplate = require('./documents');
 
