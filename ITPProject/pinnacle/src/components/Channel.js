@@ -331,7 +331,7 @@ export default function Channel(props) {
               <label className="block text-white">Name:</label>
               <input
                 type="text"
-                value={name}
+                value={name} 
                 onChange={(e) => setName(e.target.value)}
            required
                 className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
