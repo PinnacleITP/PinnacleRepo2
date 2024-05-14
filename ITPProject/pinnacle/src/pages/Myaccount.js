@@ -18,7 +18,7 @@ import Subscribers from "../components/Subscribers";
 import Footer from "../components/Footer";
 import SuccessPopup from "../components/SuccessPopup";
 import useSWR from 'swr';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import RookieLeague from "../assets/myAccount/rookie_league.png";
@@ -570,13 +570,39 @@ export default function Myaccount() {
 
   var xpPoints = 40;
   var pusername = userData ? userData.firstname + " " + userData.lastname : '';
+
+  //  //feedback and faq
+  // //  const streamid = queryParams.get("streamid");
+  // //  const pageid='fblist';
+  const [feedbacks, setFeedbacks] = useState([]); 
+  // useEffect(() => {
+  //   axios.get('http://localhost:3001/getallfeedbacks')
+  //     .then(feedbacks =>setFeedbacks(feedbacks.data))
+  //     .catch(err => console.log(err));
+  // }, []);
+ 
+  useEffect(() => {
+    if (selectedDiv === "Reviews") {
+      console.log('Fetching feedbacks...');
+      axios.get('http://localhost:3001/getallfeedbacks')
+        .then(response => {
+          console.log('Feedbacks fetched:', response.data);
+          setFeedbacks(response.data);
+        })
+        .catch(error => {
+          console.error('Error fetching feedbacks:', error);
+        });
+    }
+  }, [selectedDiv]);
+  
+
   return (
     <div>
       <Header navid="home" key={`${reloadCount}-${selectedDiv}`}/>
-      <div className="h-1/4 p-8 flex flex-row justify-center">
+      <div className="flex flex-row justify-center p-8 h-1/4">
         <div className="flex justify-center">
         <img
-            className="h-32 w-32 rounded-full"
+            className="w-32 h-32 rounded-full"
             src={userData ? (userData.image !== '' ? userData.image : 'https://cdn-icons-png.flaticon.com/512/149/149071.png') : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}
             alt="user"
           />
@@ -744,8 +770,10 @@ export default function Myaccount() {
 
             {/* ######################### Dashboard ########################   */}
             {selectedDiv === "Dashboard" && (
-        <div className=" flex w-11/12 mx-auto">
-          <div className=" w-2/5 ">
+
+        <div className="flex w-11/12 mx-auto ">
+          <div className="w-2/5 ">
+
             <div className="bg-[#ffffff1a] rounded-3xl mt-9 flex flex-col items-center pt-9 pb-5">
               <img
                 className="h-[200px] w-[225px]"
@@ -762,8 +790,10 @@ export default function Myaccount() {
                   "Legendary"}
               </span>
               <span className=" text-[#ffffff8d] text-xl">League</span>
-              <div className="mt-9 w-full px-9">
-                <span className=" text-white text-lg font-bold w-full">
+
+              <div className="w-full mt-9 px-9">
+                <span className="w-full text-lg font-bold text-white ">
+
                   Leagues
                 </span>
                 <div className="flex items-center mt-5">
@@ -801,7 +831,7 @@ export default function Myaccount() {
           </div>
 
           <div className="flex flex-col w-3/5">
-            <div className=" w-full flex justify-around px-5">
+            <div className="flex justify-around w-full px-5 ">
               <div className="flex flex-col items-center  py-8 mt-9 bg-[#ffffff1a] w-5/12 rounded-3xl">
                 <img
                   className="h-[70px] w-[70px]"
@@ -835,7 +865,7 @@ export default function Myaccount() {
               </div>
             </div>
 
-            <div className=" w-full flex justify-around px-5">
+            <div className="flex justify-around w-full px-5 ">
               <div className="flex flex-col items-center  py-8 mt-9 bg-[#ffffff1a] w-5/12 rounded-3xl">
                 <img
                   className="h-[70px] w-[70px]"
@@ -887,7 +917,9 @@ export default function Myaccount() {
 
             {/* ######################### MyChannels ########################   */}
             {channelDiv === "MyChannels" && (
-              <div className="text-white px-5 mt-3">
+
+              <div className="px-5 mt-3 text-white">
+
                 <Channel reloadCount={reloadCount} setReloadCount={setReloadCount} memberID={memberID} crystalcount={userData?.crystalCount}/>
 
               </div>
@@ -895,7 +927,7 @@ export default function Myaccount() {
 
             {/* ######################### MySubcriptions ########################   */}
             {channelDiv === "MySubcriptions" && (
-              <div className="text-white px-5 mt-3">
+              <div className="px-5 mt-3 text-white">
               <Subscribers memberID={memberID} />
               </div>
             )}
@@ -906,7 +938,7 @@ export default function Myaccount() {
       {/* ######################### Purchases ########################   */}
       {selectedDiv === "Purchase" && (
         <div className="w-11/12 mx-auto mt-5">
-          <h1 className="text-white text-2xl font-bold mb-6">
+          <h1 className="mb-6 text-2xl font-bold text-white">
             Purchase History
           </h1>
           <div className="flex ">
@@ -919,8 +951,8 @@ export default function Myaccount() {
                 onKeyUp={searchPayment}
               />
             </div>
-            <div className="w-1/2 flex justify-between px-3">
-              <div className="flex justify-end relative">
+            <div className="flex justify-between w-1/2 px-3">
+              <div className="relative flex justify-end">
                 <span className="h-full bg-gradient-to-r from-[#FE7804] to-[#FF451D] rounded-lg flex items-center px-8 text-white font-semibold">
                   Search
                 </span>
@@ -1000,7 +1032,7 @@ export default function Myaccount() {
 
           <br />
           {isPaymentSearchCkecked && (
-            <div className=" w-full mb-14 mt-8">
+            <div className="w-full mt-8 mb-14">
               {searchedPayments.length > 0 ? (
                 <div>
                   {searchedPayments.map((item) => (
@@ -1017,7 +1049,7 @@ export default function Myaccount() {
                   ))}
                 </div>
               ) : (
-                <div className=" w-full p-7 flex flex-col justify-center items-center mb-9">
+                <div className="flex flex-col items-center justify-center w-full p-7 mb-9">
                   <video autoPlay loop className="w-[200px] h-auto">
                     <source src={SearchError} type="video/webm" />
                     Your browser does not support the video tag.
@@ -1031,7 +1063,7 @@ export default function Myaccount() {
           )}
 
           {isNewastPaymentCkecked && (
-            <div className=" w-full mb-14 mt-8">
+            <div className="w-full mt-8 mb-14">
               {sortedPaymentsDateDesc.map((item) => {
                 return (
                   <Payment_history_card
@@ -1050,7 +1082,7 @@ export default function Myaccount() {
           )}
 
           {isOldeststPaymentCkecked && (
-            <div className=" w-full mb-14 mt-8">
+            <div className="w-full mt-8 mb-14">
               {sortedPaymentsDateAsc.map((item) => {
                 return (
                   <Payment_history_card
@@ -1068,7 +1100,7 @@ export default function Myaccount() {
           )}
 
           {isLargAmountCkecked && (
-            <div className=" w-full mb-14 mt-8">
+            <div className="w-full mt-8 mb-14">
               {sortedPaymentsAmountDesc.map((item) => {
                 return (
                   <Payment_history_card
@@ -1086,7 +1118,7 @@ export default function Myaccount() {
           )}
 
           {isLowestAmountCkecked && (
-            <div className=" w-full mb-14 mt-8">
+            <div className="w-full mt-8 mb-14">
               {sortedPaymentsAmountAsc.map((item) => {
                 return (
                   <Payment_history_card
@@ -1104,7 +1136,7 @@ export default function Myaccount() {
           )}
 
           {AllDeleteConfirmMessage && (
-            <div className=" z-50 fixed top-0 left-0 w-full h-screen flex justify-center bg-black bg-opacity-80 items-center">
+            <div className="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen bg-black bg-opacity-80">
               <div className=" flex flex-col justify-center items-center w-[28%] border-2 border-[#FE7804] border-opacity-50 rounded-lg bg-[#1B1E20]">
                 <div className="mt-6">
                   <video autoPlay loop className="w-[150px] h-auto">
@@ -1120,7 +1152,7 @@ export default function Myaccount() {
                   <br />
                   Make suer you want to do this.
                 </p>
-                <div className=" w-full mt-12 mb-5 flex justify-end px-8">
+                <div className="flex justify-end w-full px-8 mt-12 mb-5 ">
                   <button
                     onClick={() => setAllDeleteConfirmMessage(false)}
                     className=" bg-transparent border-2 border-[#FE7804] text-[#FE7804] hover:bg-[#FE7804] hover:text-white rounded-lg py-2 px-5 mr-4 font-semibold"
@@ -1146,7 +1178,7 @@ export default function Myaccount() {
       {/* ######################### Downloads ########################   */}
       {selectedDiv === "Downloads" && (
         <div className="w-11/12 mx-auto mt-5">
-          <h1 className="text-white text-2xl font-bold mb-6">My Games</h1>
+          <h1 className="mb-6 text-2xl font-bold text-white">My Games</h1>
           <div className="flex mb-8">
             <div className=" w-1/2 p-[2px] bg-gradient-to-l from-[#FE7804] to-[#FF451D] rounded-lg">
               <input
@@ -1175,7 +1207,7 @@ export default function Myaccount() {
                   })}
                 </div>
               ) : (
-                <div className=" w-full p-7 flex flex-col justify-center items-center mb-9">
+                <div className="flex flex-col items-center justify-center w-full p-7 mb-9">
                   <video autoPlay loop className="w-[200px] h-auto">
                     <source src={SearchError} type="video/webm" />
                     Your browser does not support the video tag.
@@ -1200,16 +1232,27 @@ export default function Myaccount() {
         </div>
       )}
 
-      {/* ######################### Reviews ########################   */}
-      {selectedDiv === "Reviews" && (
+     {/* ######################### Reviews ########################   */}
+     {selectedDiv === "Reviews" && (
         <div className="w-11/12 mx-auto mt-3">
-          <h1>Reviews</h1>
+          <h1 className="mb-6 text-2xl font-bold text-white">Reviews</h1>
+          <div className="flex flex-col space-y-4">
+            {feedbacks.length > 0 ? (
+              feedbacks.map(feedback => (
+                <div key={feedback._id} className="p-4 bg-[#2A2B2F] text-white rounded-lg">
+                  <p>{feedback.feedback}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-white">No feedbacks found.</p>
+            )}
+          </div>
         </div>
       )}
 
       {/* ######################### Events ########################   */}
       {selectedDiv === "Events" && (
-        <div className="w-11/12 mx-auto px-5 mt-3">
+        <div className="w-11/12 px-5 mx-auto mt-3">
           <h1>Events</h1>
         </div>
       )}
@@ -1217,12 +1260,12 @@ export default function Myaccount() {
       {/* ######################### Settings dasun ########################   */}
       {selectedDiv === 'Settings' && (
         <div className="w-11/12 mx-auto mt-3">
-          <div className="text-white font-sans p-8">
+          <div className="p-8 font-sans text-white">
             <div className="max-w-4xl mx-auto">
-                <h1 className="text-2xl font-bold mb-6">My Profile</h1>
+                <h1 className="mb-6 text-2xl font-bold">My Profile</h1>
                 
                 <div className="mb-8">
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="flex items-center justify-between mb-4">
                         <div className="w-[48%]">
                             <label htmlFor="firstName" className="block text-sm font-medium">First Name</label>
                             <input onChange={(e)=> setFirstName(e.target.value)} type="text" id="firstName" value={firstName == '' ? userData?.firstname : firstName} className={inputClasses} />
@@ -1246,8 +1289,8 @@ export default function Myaccount() {
                 <hr/><br/>
 
                 <div className="mb-8">
-                    <h2 className="text-xl font-semibold mb-4">Change Password</h2>
-                    <div className="flex justify-between items-center">
+                    <h2 className="mb-4 text-xl font-semibold">Change Password</h2>
+                    <div className="flex items-center justify-between">
                         <div className="w-full mr-4">
                             <label htmlFor="newPassword" className="block text-sm font-medium">Create Password</label>
                             <input type="password" id="newPassword" className={inputClasses}/>
@@ -1261,15 +1304,15 @@ export default function Myaccount() {
                 </div>
 
                 <hr/><br/>
-                  <h2 className="text-xl font-semibold mb-4">Change profile picture</h2>
+                  <h2 className="mb-4 text-xl font-semibold">Change profile picture</h2>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
-                    className='border border-orange-600 text-white p-2'
+                    className='p-2 text-white border border-orange-600'
                     ref={imageInputRef}
                   />
-                  <button onClick={handleUpload} className='bg-green-600 hover:bg-green-700 ml-10 text-white font-bold py-2 px-4 rounded-lg'>Upload Image</button>
+                  <button onClick={handleUpload} className='px-4 py-2 ml-10 font-bold text-white bg-green-600 rounded-lg hover:bg-green-700'>Upload Image</button>
                   <br/><br/>
                 <hr/><br/>
 
@@ -1283,8 +1326,8 @@ export default function Myaccount() {
       {/* ######################### All Users ########################   */}
       {selectedDiv === 'AllUsers' && (
       <div className="w-11/12 mx-auto mt-5">
-      <h1 className="text-white text-2xl font-bold mb-6">All Users</h1>
-      <div className="mb-8 flex gap-4 items-center">
+      <h1 className="mb-6 text-2xl font-bold text-white">All Users</h1>
+      <div className="flex items-center gap-4 mb-8">
   <button onClick={generatePDF} className="float-right bg-gradient-to-tr from-[#FF451D] to-[#FE7804] px-4 py-2 text-[18px] font-semibold rounded-lg text-white">
     Generate PDF
   </button>
@@ -1317,7 +1360,7 @@ export default function Myaccount() {
 
       
       <div id="pdf-table" className="overflow-x-auto">
-        <table className="table-auto w-full border-collapse border border-gray-800">
+        <table className="w-full border border-collapse border-gray-800 table-auto">
           <thead>
             <tr>
               <th className="border px-4 py-2 border-[#1F2937] bg-gradient-to-tr from-[#FF451D] to-[#FE7804] text-white">Username</th>
@@ -1345,12 +1388,12 @@ export default function Myaccount() {
     </div>
       )}
 
-      <div className=" mt-10">
+      <div className="mt-10 ">
         <Footer />
       </div>
 
       {loading && (
-        <div className=" z-50 fixed top-0 left-0 w-full h-screen flex justify-center bg-black bg-opacity-50 items-center">
+        <div className="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen bg-black bg-opacity-50 ">
           <HashLoader size="75" color="#FE7804" />
         </div>
       )}

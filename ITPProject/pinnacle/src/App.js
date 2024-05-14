@@ -16,6 +16,7 @@ import StreamDetailsPage from './pages/StreamDetailsPage';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Leaderboardminigames from './pages/Leaderboardminigames';
+import UpdateFeedback from './UpdateFeedback'
 
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
           <Route path="/register" element={<Register />}></Route>
           <Route path="/login" element={<Login />}></Route>
           <Route path='/leaderboardminigame' element={<Leaderboardminigames/>}></Route>
+          <Route path='/updatefeedback/:id' element={<UpdateFeedback/>}></Route>
         </Routes>
       </BrowserRouter>
     </div>

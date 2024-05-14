@@ -1568,6 +1568,22 @@ app.post('/api/sendStreamNotification', async (req, res) => {
 //::::::::::::::::::::::::::::::::::::::::::::::Special Function Stream::::::::::::::::::::::::::::::::::::::::::::::
 
 
+
+app.get('/getallfeedbacks', (req, res) => {
+  FeedbackModel.find()
+    .then(feedbacks => {
+      console.log('Feedbacks fetched:', feedbacks);
+      res.json(feedbacks);
+    })
+    .catch(err => {
+      console.error('Error fetching feedbacks:', err);
+      res.status(500).json({ error: err.message });
+    });
+});
+
+
+
+
 app.listen(3001, () => {
   console.log("Server is Running");
 });

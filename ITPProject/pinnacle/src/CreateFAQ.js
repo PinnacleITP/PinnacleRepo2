@@ -28,8 +28,11 @@ function CreateFAQ() {
   return (
     <div>
       <Header/>
+      
     <div className="min-h-screen px-4 py-8 bg-[#2A2B2F]">
+      
       <div className="max-w-md p-6 mx-auto rounded-lg bg-neutral-800">
+      
         <form onSubmit={handleSubmit}>
           <h2 className="mb-4 text-2xl font-bold text-white">Add FAQ</h2>
           <div className="mb-4">
