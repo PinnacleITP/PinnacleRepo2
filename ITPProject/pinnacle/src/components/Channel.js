@@ -117,32 +117,32 @@ export default function Channel(props) {
 
   const createStream = async (e) => {
     e.preventDefault();
-    if (!name.trim()) {
-      alert("Name is required");
-      return;
-    }
-    if (!description.trim()) {
-      alert("Description is required");
-      return;
-    }
+    // if (!name.trim()) {
+    //   alert("Name is required");
+    //   return;
+    // }
+    // if (!description.trim()) {
+    //   alert("Description is required");
+    //   return;
+    // }
 
-    if (thumbnail && thumbnail.size > 10485760) {
-      alert("Thumbnail must be less than 10 MB");
-      return;
-    }
-    if (video && video.size > 104857600) {
-      alert("Video must be less than 100 MB");
-      return;
-    }
+    // if (thumbnail && thumbnail.size > 10485760) {
+    //   alert("Thumbnail must be less than 10 MB");
+    //   return;
+    // }
+    // if (video && video.size > 104857600) {
+    //   alert("Video must be less than 100 MB");
+    //   return;
+    // }
 
-    const codePattern =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!codePattern.test(secretVideoCode)) {
-      alert(
-        "Secret Video Code must contain at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long"
-      );
-      return;
-    }
+    // const codePattern =
+    //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    // if (!codePattern.test(secretVideoCode)) {
+    //   alert(
+    //     "Secret Video Code must contain at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long"
+    //   );
+    //   return;
+    // }
     try {
       setLoading(true);
       // Upload video file
@@ -165,9 +165,20 @@ export default function Channel(props) {
         channel_ID: channelDetails._id,
         secretVideoCode,
         gameType,
+        userId
       });
-      console.log("Stream created successfully:", response.data);
-      // window.location.reload();
+
+      crystalCountUpdater();
+      //-------dasun notification
+      const newStream = response.data; // Assuming response contains the created stream details
+  
+      // Send notification to all users about the new stream
+      await axios.post("http://localhost:3001/api/sendStreamNotification", newStream);
+  
+      console.log("Stream created and notification sent successfully:", newStream);
+  
+
+      // Reset form state
       setLoading(false);
       setCreateSuccessMessagechecked(true);
       handleChannelfunction("channelVideos");
@@ -211,6 +222,16 @@ export default function Channel(props) {
       console.error("Error creating Channel:", error);
     }
   };
+
+  const crystalCountUpdater = () => {
+    const newCrystalcount = props.crystalcount + 100;
+    axios.put(`http://localhost:3001/updateCrystalCount/${props.memberID}`, { newCrystalcount })
+      .then(result => {
+          console.log(result);
+      })
+      .catch(err => console.log(err));
+  }
+
   const channelUpdate = async (e) => {
     e.preventDefault();
     setLoading(true);

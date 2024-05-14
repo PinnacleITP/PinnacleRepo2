@@ -1,5 +1,14 @@
 module.exports = ({ name, email, description, officialpice, crystal, discount, pid, date, subtotal }) => {
     const today = new Date();
+    var dateObject = new Date(date);
+    var year = dateObject.getFullYear();
+    var month = (dateObject.getMonth() + 1).toString().padStart(2, '0');
+    var day = dateObject.getDate().toString().padStart(2, '0');
+    var hours = dateObject.getHours().toString().padStart(2, '0');
+    var minutes = dateObject.getMinutes().toString().padStart(2, '0');
+    var seconds = dateObject.getSeconds().toString().padStart(2, '0');
+
+    var formattedDateTime = `${year}.${month}.${day} H${hours}:${minutes}:${seconds}`;
 return `
 <!doctype html>
 <html>
@@ -89,22 +98,27 @@ return `
             float: right;
             color: #494646;
         }
+
+        .successimage{
+            margin: 15px 42%;
+        }
     </style>
 </head>
 
 <body>
     <div class="invoice-box">
         <div class="logod">
-            <img class="logoh" width="50px" height="50px" width="150px" height="150px"
-                scr="https://res.cloudinary.com/dg8cpnx1m/image/upload/v1713894657/Games/cjkembjpn4tijij7hbhi.jpg " />
-            <span class="name">PINNACLE<br /><span class="subtitle">Pinnacle gaming pvt(ltd).</span></span>
+            <img class="logoh" width="260px" height="60px"
+                src="https://res.cloudinary.com/dg8cpnx1m/image/upload/v1715581878/channelDP/uvx3d7eizzhk5xun0le9.png" />
 
         </div>
         <p class="date">Date: ${` ${today.getDate()}. ${today.getMonth() + 1}. ${today.getFullYear()}`}</p>
         <br />
         <br />
         <h1 class="invicetitle">INVOICE</h1><br/>
-
+        <img class="successimage" width="120px" height="120px"
+                src="https://res.cloudinary.com/dg8cpnx1m/image/upload/v1715580950/channelDP/xd5ojhpnhumimaqbkmzv.png" />
+                <br/>
         <h1 class="successtitle">Payment Successfull!</h1>
         <br/>
         <span class="st">Pay from</span><br />
@@ -126,19 +140,18 @@ return `
         <span class="st">Total debit amount</span><span class="val" style="font-weight: 700;">USD ${subtotal}.00</span><br />
 
         <br />
-        <span class="st">Date & Time</span><span class="val" style="font-weight: 700;">${date}</span><br />
+        <span class="st">Date & Time</span><span class="val" style="font-weight: 700;">${formattedDateTime}</span><br />
 
         <br />
         <span class="st">Transaction No</span><span class="val" style="font-weight: 700;">${pid}</span><br />
 
         <br />
         <br />
-        <p style="font-size: 17px; text-align: center;">Thank you for your Purchace</p>
+        <p style="font-size: 17px; text-align: center;">Thank you for your Purchase</p>
         <hr />
         <div class="logod" style="margin-top: 20px;">
-            <img class="logoh" width="50px" height="50px" width="150px" height="150px"
-                scr="https://res.cloudinary.com/dg8cpnx1m/image/upload/v1713894657/Games/cjkembjpn4tijij7hbhi.jpg " />
-            <span class="name">PINNACLE<br /><span class="subtitle">Pinnacle gaming pvt(ltd).</span></span>
+            <img class="logoh" width="260px" height="60px"
+                src="https://res.cloudinary.com/dg8cpnx1m/image/upload/v1715581878/channelDP/uvx3d7eizzhk5xun0le9.png" />
 
         </div>
         <p style="font-size: 15px; color: #494646; text-align: center;">Copyright @ 2024 Pinnalce. - All rights reserved</p>
