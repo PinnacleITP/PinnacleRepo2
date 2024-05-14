@@ -5,12 +5,19 @@ Welcome to our game streaming and purchasing platform repository! This project i
 Features
 
 Membership management: User registration, login, and profile management.
+
 Game management: Cataloging and categorizing games available for streaming and purchase.
+
 Streaming management: Seamless streaming of games for users.
-Social engagement: Integration of social features to enhance user interaction.
+
+Social engagement: Integration of social features to enhance user interaction
+.
 Feedback management: Gathering and analyzing user feedback to improve the platform.
+
 Shopping cart management: Smooth handling of user purchases.
+
 Payment management: Secure payment processing for purchasing games or premium services.
+
 Leaderboard management: Tracking and displaying user achievements and rankings.
 
 About Us
