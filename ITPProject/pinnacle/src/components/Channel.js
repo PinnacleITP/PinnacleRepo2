@@ -166,8 +166,15 @@ export default function Channel(props) {
         secretVideoCode,
         gameType,
       });
-      console.log("Stream created successfully:", response.data);
-      // window.location.reload();
+      
+      const newStream = response.data; // Assuming response contains the created stream details
+  
+      // Send notification to all users about the new stream
+      await axios.post("http://localhost:3001/api/sendStreamNotification", newStream);
+  
+      console.log("Stream created and notification sent successfully:", newStream);
+  
+      // Reset form state
       setLoading(false);
       setCreateSuccessMessagechecked(true);
       handleChannelfunction("channelVideos");
@@ -178,8 +185,10 @@ export default function Channel(props) {
       setType("action");
       setSecretVideoCode("");
       setGameType("other");
+  
     } catch (error) {
-      console.error("Error creating stream:", error);
+      console.error("Error creating stream or sending notification:", error);
+      setLoading(false);
     }
   };
 
@@ -285,8 +294,8 @@ export default function Channel(props) {
       )}
       {!(channelDetails === null) && (
         <div>
-          <div className="flex relative justify-start my-10">
-            <div className=" mr-10">
+          <div className="relative flex justify-start my-10">
+            <div className="mr-10 ">
               <img
                 src={channelDetails.channelDp}
                 alt="channelDp"
@@ -294,7 +303,7 @@ export default function Channel(props) {
                 style={{ width: "200px", height: "200px" }}
               />
             </div>
-            <div className="item-center flex flex-col">
+            <div className="flex flex-col item-center">
               <h1 className="font-extrabold  text-[56px]  ">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#FF451D] to-[#FE7804]">
                   {channelDetails.channelName}
@@ -308,7 +317,7 @@ export default function Channel(props) {
                 {subscribercount} Subscribers
               </h1>
             </div>
-            <div className="absolute right-0 bottom-0 ">
+            <div className="absolute bottom-0 right-0 ">
               <div
                 className="my-3 mx-2 py-1 px-5 border-2 border-[#FE7804] rounded-3xl text-[#FE7804] font-semibold  cursor-pointer hover:bg-gradient-to-t from-[#FF451D] to-[#FE7804] hover:text-white text-[16px]"
                 onClick={handleChannelUpdateClick}
@@ -346,12 +355,12 @@ export default function Channel(props) {
       )}
       <div>
         {channelDiv === "createChannel" && (
-          <div className="fixed z-50 backdrop-blur-lg bg-opacity-80 top-0 left-0 h-screen w-full justify-center items-center flex">
+          <div className="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen backdrop-blur-lg bg-opacity-80">
             <form
               onSubmit={createNewChannel}
               className="relative z-50 p-8 w-[30%] border-2 border-[#FE7804] rounded-lg bg-[#1B1E20]"
             >
-              <div className=" float-right cursor-pointer">
+              <div className="float-right cursor-pointer ">
                 <img
                   onClick={() => setChannelDiv(false)}
                   width="25"
@@ -360,10 +369,10 @@ export default function Channel(props) {
                   alt="multiply"
                 />
               </div>
-              <h1 className="text-white text-center text-2xl mb-10 mt-2 font-bold">
+              <h1 className="mt-2 mb-10 text-2xl font-bold text-center text-white">
                 Create Your Own Channel
               </h1>
-              <label className="block text-white mb-2">Channel Name:</label>
+              <label className="block mb-2 text-white">Channel Name:</label>
               <input
                 type="text"
                 value={channelName}
@@ -372,7 +381,7 @@ export default function Channel(props) {
                 className="text-white h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50"
               />
 
-              <label className="block text-white mt-4 mb-2">
+              <label className="block mt-4 mb-2 text-white">
                 Description about channel:
               </label>
               <input
@@ -383,7 +392,7 @@ export default function Channel(props) {
                 className="text-white h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50"
               />
 
-              <label className="block text-white mt-4 mb-2">
+              <label className="block mt-4 mb-2 text-white">
                 Display Picture(Dp):
               </label>
               <input
@@ -408,8 +417,8 @@ export default function Channel(props) {
           </div>
         )}
         {channelDiv === "addStream" && (
-          <div className="mx-auto w-1/2 h-full  items-center justify-center">
-            <h1 className="text-white text-center text-2xl mb-4">
+          <div className="items-center justify-center w-1/2 h-full mx-auto">
+            <h1 className="mb-4 text-2xl text-center text-white">
               Add new Stream
             </h1>
             <form
@@ -422,49 +431,49 @@ export default function Channel(props) {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
+                className="block w-full px-3 py-2 mt-2 text-white bg-gray-800 border border-gray-700 rounded-md"
               />
 
-              <label className="block text-white mt-4">Description:</label>
+              <label className="block mt-4 text-white">Description:</label>
               <input
                 type="text"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
-                className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
+                className="block w-full px-3 py-2 mt-2 text-white bg-gray-800 border border-gray-700 rounded-md"
               />
               <div className="flex">
-                <div className="my-2 mx-1">
-                  <label className="block text-white mt-4">Stream:</label>
+                <div className="mx-1 my-2">
+                  <label className="block mt-4 text-white">Stream:</label>
                   <input
                     type="file"
                     accept="video/*"
                     id="video"
                     onChange={(e) => setVideo(e.target.files[0])}
                     required
-                    className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
+                    className="block w-full px-3 py-2 mt-2 text-white bg-gray-800 border border-gray-700 rounded-md"
                   />
                 </div>
-                <div className="my-2 mx-1">
-                  <label className="block text-white mt-4">Thumbnail:</label>
+                <div className="mx-1 my-2">
+                  <label className="block mt-4 text-white">Thumbnail:</label>
                   <input
                     type="file"
                     accept="image/*"
                     id="thumbnail"
                     onChange={(e) => setThumbnail(e.target.files[0])}
                     required
-                    className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
+                    className="block w-full px-3 py-2 mt-2 text-white bg-gray-800 border border-gray-700 rounded-md"
                   />
                 </div>
               </div>
               <div className="flex">
                 <div className="w-1/3 mx-1">
-                  <label className="block text-white mt-4">Type:</label>
+                  <label className="block mt-4 text-white">Type:</label>
                   <select
                     value={type}
                     onChange={(e) => setType(e.target.value)}
                     required
-                    className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
+                    className="block w-full px-3 py-2 mt-2 text-white bg-gray-800 border border-gray-700 rounded-md"
                   >
                     <option value="action">Action</option>
                     <option value="racing">Racing</option>
@@ -474,12 +483,12 @@ export default function Channel(props) {
                   </select>
                 </div>
                 <div className="w-1/3 mx-1">
-                  <label className="block text-white mt-4">Game Type:</label>
+                  <label className="block mt-4 text-white">Game Type:</label>
                   <select
                     value={gameType}
                     onChange={(e) => setGameType(e.target.value)}
                     required
-                    className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
+                    className="block w-full px-3 py-2 mt-2 text-white bg-gray-800 border border-gray-700 rounded-md"
                   >
                     <option value="other">Other</option>
                     <option value="CallOfDuty">Call Of Duty</option>
@@ -492,7 +501,7 @@ export default function Channel(props) {
                   </select>
                 </div>
                 <div className="w-1/3 mx-1">
-                  <label className="block text-white mt-4">Secret Code:</label>
+                  <label className="block mt-4 text-white">Secret Code:</label>
                   <input
                     type="text"
                     value={secretVideoCode}
@@ -501,7 +510,7 @@ export default function Channel(props) {
                     title="The secret video code must include capital letters, simple letters, numbers, symbols, and should be 8 characters long."
                     required
                     maxLength={8}
-                    className="block w-full mt-2 px-3 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
+                    className="block w-full px-3 py-2 mt-2 text-white bg-gray-800 border border-gray-700 rounded-md"
                   />
                 </div>
               </div>
@@ -523,12 +532,12 @@ export default function Channel(props) {
           </div>
         )}
         {isChannelUpdateClicked && (
-          <div className="fixed z-50 backdrop-blur-lg bg-opacity-80 top-0 left-0 h-screen w-full justify-center items-center flex">
+          <div className="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen backdrop-blur-lg bg-opacity-80">
             <form
               onSubmit={channelUpdate}
               className="relative z-50 p-8 w-[30%] border-2 border-[#FE7804] rounded-lg bg-[#1B1E20]"
             >
-              <div className=" float-right cursor-pointer">
+              <div className="float-right cursor-pointer ">
                 <img
                   onClick={() => setIsChannelUpdateClicked(false)}
                   width="25"
@@ -537,10 +546,10 @@ export default function Channel(props) {
                   alt="multiply"
                 />
               </div>
-              <h1 className="text-white text-center text-2xl mb-10 mt-2 font-bold">
+              <h1 className="mt-2 mb-10 text-2xl font-bold text-center text-white">
                 Update Your Channel
               </h1>
-              <label className="block text-white mb-2">Channel Name:</label>
+              <label className="block mb-2 text-white">Channel Name:</label>
               <input
                 type="text"
                 value={channelName}
@@ -549,7 +558,7 @@ export default function Channel(props) {
                 className="text-white h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50"
               />
 
-              <label className="block text-white mt-4 mb-2">
+              <label className="block mt-4 mb-2 text-white">
                 Description about channel:
               </label>
               <input
@@ -560,7 +569,7 @@ export default function Channel(props) {
                 className="text-white h-[45px] w-full bg-[#2A2B2F] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50"
               />
 
-              <label className="block text-white mt-4 mb-2">
+              <label className="block mt-4 mb-2 text-white">
                 Display Picture(Dp):
               </label>
               <input
@@ -587,7 +596,7 @@ export default function Channel(props) {
           setIsChannelUpdateClicked(false);
         </div>)} */}
         {loading && (
-          <div className=" z-50 fixed top-0 left-0 w-full h-screen flex justify-center bg-black bg-opacity-50 items-center">
+          <div className="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen bg-black bg-opacity-50 ">
             <HashLoader size="75" color="#FE7804" />
           </div>
         )}
@@ -616,7 +625,7 @@ export default function Channel(props) {
         )}
           
 {isDeleteWarning && (
-        <div className=" z-50 fixed top-0 left-0 w-full h-screen flex justify-center bg-black bg-opacity-80 items-center">
+        <div className="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen bg-black bg-opacity-80">
           <div className=" flex flex-col justify-center items-center w-[28%] border-2 border-[#FE7804] border-opacity-50 rounded-lg bg-[#1B1E20]">
             <div className="mt-6">
               <video autoPlay loop className="w-[150px] h-auto">
@@ -629,7 +638,7 @@ export default function Channel(props) {
               Once you delete record, thre's no getting it back.<br/>
               Make suer you want to do this.
             </p>
-            <div className=" w-full mt-12 mb-5 flex justify-end px-8">
+            <div className="flex justify-end w-full px-8 mt-12 mb-5 ">
             <button
                 onClick={() => setIsDeleteWarning(false)}
                 className=" bg-transparent border-2 border-[#FE7804] text-[#FE7804] hover:bg-[#FE7804] hover:text-white rounded-lg py-2 px-5 mr-4 font-semibold"

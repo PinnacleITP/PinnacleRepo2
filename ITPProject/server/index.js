@@ -1054,6 +1054,416 @@ app.put("/updateEndDate/:id", (req, res) => {
     .catch((err) => res.json(err));
 });
 
+app.post("/season", (req, res) => {
+  SeasonModel.create(req.body)
+    .then((season) => res.json(season))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+app.get("/api/readSeason/:id", (req, res) => {
+  const id = req.params.id;
+  SeasonModel.findById(id)
+    .then((season) => {
+      if (!season) {
+        return res.status(404).json({ error: "Season not found" });
+      }
+      res.json(season);
+    })
+    .catch((err) => {
+      console.error("Error retrieving season:", err);
+      res.status(500).json({ error: "Internal server error" });
+    });
+});
+
+app.put("/updateEndDate/:id", (req, res) => {
+  const id = req.params.id;
+  SeasonModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      endDate: req.body.newEndDate,
+    }
+  )
+    .then((season) => res.json(season))
+    .catch((err) => res.json(err));
+});
+app.get('/getFeedback/:id',(req,res) => {
+  const id=req.params.id;
+  FeedbackModel.findById({_id:id})
+  .then(feedbacks =>res.json(feedbacks))
+  .catch(err => res.json(err))
+})
+
+app.put('/updateFeedback/:id',(req,res) => {
+  const id=req.params.id;
+  FeedbackModel.findByIdAndUpdate({_id:id},{
+      name:req.body.name,
+      email:req.body.email,
+      feedback:req.body.feedback})
+  .then(feedbacks =>res.json(feedbacks))
+  .catch(err => res.json(err))
+})
+
+app.delete('/deleteFeedback/:id',(req,res) => {
+  const id=req.params.id;
+  FeedbackModel.findByIdAndDelete({_id:id})
+  .then(res => res.json(res))
+  .catch(err => res.json(err))
+})
+
+app.post("/createfeedback",(req,res) => {
+  FeedbackModel.create(req.body)
+  .then(feedbacks => res.json(feedbacks))
+  .catch(err => res.json(err))
+})
+
+
+app.post("/createfaq",(req,res) => {
+  FaqModel.create(req.body)
+  .then(faqs => res.json(faqs))
+  .catch(err => res.json(err))
+})
+
+app.delete('/deletefaq/:id',(req,res) =>{
+  const id=req.params.id;
+  FaqModel.findByIdAndDelete({_id:id})
+  .then(res =>res.json(res))
+  .catch(err => res.json(err))
+})
+
+// ----------levelling system code start ----------
+//Updated by Ishan
+app.put("/updateViewCount/:id", (req, res) => {
+  const id = req.params.id;
+  const userId = req.body.userId;
+  StreamModel.findByIdAndUpdate({ _id: id },
+    {
+      viewCount: req.body.viewCount,
+    }
+  )
+  .then((stream) => {
+    // Find the user by _id and update xpCount
+    UserModel.findOneAndUpdate(
+      { _id: req.body.userId },
+      { $inc: { xpCount: 5 } },
+      { new: true }
+    )
+      .then((user) => {
+        if (user) {
+          const level = Math.floor(user.xpCount / 100);
+          if (user.xpCount >= 500 && user.xpCount < 1000) {
+            UserModel.findOneAndUpdate(
+              { _id: req.body.userId },
+              { $set: { memberLevel: level, league: 'Master' } },
+              { new: true }
+            )
+            .then((updatedUser) => {
+              // Send response with updated user
+              res.json({ stream, user: updatedUser });
+            })
+            .catch((err) => res.status(500).json({ error: err.message }));
+          } else if(user.xpCount >= 1000 && user.xpCount < 1500){
+            UserModel.findOneAndUpdate(
+              { _id: req.body.userId },
+              { $set: { memberLevel: level, league: 'Legendary' } },
+              { new: true }
+            )
+            .then((updatedUser) => {
+              // Send response with updated user
+              res.json({ stream, user: updatedUser });
+            })
+            .catch((err) => res.status(500).json({ error: err.message }));
+          }else if(user.xpCount >= 1500){
+            UserModel.findOneAndUpdate(
+              { _id: req.body.userId },
+              { $set: { memberLevel: level, league: 'Legendary' } },
+              { new: true }
+            )
+            .then((updatedUser) => {
+              // Send response with updated user
+              res.json({ stream, user: updatedUser });
+            })
+            .catch((err) => res.status(500).json({ error: err.message }));
+          }else {
+            UserModel.findOneAndUpdate(
+              { _id: req.body.userId },
+              { $set: { memberLevel: level, league: 'Rookie' } },
+              { new: true }
+            )
+            .then((updatedUser) => {
+              // Send response with updated user
+              res.json({ stream, user: updatedUser });
+            })
+            .catch((err) => res.status(500).json({ error: err.message }));
+          }
+        } else {
+          res.status(404).json({ error: "User not found" });
+        }
+      })
+      .catch((err) => res.status(500).json({ error: err.message }));
+    })
+    .catch((err) => res.status(500).json({ error: err.message }));
+  });
+
+  //Updated by Ishan
+app.post("/createdounloadRecod", (req, res) => {
+  DownloadModel.create(req.body)
+    .then((download) => {
+      // Find the user by _id and update xpCount
+      UserModel.findOneAndUpdate(
+        { _id: req.body.userId },
+        { $inc: { xpCount: 50 } },
+        { new: true }
+      )
+        .then((user) => {
+          if (user) {
+            const level = Math.floor(user.xpCount / 100);
+            if (user.xpCount >= 500 && user.xpCount < 1000) {
+              UserModel.findOneAndUpdate(
+                { _id: req.body.userId },
+                { $set: { memberLevel: level, league: 'Master' } },
+                { new: true }
+              )
+              .then((updatedUser) => {
+                // Send response with updated user
+                res.json({ download, user: updatedUser });
+              })
+              .catch((err) => res.status(500).json({ error: err.message }));
+            } else if(user.xpCount >= 1000 && user.xpCount < 1500){
+              UserModel.findOneAndUpdate(
+                { _id: req.body.userId },
+                { $set: { memberLevel: level, league: 'Legendary' } },
+                { new: true }
+              )
+              .then((updatedUser) => {
+                // Send response with updated user
+                res.json({ download, user: updatedUser });
+              })
+              .catch((err) => res.status(500).json({ error: err.message }));
+            }else if(user.xpCount >= 1500){
+              UserModel.findOneAndUpdate(
+                { _id: req.body.userId },
+                { $set: { memberLevel: level, league: 'Legendary' } },
+                { new: true }
+              )
+              .then((updatedUser) => {
+                // Send response with updated user
+                res.json({ download, user: updatedUser });
+              })
+              .catch((err) => res.status(500).json({ error: err.message }));
+            }else {
+              UserModel.findOneAndUpdate(
+                { _id: req.body.userId },
+                { $set: { memberLevel: level, league: 'Rookie' } },
+                { new: true }
+              )
+              .then((updatedUser) => {
+                // Send response with updated user
+                res.json({ stream, user: updatedUser });
+              })
+              .catch((err) => res.status(500).json({ error: err.message }));
+            }
+          } else {
+            res.status(404).json({ error: "User not found" });
+          }
+        })
+        .catch((err) => res.status(500).json({ error: err.message }));
+    })
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+//Updated by Ishan
+// create new stream
+app.post("/createStream", (req, res) => {
+  // Create the stream
+  StreamModel.create(req.body)
+    .then((stream) => {
+      // Find the user by _id and update xpCount
+      UserModel.findOneAndUpdate(
+        { _id: req.body.userId },
+        { $inc: { xpCount: 20 } },
+        { new: true }
+      )
+        .then((user) => {
+          if (user) {
+            const level = Math.floor(user.xpCount / 100);
+            if (user.xpCount >= 500 && user.xpCount < 1000) {
+              UserModel.findOneAndUpdate(
+                { _id: req.body.userId },
+                { $set: { memberLevel: level, league: 'Master' } },
+                { new: true }
+              )
+              .then((updatedUser) => {
+                // Send response with updated user
+                res.json({ stream, user: updatedUser });
+              })
+              .catch((err) => res.status(500).json({ error: err.message }));
+            } else if(user.xpCount >= 1000 && user.xpCount < 1500){
+              UserModel.findOneAndUpdate(
+                { _id: req.body.userId },
+                { $set: { memberLevel: level, league: 'Legendary' } },
+                { new: true }
+              )
+              .then((updatedUser) => {
+                // Send response with updated user
+                res.json({ stream, user: updatedUser });
+              })
+              .catch((err) => res.status(500).json({ error: err.message }));
+            }else if(user.xpCount >= 1500){
+              UserModel.findOneAndUpdate(
+                { _id: req.body.userId },
+                { $set: { memberLevel: level, league: 'Legendary' } },
+                { new: true }
+              )
+              .then((updatedUser) => {
+                // Send response with updated user
+                res.json({ stream, user: updatedUser });
+              })
+              .catch((err) => res.status(500).json({ error: err.message }));
+            }else {
+              UserModel.findOneAndUpdate(
+                { _id: req.body.userId },
+                { $set: { memberLevel: level, league: 'Rookie' } },
+                { new: true }
+              )
+              .then((updatedUser) => {
+                // Send response with updated user
+                res.json({ stream, user: updatedUser });
+              })
+              .catch((err) => res.status(500).json({ error: err.message }));
+            }
+          } else {
+            res.status(404).json({ error: "User not found" });
+          }
+        })
+        .catch((err) => res.status(500).json({ error: err.message }));
+    })
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+//----------levelling system code end ----------
+
+const sgMail = require('@sendgrid/mail');
+//require('dotenv').config(); // Load environment variables from .env file
+
+// Set SendGrid API key from environment variable
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+const fetchAllEmails = async () => {
+  try {
+    const users = await UserModel.find({}, 'email'); // Fetch only email field
+    return users.map(user => user.email);
+  } catch (error) {
+    console.error('Error fetching emails:', error);
+    return [];
+  }
+};
+
+const sendGameNotificationEmail = async (emails, game) => {
+  try {
+    const msg = {
+      to: emails, // Send to all emails
+      from: 'pinnacleitp@gmail.com', // Replace with your verified sender email
+      subject: `New Game: ${game.name} Available Now!`,
+      text: `Hello!\n\nWe're excited to announce that a new game, "${game.name}," is now available!\n\nType: ${game.type}\n\nCheck it out now on our platform!`,
+    };
+
+    await sgMail.sendMultiple(msg); // Send emails in bulk
+    console.log('Game notification emails sent successfully!');
+  } catch (error) {
+    console.error('Error sending game notification emails:', error.response ? error.response.body : error);
+  }
+};
+
+// Route to handle new game notification
+app.post('/api/sendGameNotification', async (req, res) => {
+  try {
+    const emails = await fetchAllEmails();
+    if (emails.length > 0) {
+      const gameDetails = req.body; // Assume game details are passed in the request
+      await sendGameNotificationEmail(emails, gameDetails);
+    }
+    res.status(200).json({ success: true, message: 'Emails sent successfully!' });
+  } catch (error) {
+    console.error('Error in sendGameNotification:', error);
+    res.status(500).json({ success: false, error: 'Failed to send emails.' });
+  }
+});
+
+
+//::::::::::::::::::::::::::::::::::::::::::::::Special Function Game::::::::::::::::::::::::::::::::::::::::::::::
+
+//::::::::::::::::::::::::::::::::::::::::::::::Special Function Community::::::::::::::::::::::::::::::::::::::::::::::
+
+// Helper function to send community post notification emails
+const sendCommunityPostNotificationEmail = async (emails, post) => {
+  try {
+    const msg = {
+      to: emails, // Send to all emails
+      from: 'pinnacleitp@gmail.com', // Replace with a verified sender email
+      subject: `New Community Post: ${post.name} Released!`,
+      text: `Hello!\n\nWe have a new community post for you!\n\nTitle: "${post.name}"\nType: ${post.type}\nRelease Date: ${post.releasedate}\n\nCheck out the post now!`,
+    };
+
+    await sgMail.sendMultiple(msg); // Send emails in bulk
+    console.log('Community post notification emails sent successfully!');
+  } catch (error) {
+    console.error('Error sending community post notification emails:', error.response ? error.response.body : error);
+  }
+};
+
+
+app.post('/api/sendCommunityPostNotification', async (req, res) => {
+  try {
+    const emails = await fetchAllEmails();
+    if (emails.length > 0) {
+      const postDetails = req.body; // Assume post details are passed in the request
+      await sendCommunityPostNotificationEmail(emails, postDetails);
+    }
+    res.status(200).json({ success: true, message: 'Emails sent successfully!' });
+  } catch (error) {
+    console.error('Error in sendCommunityPostNotification:', error);
+    res.status(500).json({ success: false, error: 'Failed to send emails.' });
+  }
+});
+
+//::::::::::::::::::::::::::::::::::::::::::::::Special Function Community::::::::::::::::::::::::::::::::::::::::::::::
+
+//::::::::::::::::::::::::::::::::::::::::::::::Special Function Stream::::::::::::::::::::::::::::::::::::::::::::::
+
+// Helper function to send stream notification emails
+const sendStreamNotificationEmail = async (emails, stream) => {
+  try {
+    const msg = {
+      to: emails, // Send to all emails
+      from: 'pinnacleitp@gmail.com', // Replace with a verified sender email
+      subject: `New Stream: ${stream.name} is Now Available!`,
+      text: `Hello!\n\nA new stream, "${stream.name}," is now available!\n\nDescription: ${stream.description}\nType: ${stream.type}\n\nCheck it out on our platform!`,
+    };
+
+    await sgMail.sendMultiple(msg); // Send emails in bulk
+    console.log('Stream notification emails sent successfully!');
+  } catch (error) {
+    console.error('Error sending stream notification emails:', error.response ? error.response.body : error);
+  }
+};
+
+// API route to handle new stream notification
+app.post('/api/sendStreamNotification', async (req, res) => {
+  try {
+    const emails = await fetchAllEmails();
+    if (emails.length > 0) {
+      const streamDetails = req.body; // Assume stream details are passed in the request
+      await sendStreamNotificationEmail(emails, streamDetails);
+    }
+    res.status(200).json({ success: true, message: 'Emails sent successfully!' });
+  } catch (error) {
+    console.error('Error in sendStreamNotification:', error);
+    res.status(500).json({ success: false, error: 'Failed to send emails.' });
+  }
+});
+
+//::::::::::::::::::::::::::::::::::::::::::::::Special Function Stream::::::::::::::::::::::::::::::::::::::::::::::
+
 app.listen(3001, () => {
   console.log("Server is Running");
 });

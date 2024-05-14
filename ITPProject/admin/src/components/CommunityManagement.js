@@ -10,9 +10,11 @@ export default function CommunityManagement() {
   const [isFilterBtnChecked, setIsFilterBtnChecked] = useState(false);
   const [isPostAddFormChecked, setIsPostAddFormChecked] = useState(false);
   const [isFilterChecked, setIsFilterChecked] = useState(false);
-  const [isSearchCommunityChecked, setIsSearchCommunityChecked] =useState(false);
+  const [isSearchCommunityChecked, setIsSearchCommunityChecked] =
+    useState(false);
   const [loading, setLoading] = useState(false);
-  const [createSuccessMessagechecked, setCreateSuccessMessagechecked] = useState(false);
+  const [createSuccessMessagechecked, setCreateSuccessMessagechecked] =
+    useState(false);
 
   const [image, setImage] = useState("");
   const [releasedate, setReleasedate] = useState("");
@@ -94,6 +96,18 @@ export default function CommunityManagement() {
     e.preventDefault();
     try {
       setLoading(true);
+
+      // Check if name field is empty
+      if (!name.trim()) {
+        // Set error message if name is empty
+        setNameError("Post name cannot be empty");
+        setLoading(false);
+        return; // Return to prevent further execution
+      }
+
+      // Reset name error if it was previously set
+      setNameError("");
+
       // Upload image file
       const postUrl = image ? await uploadFile("image", image) : null;
 
@@ -109,7 +123,20 @@ export default function CommunityManagement() {
         }
       );
 
-      console.log("Community post created successfully:", response.data);
+      const newPost = response.data; // Assuming response contains the created post details
+
+      // Send notification to all users about the new post
+      await axios.post(
+        "http://localhost:3001/api/sendCommunityPostNotification",
+        newPost
+      );
+
+      console.log(
+        "Community post created and notification sent successfully:",
+        newPost
+      );
+
+      // Reset form state
       setLoading(false);
       setIsPostAddFormChecked(false);
       setCreateSuccessMessagechecked(true);
@@ -118,10 +145,12 @@ export default function CommunityManagement() {
       setName("");
       setType("");
       setReleasedate("");
-
-      // window.location.reload();
     } catch (error) {
-      console.error("Error creating community post:", error);
+      console.error(
+        "Error creating community post or sending notification:",
+        error
+      );
+      setLoading(false);
     }
   };
 
@@ -129,8 +158,31 @@ export default function CommunityManagement() {
     setCreateSuccessMessagechecked(false);
   };
 
+  const handleReleaseDateChange = (e) => {
+    const selectedDate = e.target.value;
+    const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+
+    if (selectedDate < today) {
+      setReleaseDateError("Please select a future date");
+      setReleasedate("");
+    } else {
+      setReleaseDateError("");
+      setReleasedate(selectedDate);
+    }
+  };
+
+  const handleDescriptionChange = (e) => {
+    const enteredDescription = e.target.value;
+    if (enteredDescription.length > 150) {
+      setDescriptionError("Maximum 150 characters allowed");
+    } else {
+      setDescriptionError("");
+      setDescription(enteredDescription);
+    }
+  };
+
   return (
-    <div className="py-5 px-7 text-white ">
+    <div className="py-5 text-white px-7 ">
       <h1 className=" text-[25px] font-bold mb-3">Community Management</h1>
       <button
         onClick={() => setIsPostAddFormChecked(true)}
@@ -151,7 +203,7 @@ export default function CommunityManagement() {
         <button className=" bg-gradient-to-tr from-[#FF451D] to-[#FE7804] px-4 py-2 text-[18px] font-semibold rounded-lg ml-3">
           Search
         </button>
-        <div className=" relative ml-3">
+        <div className="relative ml-3 ">
           <button className=" bg-gradient-to-tr from-[#FF451D] to-[#FE7804] h-full px-2 text-[18px] font-semibold rounded-lg ">
             <img
               onClick={() => {
@@ -165,7 +217,7 @@ export default function CommunityManagement() {
             />
           </button>
           {isFilterBtnChecked && (
-            <div className=" absolute z-10 bg-black bg-opacity-85 pl-5 pr-10 py-3 leading-7">
+            <div className="absolute z-10 py-3 pl-5 pr-10 leading-7 bg-black bg-opacity-85">
               <p
                 onClick={() => {
                   setIsFilterChecked(false);
@@ -228,7 +280,7 @@ export default function CommunityManagement() {
         <div className="py-6 mt-3 text-white ">
           <h1 className=" text-[18px] font-bold">All Posts</h1>
           {!isFilterChecked && (
-            <div className=" flex justify-between flex-wrap">
+            <div className="flex flex-wrap justify-between ">
               {CommunityPosts.map((item) => {
                 return (
                   <div className=" w-[30%]">
@@ -245,7 +297,7 @@ export default function CommunityManagement() {
             </div>
           )}
           {isFilterChecked && (
-            <div className=" flex justify-between flex-wrap">
+            <div className="flex flex-wrap justify-between ">
               {filteredCommunityPosts.map((item) => {
                 return (
                   <div className=" w-[30%]">
@@ -268,7 +320,7 @@ export default function CommunityManagement() {
         <div className="py-6 mt-3 text-white ">
           <h1 className=" text-[18px] font-bold">Search Results</h1>
           {searchedCommunityPosts.length > 0 ? (
-            <div className=" flex justify-between flex-wrap">
+            <div className="flex flex-wrap justify-between ">
               {searchedCommunityPosts.map((item) => {
                 return (
                   <div className=" w-[30%]">
@@ -284,7 +336,7 @@ export default function CommunityManagement() {
               })}
             </div>
           ) : (
-            <div className=" w-full p-7 flex flex-col justify-center items-center mb-9">
+            <div className="flex flex-col items-center justify-center w-full p-7 mb-9">
               <video autoPlay loop className="w-[200px] h-auto">
                 <source src={SearchError} type="video/webm" />
                 Your browser does not support the video tag.
@@ -296,18 +348,18 @@ export default function CommunityManagement() {
       )}
 
       {isPostAddFormChecked && (
-        <div className=" z-40 fixed top-0 left-0 flex items-center justify-center w-full h-full backdrop-blur-lg">
+        <div className="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-full backdrop-blur-lg">
           <form
             onSubmit={createCommunityPost}
             className="bg-[#1B1E20] rounded-2xl border-2 w-[40%] border-[#FE7804] px-10 py-8"
           >
-            <div className=" w-full">
+            <div className="w-full ">
               <h1 className=" inline-block text-[25px] font-bold">
                 Add New Post
               </h1>
               <div className="float-right">
                 <img
-                  className=" cursor-pointer"
+                  className="cursor-pointer "
                   onClick={() => setIsPostAddFormChecked(false)}
                   width="25"
                   height="25"
@@ -315,6 +367,7 @@ export default function CommunityManagement() {
                   alt="multiply"
                 />
               </div>
+              <div className="py-5 text-white px-7 "></div>
               <div className="w-[90%] mx-auto mt-5">
                 <label>Post Name</label>
                 <br />
@@ -324,6 +377,7 @@ export default function CommunityManagement() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
+                 {nameError && <p className="text-red-500">{nameError}</p>}
               </div>
               <div className="w-[90%] mx-auto mt-5 flex justify-between">
                 <div className=" w-[45%]">
@@ -335,6 +389,7 @@ export default function CommunityManagement() {
                     value={releasedate}
                     onChange={(e) => setReleasedate(e.target.value)}
                   />
+                   {releaseDateError && <p className="text-red-500">{releaseDateError}</p>}
                 </div>
                 <div className=" w-[45%]">
                   <label>Game Type</label>
@@ -372,7 +427,7 @@ export default function CommunityManagement() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 ></textarea>
-
+{descriptionError && <p className="text-red-500">{descriptionError}</p>}
                 <button
                   type="submit"
                   className=" mt-8 float-right bg-transparent text-[#FE7804] border-2 border-[#FE7804] hover:bg-[#FE7804] hover:text-white rounded-lg px-5 py-2 text-[16px] font-bold"
@@ -386,14 +441,18 @@ export default function CommunityManagement() {
       )}
 
       {loading && (
-        <div className=" z-50 fixed top-0 left-0 w-full h-screen flex justify-center bg-black bg-opacity-50 items-center">
+        <div className="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen bg-black bg-opacity-50 ">
           <HashLoader size="75" color="#FE7804" />
         </div>
       )}
 
-{createSuccessMessagechecked && (
-  <SuccessPopup  type="Create" item="Community post" onClose={handleCreateCloseSuccessPopup} /> 
-)}
+      {createSuccessMessagechecked && (
+        <SuccessPopup
+          type="Create"
+          item="Community post"
+          onClose={handleCreateCloseSuccessPopup}
+        />
+      )}
     </div>
   );
 }
