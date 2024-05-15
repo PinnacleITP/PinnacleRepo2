@@ -18,17 +18,6 @@ export default function LeaderboardManagement() {
   const [searchResultArr, setSearchResultArr] = useState([]);
   const [createSuccessMessagechecked, setCreateSuccessMessagechecked] = useState(false);
 
-  // const create = ()  => {
-  //   axios
-  //   .post("http://localhost:3001/season", {
-  //     endDate})
-  //   .then((result) => {
-  //     console.log(result);
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
-  // }
   const end = '66280fe4c73c5e6363e0ba46';
 
   useEffect(() => {
@@ -45,8 +34,8 @@ export default function LeaderboardManagement() {
     const currentDate = new Date();
   
     const differenceInMs = futureDate - currentDate;
-    const differenceInDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
-    setdifferenceInDays(differenceInDays);
+    const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24)); // Use Math.ceil to ensure non-negative result
+    setdifferenceInDays(Math.max(differenceInDays, 0)); // Ensure non-negative result
     if (differenceInDays <= 0) {
       // If the future date is past or equal to the current date, set btn to true
       setBtn(true);
@@ -56,8 +45,8 @@ export default function LeaderboardManagement() {
     }
   
     // Use differenceInDays here if needed
-  }, [endDate.endDate]);
-  
+}, [endDate.endDate]);
+
 
 const Updatedate = (e) => {
   e.preventDefault();
@@ -118,7 +107,7 @@ const Updatedate = (e) => {
       
       <h1 className=" text-[25px] font-bold mb-3">Leaderboard Management<span className=" float-right font-normal text-[16px]">Season ends in: {differenceInDays} Days</span></h1>
       <div className=" float-right flex justify-end ">
-      <input className=" mr-4 bg-transparent" type="date" value={endDate.endDate} onChange={(e) => setNewEndDate(e.target.value)} />
+      <input className=" mr-4 bg-transparent" type="date" value={endDate.endDate} onChange={(e) => setNewEndDate(e.target.value)} min={new Date().toISOString().split("T")[0]} />
       <button className=" mr-4 rounded-lg border-2 border-[#FE7804] px-4 py-2 text-[#FE7804]" onClick={Updatedate}>Update Date</button>
       {!btn && (
       <button className=" bg-transparent text-[#b6b0b0] bg-[#514f4e] border-2 border-[#a19d9d] px-4 py-2 text-[18px] font-semibold rounded-lg">
@@ -126,7 +115,7 @@ const Updatedate = (e) => {
     </button>
     )} 
     {btn && (
-      <button onClick={clearLeaderbord} className=" bg-transparent text-[#FE7804] hover:text-white hover:bg-[#FE7804] border-2 border-[#FE7804] px-4 py-2 text-[18px] font-semibold rounded-lg">
+      <button onClick={clearLeaderbord} className=" bg-transparent text-[#FE7804] hover:text-white hover:bg-[#FE7804] border-2 border-[#FE7804] px-4 py-2 text-[18px] font-semibold rounded-lg" disabled>
         Clear Leaderboard
       </button>
     )}</div>

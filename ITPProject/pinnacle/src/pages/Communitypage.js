@@ -78,7 +78,7 @@ export default function Communitypage() {
           <h1 className=" text-[32px] font-bold text-white">Upcoming Games</h1>
           <div className=" relative mt-4">
             <img className="w-[80%] h-[500px] mx-auto" src={Event} />
-              {btn && (<button onClick={(e)=>createViewBatle(e)} className=" border-2 border-[#FE7804] text-[#FE7804] text-[20px] hover:text-white hover:bg-[#FE7804] font-bold px-6 py-2 rounded-md absolute bottom-14 left-[45%]">
+              {btn && (<button onClick={(e)=> {createViewBatle(e); window.location.reload();}} className=" border-2 border-[#FE7804] text-[#FE7804] text-[20px] hover:text-white hover:bg-[#FE7804] font-bold px-6 py-2 rounded-md absolute bottom-14 left-[45%]">
                 Register
               </button>)}
               {!btn && (<p className=" text-[#FE7804] absolute bottom-14 left-[40%] font-bold ">You are already registered to this event</p>)}

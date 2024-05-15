@@ -242,9 +242,7 @@ export default function Channel(props) {
     setLoading(true);
     try {
       // Upload DP file
-      const dpUrl = channelDp
-        ? await uploadFile("image", channelDp, "channel")
-        : null;
+      const dpUrl = channelDp? await uploadFile("image", channelDp, "channel"): null;
 
       const response = await axios.put(
         "http://localhost:3001/updateChannelData/" + channelDetails._id,
