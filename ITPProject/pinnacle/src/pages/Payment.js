@@ -16,7 +16,7 @@ export default function Payment() {
   const userEmail = localStorage.getItem('userEmail');
   const userId = localStorage.getItem('userId');
   var userid = userId;
-  // var userid = "6640a771b7b3a8d3156eb377";
+
   //usestate for read card details
   const [memberID, setMemberID] = useState('');
   const [cardNumber, setCardNumber] = useState();
@@ -51,13 +51,13 @@ export default function Payment() {
   const [paymentEmail, setPaymentEmail] = useState("");
   const [paymentName, setPaymentName] = useState("");
   const [paymentCountry, setPaymentCountry] = useState("");
-  const [payBtnEnable, setPayBtnEnable] = useState(false);
-  const [emaiIsValid, setEmaiIsValid] = useState(false);
+  // const [payBtnEnable, setPayBtnEnable] = useState(false);
+  // const [emaiIsValid, setEmaiIsValid] = useState(false);
   const [cardNameIsValide, setCardNameIsValide] = useState(false);
   const [countryIsValide, setCuntryIsValide] = useState(false);
-  const [clickemail, setclickemail] = useState(false);
-  const [clickname, setclickname] = useState(false);
-  const [clickcountry, setclickcountry] = useState(false);
+  // const [clickemail, setclickemail] = useState(false);
+  // const [clickname, setclickname] = useState(false);
+  // const [clickcountry, setclickcountry] = useState(false);
 
   // set memberid to usestate
   useEffect(() => {
@@ -227,75 +227,101 @@ export default function Payment() {
 
   // form validation___________________________________________________________________
   // card number validation
-  const cardNumberhandle = (event) => {
-    const { value } = event.target;
-    // check only numbers are input
-    const sanitizedcardValue = value.replace(/\D/g, "").slice(0, 16);
-    // dividet into groups
-    const formattedCardValue = sanitizedcardValue
-      .replace(/(\d{4})/g, "$1 ")
-      .trim();
-    setCardNumber(formattedCardValue);
-  };
+  // const cardNumberhandle = (event) => {
+  //   const { value } = event.target;
+  //   // check only numbers are input
+  //   const sanitizedcardValue = value.replace(/\D/g, "").slice(0, 16);
+  //   // dividet into groups
+  //   const formattedCardValue = sanitizedcardValue
+  //     .replace(/(\d{4})/g, "$1 ")
+  //     .trim();
+  //   setCardNumber(formattedCardValue);
+  // };
 
   // card cvc validation
-  const cvcNumberHandle = (event) => {
-    const { value } = event.target;
+  // const cvcNumberHandle = (event) => {
+  //   const { value } = event.target;
 
-    const filteredCVCValue = value.replace(/\D/g, "").slice(0, 3);
-    setCVCNumber(filteredCVCValue);
-  };
+  //   const filteredCVCValue = value.replace(/\D/g, "").slice(0, 3);
+  //   setCVCNumber(filteredCVCValue);
+  // };
 
   // card name validation
-  const nickNamehandle = (event) => {
-    const value = event.target.value;
+  // const nickNamehandle = (event) => {
+  //   const value = event.target.value;
 
-    // Check if the input contains only letters
-    if (/^[A-Za-z]+$/.test(value) || value === "") {
-      setCardName(value);
-    }
-  };
+  //   // Check if the input contains only letters
+  //   if (/^[A-Za-z]+$/.test(value) || value === "") {
+  //     setCardName(value);
+  //   }
+  // };
 
   //date validation
-  const expDatehandle = (event) => {
-    const input = event.target.value;
-    const formattedInput = input.replace(/\D/g, "");
+  // const expDatehandle = (event) => {
+  //   const input = event.target.value;
+  //   const formattedInput = input.replace(/\D/g, "");
 
-    let formattedExpiryDate = "";
+  //   let formattedExpiryDate = "";
 
-    if (formattedInput.length <= 2) {
-      formattedExpiryDate = formattedInput;
-    } else if (formattedInput.length > 2 && formattedInput.length <= 4) {
-      formattedExpiryDate =
-        formattedInput.substring(0, 2) + "/" + formattedInput.substring(2);
-    } else if (formattedInput.length > 4) {
-      formattedExpiryDate =
-        formattedInput.substring(0, 2) + "/" + formattedInput.substring(2, 4);
-    }
+  //   if (formattedInput.length <= 2) {
+  //     formattedExpiryDate = formattedInput;
+  //   } else if (formattedInput.length > 2 && formattedInput.length <= 4) {
+  //     formattedExpiryDate =
+  //       formattedInput.substring(0, 2) + "/" + formattedInput.substring(2);
+  //   } else if (formattedInput.length > 4) {
+  //     formattedExpiryDate =
+  //       formattedInput.substring(0, 2) + "/" + formattedInput.substring(2, 4);
+  //   }
 
-    setEXPDate(formattedExpiryDate);
-  };
+  //   setEXPDate(formattedExpiryDate);
+  // };
 
   // email validation
-  const emailValidater = () => {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    setEmaiIsValid(emailPattern.test(paymentEmail));
-    setclickemail(!emailPattern.test(paymentEmail));
+  // const emailValidater = () => {
+  //   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //   setEmaiIsValid(emailPattern.test(paymentEmail));
+  //   setclickemail(!emailPattern.test(paymentEmail));
+  // };
+
+  // card validation
+  // const cardNameValidater = () => {
+  //   const onlyLettersRegex = /^[A-Za-z]+$/;
+  //   setCardNameIsValide(onlyLettersRegex.test(paymentName));
+  //   setclickname(!onlyLettersRegex.test(paymentName));
+
+  // };
+  const bankCardNameHandler = (event) => {
+    const value = event.target.value;
+
+    if (/^[A-Za-z]+$/.test(value) || value === "") {
+      setPaymentName(value);
+    }
+    if(value.length > 0){
+      setCardNameIsValide(true);
+    }
+    else{
+      setCardNameIsValide(false);
+    }
   };
 
   // card validation
-  const cardNameValidater = () => {
-    const onlyLettersRegex = /^[A-Za-z]+$/;
-    setCardNameIsValide(onlyLettersRegex.test(paymentName));
-    setclickname(!onlyLettersRegex.test(paymentName));
+  const bankCardCountryHandler = (event) => {
+    // const lettersWithSpacesRegex = /^[A-Za-z\s]+$/;
+    // setCuntryIsValide(lettersWithSpacesRegex.test(paymentCountry));
+    // setclickcountry(!lettersWithSpacesRegex.test(paymentCountry));
 
-  };
+    const value = event.target.value;
 
-  // card validation
-  const countryValidater = () => {
-    const lettersWithSpacesRegex = /^[A-Za-z\s]+$/;
-    setCuntryIsValide(lettersWithSpacesRegex.test(paymentCountry));
-    setclickcountry(!lettersWithSpacesRegex.test(paymentCountry));
+    if (/^[A-Za-z]+$/.test(value) || value === "") {
+      setPaymentCountry(value);
+      if(value.length > 0){
+        setCuntryIsValide(true);
+      }
+      else{
+        setCuntryIsValide(false);
+      }
+    }
+    
 
   };
 
@@ -349,17 +375,17 @@ export default function Payment() {
               <br />
               <input
                 id="paymentEmail"
-                className={` h-[45px] w-full bg-[#4f5153d2] border-[#D8DAE3] border-2 border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50 ${
-                  emaiIsValid ? "text-black" : "text-red-500"
-                }`}
+                className={` h-[45px] w-full bg-[#4f5153d2] border-[#D8DAE3] border-2 border-opacity-20 rounded-[10px] pl-3 placeholder-[#9D9191] placeholder-opacity-50 `}
                 type="email"
                 name="paymentemail"
                 placeholder="abc@gmail.com"
-                onChange={(e) => setPaymentEmail(e.target.value)}
-                onKeyUp={emailValidater}
-                onClick={() => setclickemail(true)}
+                value={userEmail}
+                readOnly
+                // onChange={(e) => setPaymentEmail(e.target.value)}
+                // onKeyUp={emailValidater}
+                // onClick={() => setclickemail(true)}
               />
-              {clickemail && (<p className=" text-[14px] text-red-500 pl-1 pt-1">Invalid email!</p>)}
+              {/* {clickemail && (<p className=" text-[14px] text-red-500 pl-1 pt-1">Invalid email!</p>)} */}
             </div>
 
             <div className="mb-5 ">
@@ -396,15 +422,17 @@ export default function Payment() {
                 </lable>
                 <br />
                 <input
-                  className={` pl-3 placeholder-[#9D9191] placeholder-opacity-50 h-[45px] w-full bg-[#4f5153d2] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px] ${cardNameIsValide ? "text-black" : " text-red-500"}`}
+                  className={` pl-3 placeholder-[#9D9191] placeholder-opacity-50 h-[45px] w-full bg-[#4f5153d2] border-2 border-[#D8DAE3] border-opacity-20 rounded-[10px]`}
                   type="text"
                   name="cardname"
                   placeholder="jonathan"
-                  onChange={(e) => setPaymentName(e.target.value)}
-                  onKeyUp={cardNameValidater}
-                  onClick={() => setclickname(true)}
+                  value={paymentName}
+                  onChange={bankCardNameHandler}
+                  // onChange={(e) => setPaymentName(e.target.value)}
+                  // onKeyUp={cardNameValidater}
+                  // onClick={() => setclickname(true)}
                 />
-                {clickname && (<p className=" text-[14px] text-red-500 pl-1 pt-1">Invalid input!</p>)}
+                {/* {clickname && (<p className=" text-[14px] text-red-500 pl-1 pt-1">Invalid input!</p>)} */}
                 <br />
               </div>
 
@@ -421,11 +449,13 @@ export default function Payment() {
                   type="text"
                   name="country"
                   placeholder="Sri Lanka"
-                  onChange={(e) => setPaymentCountry(e.target.value)}
-                  onKeyUp={countryValidater}
-                  onClick={() => setclickcountry(true)}
+                  value={paymentCountry}
+                  onChange={bankCardCountryHandler}
+                  // onChange={(e) => setPaymentCountry(e.target.value)}
+                  // onKeyUp={countryValidater}
+                  // onClick={() => setclickcountry(true)}
                 />
-                {clickcountry && (<p className=" text-[14px] text-red-500 pl-1 pt-1">Invalid input!</p>)}
+                {/* {clickcountry && (<p className=" text-[14px] text-red-500 pl-1 pt-1">Invalid input!</p>)} */}
                 <br />
               </div>
             </div>
@@ -452,8 +482,8 @@ export default function Payment() {
           </form>
         </div>
 
-        <div className="flex flex-col justify-between w-2/5 px-5">
-          <div>
+        <div className="w-2/5 px-5">
+          {/* <div> */}
             <h1 className="text-white text-[30px] font-bold">Invoice</h1>
             <div className="bg-[#202022] rounded-xl my-4 p-6">
               <div className="mb-1 text-[18px] font-semibold text-[#D9D9D9]">
@@ -520,20 +550,20 @@ export default function Payment() {
                   $ {subTotal}
                 </span>
               </div>
-              {emaiIsValid && cardNameIsValide && countryIsValide && (<button
+              {(cardNameIsValide && countryIsValide) && (<button
                 id="MakePaymentbtn"
                 onClick={handleSubmit}
                 className="bg-gradient-to-b from-[#FF451D] to-[#FE7804] text-white w-full h-10 rounded-[10px] text-lg font-bold"
               >
                 Make Payment
               </button>)}
-              {!(emaiIsValid && cardNameIsValide && countryIsValide) && (<button
+              {!(cardNameIsValide && countryIsValide) && (<button
                 className="bg-gradient-to-b from-[#6a6966] to-[#E8E8E7] text-[#545353] w-full h-10 rounded-[10px] text-lg font-bold"
               >
                 Make Payment
               </button>)}
             </div>
-          </div>
+          {/* </div> */}
           {/* <div>
             <h1 className="text-white text-[30px] font-bold">Saved Cards</h1>
             <div className="bg-[#202022] rounded-xl my-4 p-5">

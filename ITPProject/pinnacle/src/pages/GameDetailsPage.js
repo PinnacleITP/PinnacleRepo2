@@ -80,7 +80,7 @@ export default function GameDetailsPage() {
       }
     });
 
-    const filtered = gameDetails.filter((game) =>game.name.toLowerCase().startsWith(gamedetail.name.toLowerCase()));
+    const filtered = gameDetails.filter((game) =>game.name.toLowerCase().startsWith(gamedetail.name.toLowerCase().slice(0, 6)));
     setFilteredGames(filtered);
   }, [gameId, downloads, gameDetails]);
 

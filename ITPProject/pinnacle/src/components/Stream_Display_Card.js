@@ -1,4 +1,3 @@
-
 import React from "react";
 // import cod from "../assets/games/cod2.jpg";
 import { useState, useEffect } from "react";
@@ -23,18 +22,18 @@ export default function Stream_Display_Card(props) {
   }, [props.channel_ID]);
   
   return (
-    <div className=" mb-10 bg-black w-full">
-      <div className=" bg-transparent relative">
+    <div className="w-full mb-10 bg-black ">
+      <div className="relative bg-transparent ">
         <div className="relative w-full h-full overflow-hidden group">
           <img
             src={props.thumbnailUrl}
             alt="Thumbnail"
-            className="w-full group-hover:opacity-0 transition-opacity duration-300"
+            className="w-full transition-opacity duration-300 group-hover:opacity-0"
           />
           <video
             autoPlay
             muted
-            className="absolute top-0 left-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            className="absolute top-0 left-0 object-cover w-full h-full transition-opacity duration-300 opacity-0 group-hover:opacity-100"
           >
             <source src={props.videoUrl} type="video/mp4" />
           </video>
@@ -47,8 +46,8 @@ export default function Stream_Display_Card(props) {
           alt="circled-play"
         />
       </div>
-      <div className=" flex relative items-center">
-        <div className=" bg-transparent px-3 py-3 ">
+      <div className="relative flex items-center ">
+        <div className="px-3 py-3 bg-transparent ">
           <img
             className="rounded-full"
             style={{ width: "40px", height: "40px" }}
@@ -57,17 +56,17 @@ export default function Stream_Display_Card(props) {
           />
         </div>
         <div className="flex flex-col justify-center">
-          <p className=" font-semibold">{props.name}</p>
+          <p className="font-semibold ">{props.name}</p>
           <p className=" text-[16px] text-[#ffffff9a]">{channelName}</p>
         </div>
-        <div className=" absolute right-0 px-3">
+        <div className="absolute right-0 px-3 ">
           <div className=" text-[#FE7804] font-semibold text-[15px]">
             {props.viewCount} views
           </div>
           <div className="flex text-[15px]">
-            <div className=" mr-4">
+            <div className="mr-4 ">
               <img
-                className=" inline-block"
+                className="inline-block "
                 width="19"
                 height="19"
                 src="https://img.icons8.com/ios-glyphs/30/FD7E14/conference-call--v1.png"
@@ -77,7 +76,7 @@ export default function Stream_Display_Card(props) {
             </div>
             {/* <div>
               <img
-                className=" inline-block"
+                className="inline-block "
                 width="19"
                 height="19"
                 src="https://img.icons8.com/windows/32/FD7E14/chat-messages--v2.png"
