@@ -519,10 +519,10 @@ export default function GameDetailsPage() {
             </div>
           </div>
         </div>
-
+{/* 
         <div className=" w-11/12 mx-auto mt-10">
           <h1 className=" font-bold text-[28px]">65 Reviews</h1>
-        </div>
+        </div> */}
 
       <div className=" w-11/12 mx-auto my-10">
         <h1 className=" font-bold text-[28px]">Editions</h1>
@@ -530,12 +530,16 @@ export default function GameDetailsPage() {
         <div className="flex justify-start my-4">
           {filteredGames.map((item) => {
               return (
+
                 <div className="w-[25%] mx-[4%]">
+                <Link to={`/gamedetail?gameid=${item._id}`}>
                   <Game_Edition_Card
                     name={item.name}
                     price={item.price}
                     image={item.gameImageUrl}
+                    id = {item._id}
                   />
+                </Link>
                 </div>
               );
             })}</div>) : (<div className="flex justify-around my-4">

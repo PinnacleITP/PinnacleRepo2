@@ -24,6 +24,7 @@ import jsPDF from 'jspdf';
 import RookieLeague from "../assets/myAccount/rookie_league.png";
 import MasterLeague from "../assets/myAccount/master_league.png";
 import LegendaryLeague from "../assets/myAccount/legendary_league.png";
+import ViewBattle from "../components/ViewBattle";
 
 export default function Myaccount() {
 
@@ -666,7 +667,7 @@ export default function Myaccount() {
               className="text-white font-medium hover:text-[#FF451D] cursor-pointer"
               onClick={() => handleDivClick("Downloads")}
             >
-              Downloads
+              My Games
             </label>
           </div>
           <div
@@ -1205,8 +1206,8 @@ export default function Myaccount() {
 
       {/* ######################### Events ########################   */}
       {selectedDiv === "Events" && (
-        <div className="w-11/12 mx-auto px-5 mt-3">
-          <h1>Events</h1>
+        <div className="w-11/12 px-5 mx-auto mt-3">
+          <ViewBattle />
         </div>
       )}
 

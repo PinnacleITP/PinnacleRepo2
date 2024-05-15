@@ -8,6 +8,7 @@ import axios from "axios";
 export default function Stream_Display_Card(props) {
   const [channelName, setChannelName] = useState([]);
   const [channelDp, setChannelDp] = useState([]);
+  const [channelSubscriberCount, setchannelSubscriberCount] = useState(0);
 
   useEffect(() => {
     axios
@@ -16,6 +17,7 @@ export default function Stream_Display_Card(props) {
         console.log(result.channel_ID);
         setChannelName(result.data.channelName);
         setChannelDp(result.data.channelDp);
+        setchannelSubscriberCount(result.data.subscribercount);
       })
       .catch((err) => console.log(err));
   }, [props.channel_ID]);
@@ -71,9 +73,9 @@ export default function Stream_Display_Card(props) {
                 src="https://img.icons8.com/ios-glyphs/30/FD7E14/conference-call--v1.png"
                 alt="conference-call--v1"
               />{" "}
-              45
+              {channelSubscriberCount}
             </div>
-            <div>
+            {/* <div>
               <img
                 className=" inline-block"
                 width="19"
@@ -82,7 +84,7 @@ export default function Stream_Display_Card(props) {
                 alt="chat-messages--v2"
               />{" "}
               53
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

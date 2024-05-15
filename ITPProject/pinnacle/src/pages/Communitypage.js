@@ -16,6 +16,38 @@ export default function Communitypage() {
       .catch((err) => console.log(err));
   }, [pageid]);
 
+  useEffect(() => {
+    axios
+      .get(`http://localhost:3001/${"views"}`)
+      .then((result) => setAllViews(result.data))
+      .catch((err) => console.log(err));
+    }, []);
+
+    useEffect(() => {
+      for (const item of allViews) {
+        if (item.userId === userId) {
+          setBtn(false);
+          return;
+        }
+      }
+    }, [allViews, userId]);
+
+  const createViewBatle = (e) => {
+    const userId = localStorage.getItem('userId');
+    e.preventDefault();
+    try {
+      const response = axios.post(
+        "http://localhost:3001/createViewBatle",
+        {
+          userId,
+        }
+      );
+      console.log("Community Event created successfully:", response.data);
+    } catch (error) {
+      console.error("Error creating community Event:", error);
+    }
+  };
+
   return (
     <div>
       <Header navid="community" />
@@ -38,7 +70,19 @@ export default function Communitypage() {
         </div>
       </div>
       <div className=" mt-10">
-        <Footer />
+        <div className=" w-11/12 mx-auto mt-9">
+          <h1 className=" text-[32px] font-bold text-white">Upcoming Events</h1>
+          <div className=" relative mt-4">
+            <img className="w-[80%] h-[500px] mx-auto" src={Event} />
+              {btn && (<button onClick={(e)=>createViewBatle(e)} className=" border-2 border-[#FE7804] text-[#FE7804] text-[20px] hover:text-white hover:bg-[#FE7804] font-bold px-6 py-2 rounded-md absolute bottom-14 left-[45%]">
+                Register
+              </button>)}
+              {!btn && (<p className=" text-[#FE7804] absolute bottom-14 left-[40%] font-bold ">You are already registered to this event</p>)}
+          </div>
+        </div>
+        <div className=" mt-9">
+          <Footer />
+        </div>
       </div>
     </div>
   );

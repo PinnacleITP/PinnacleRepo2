@@ -1,5 +1,6 @@
 import React from "react";
 import cod2 from "../assets/games/cod2.jpg";
+import { Link } from "react-router-dom";
 
 export default function Game_Edition_Card(props) {
   return (
@@ -25,7 +26,7 @@ export default function Game_Edition_Card(props) {
               src="https://img.icons8.com/pastel-glyph/64/FFFFFF/shopping-cart--v1.png"
               alt="shopping-cart--v1"
             /> */}
-            <span className=" font-bold">View More</span>
+            <Link to={`/gamedetail?gameid=${props.id}`}><span className=" font-bold">View More</span></Link>
           </span>
         </div>
       </div>

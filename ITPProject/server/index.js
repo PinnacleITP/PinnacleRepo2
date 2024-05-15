@@ -29,6 +29,7 @@ const SubscriberModel = require("./models/Subscribers");
 const FeedbackModel =require('./models/Feedback')
 const FaqModel  =require('./models/faqs')
 
+
 const pdfTemplate = require('./documents');
 
 const UserModel = require('./models/User');
