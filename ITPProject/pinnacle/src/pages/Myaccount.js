@@ -303,10 +303,7 @@ export default function Myaccount() {
   const uploadFile = async (type, file) => {
     const data = new FormData();
     data.append("file", file);
-    data.append(
-      "upload_preset",
-      type === "image" ? "userProfile_Preset" : "Stream_Preset"
-    );
+    data.append("upload_preset",type === "image" ? "userProfile_Preset" : "Stream_Preset");
 
     try {
       let cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;

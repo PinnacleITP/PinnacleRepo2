@@ -146,7 +146,7 @@ export default function Admindashboard() {
           <img src={Pinnaclelogo} className="w-[45px] h-[45px] inline-block " />
           <span className="text-[23px] font-bold">PINNACLE ADMIN</span>
           <div className=" mt-9 pl-5 h-screen text-[18px] font-semibold" >
-            <p onClick={membershipManagementHandler} className=" cursor-pointer py-3 hover:text-[#FF451D] hover:pl-1">Membership Management</p>
+            {/* <p onClick={membershipManagementHandler} className=" cursor-pointer py-3 hover:text-[#FF451D] hover:pl-1">Membership Management</p> */}
             <p onClick={streamManagementHandler} className=" cursor-pointer py-3 hover:text-[#FF451D] hover:pl-1">Stream Management</p>
             <p onClick={gameManagementHandler} className=" cursor-pointer py-3 hover:text-[#FF451D] hover:pl-1">Game Management</p>
             <p onClick={cartManagementHandler} className=" cursor-pointer py-3 hover:text-[#FF451D] hover:pl-1">Cart Management</p>
@@ -158,7 +158,7 @@ export default function Admindashboard() {
         </div>
 
         <div className=" w-4/5 ml-[20%]">
-          {isCheckedMembershipManagement && <MembershipManagement />}
+          {/* {isCheckedMembershipManagement && <MembershipManagement />} */}
           {isCheckedStreamManagement && <StreamManagement />}
           {isCheckedGameManagement && <GameManagement />}
           {isCheckedCartManagement && <CartManagement />}
