@@ -46,9 +46,11 @@ export default function Communitypage() {
           userId,
         }
       );
-      console.log("Community post created successfully:", response.data);
+
+      console.log("Community Event created successfully:", response.data);
     } catch (error) {
-      console.error("Error creating community post:", error);
+      console.error("Error creating community Event:", error);
+
     }
   };
 
@@ -75,7 +77,9 @@ export default function Communitypage() {
       </div>
       <div className=" mt-10">
         <div className=" w-11/12 mx-auto mt-9">
-          <h1 className=" text-[32px] font-bold text-white">Upcoming Games</h1>
+
+          <h1 className=" text-[32px] font-bold text-white">Upcoming Events</h1>
+
           <div className=" relative mt-4">
             <img className="w-[80%] h-[500px] mx-auto" src={Event} />
               {btn && (<button onClick={(e)=>createViewBatle(e)} className=" border-2 border-[#FE7804] text-[#FE7804] text-[20px] hover:text-white hover:bg-[#FE7804] font-bold px-6 py-2 rounded-md absolute bottom-14 left-[45%]">
