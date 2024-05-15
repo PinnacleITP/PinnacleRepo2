@@ -205,9 +205,7 @@ export default function Channel(props) {
     setLoading(true);
     try {
       // Upload DP file
-      const dpUrl = channelDp
-        ? await uploadFile("image", channelDp, "channel")
-        : null;
+      const dpUrl = channelDp? await uploadFile("image", channelDp, "channel"): null;
 
       // Send backend API request
       const response = await axios.post("http://localhost:3001/createChannel", {
