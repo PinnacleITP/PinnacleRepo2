@@ -11,7 +11,7 @@ export default function CartManagement() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/${pageid}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${pageid}`)
       .then((result) => {
         setCartDetails(result.data);
         // Calculate genre counts
@@ -56,7 +56,7 @@ export default function CartManagement() {
   //pdf
   const createAndDownloadPdf = () => {
     axios
-      .post("http://localhost:3001/api/create-pdf/CartSummarySheet", {
+      .post(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/create-pdf/CartSummarySheet`, {
         action,
         adventure,
         racing,
@@ -64,7 +64,7 @@ export default function CartManagement() {
         sports,
       })
       .then(() =>
-        axios.get("http://localhost:3001/api/fetch-pdf", {
+        axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/fetch-pdf`, {
           responseType: "blob",
         })
       )

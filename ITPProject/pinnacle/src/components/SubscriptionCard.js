@@ -12,7 +12,7 @@ export default function SubscriptionCard(props) {
   // Read channel details using channel id
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/getChannelByChannelID/${props.channelID}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getChannelByChannelID/${props.channelID}`)
       .then((result) => {
         console.log(result);
         setChannelDetails(result.data);
@@ -22,7 +22,7 @@ export default function SubscriptionCard(props) {
 
   const handleDelete = (id) => {
     axios
-      .delete("http://localhost:3001/deleteSubscription/" + id)
+      .delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deleteSubscription/` + id)
       .then((res) => {
         console.log(res);
         window.location.reload();
@@ -42,7 +42,7 @@ export default function SubscriptionCard(props) {
     console.log("Updated subscribers count:", subscriberCount);
     axios
       .put(
-        `http://localhost:3001/updateSubscriberCountofChannel/${channelDetails._id}`,
+        `${process.env.REACT_APP_SERVER_ENDPOINT}/updateSubscriberCountofChannel/${channelDetails._id}`,
         { subscriberCount }
       )
       .then((result) => {

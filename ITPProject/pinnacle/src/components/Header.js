@@ -9,6 +9,9 @@ import axios from 'axios';
 
 export default function Header(props) {
   const activeNavItem = props.navid;
+  var login = false;
+  login = localStorage.getItem('login');
+
 
   const { data, isLoading } = useSWR('api/me');
 
@@ -23,7 +26,7 @@ export default function Header(props) {
 
         const fetchData = async () => {
           try {
-            const response = await axios.get('http://localhost:3001/api/getuser?email=' + userEmail);
+            const response = await axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/getuser?email=` + userEmail);
             setUserData(response.data);
           } catch (error) {
             console.error("Error fetching data:", error);
@@ -53,8 +56,8 @@ export default function Header(props) {
         {activeNavItem !== "home" && <div className='nav_under_bar' style={{ marginLeft: `${["streams", "games", "community", "support"].indexOf(activeNavItem) * 25}%` }}></div>}
       </div>
 
-      <div className='navicon'>
-        <Link to="/leaderboard"><img src="https://img.icons8.com/glyph-neue/64/FD7E14/trophy.png" alt="trophy"/></Link>
+      {login && (<div className='navicon'>
+      <Link to="/leaderboard"><img src="https://img.icons8.com/glyph-neue/64/FD7E14/trophy.png" alt="trophy"/></Link>
         <Link to="/cart"><img src="https://img.icons8.com/pastel-glyph/64/FD7E14/shopping-cart--v1.png" alt="shopping-cart--v1"/></Link>
         <Link to="/premiumplanes"><Rounded_corner_btn value='Go Premium'/></Link>
         <Link to="/account" style={{ textDecoration: 'none' }}>
@@ -81,7 +84,11 @@ export default function Header(props) {
               </div>
           </div>
         </Link>
-      </div>
+      </div>)}
+      {!login && (<div className='navicon'>
+        <Link to="/login"><span className=' bg-gradient-to-t from-[#FF451D] to-[#FE7804] py-2 px-6 mr-5 rounded-3xl font-semibold w-[50%] text-white'>Login</span></Link>
+        <Link to="/register"><span className=' bg-gradient-to-t from-[#FF451D] to-[#FE7804] py-2 px-6 mr-5 rounded-3xl font-semibold w-[50%] text-white'>Register</span></Link>
+      </div>)}
     
       </div>
         <label htmlFor='navcheck'><img className='menubtn' src="https://img.icons8.com/glyph-neue/64/FD7E14/menu--v1.png" alt="menu--v1"/></label>
@@ -104,6 +111,8 @@ export default function Header(props) {
         <li><Link to="/account" style={{ textDecoration: 'none' }}><span>ACCOUNT</span></Link></li>
       </ul>
       </div>)}
+
+      
 
     </div>
   );

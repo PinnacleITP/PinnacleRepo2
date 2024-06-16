@@ -67,7 +67,7 @@ export default function Cartpage() {
   //read all game details
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/${suggestid}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${suggestid}`)
       .then((result) => setGameDetails(result.data))
       .catch((err) => console.log(err));
   }, [suggestid]);
@@ -122,7 +122,7 @@ export default function Cartpage() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/getCartItemByMemberID/${userId}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getCartItemByMemberID/${userId}`)
       .then((result) => {
         setItemDetails(result.data);
 
@@ -158,7 +158,7 @@ export default function Cartpage() {
   //   if (mostCommonGenres.length > 0) {
   //     axios
   //       .get(
-  //         `http://localhost:3001/getSuggestedGameIds/${mostCommonGenres.join(",")}`
+  //         `${process.env.REACT_APP_SERVER_ENDPOINT}/getSuggestedGameIds/${mostCommonGenres.join(",")}`
   //       )
   //       .then((result) => {
   //         setSuggestedGames(result.data);

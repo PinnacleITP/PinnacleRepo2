@@ -47,7 +47,7 @@ export default function Channel(props) {
   // Read channel details using member id
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/getChannelByMemberID/${props.memberID}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getChannelByMemberID/${props.memberID}`)
       .then((result) => {
         console.log(result);
         const channelData = result.data;
@@ -68,7 +68,7 @@ export default function Channel(props) {
       if (channelDetails && channelDetails._id) {
         axios
           .get(
-            `http://localhost:3001/getStreamByChannelID/${channelDetails._id}`
+            `${process.env.REACT_APP_SERVER_ENDPOINT}/getStreamByChannelID/${channelDetails._id}`
           )
           .then((result) => setStreamDetails(result.data))
           .catch((err) => console.log(err));
@@ -117,32 +117,32 @@ export default function Channel(props) {
 
   const createStream = async (e) => {
     e.preventDefault();
-    // if (!name.trim()) {
-    //   alert("Name is required");
-    //   return;
-    // }
-    // if (!description.trim()) {
-    //   alert("Description is required");
-    //   return;
-    // }
+    if (!name.trim()) {
+      alert("Name is required");
+      return;
+    }
+    if (!description.trim()) {
+      alert("Description is required");
+      return;
+    }
 
-    // if (thumbnail && thumbnail.size > 10485760) {
-    //   alert("Thumbnail must be less than 10 MB");
-    //   return;
-    // }
-    // if (video && video.size > 104857600) {
-    //   alert("Video must be less than 100 MB");
-    //   return;
-    // }
+    if (thumbnail && thumbnail.size > 10485760) {
+      alert("Thumbnail must be less than 10 MB");
+      return;
+    }
+    if (video && video.size > 104857600) {
+      alert("Video must be less than 100 MB");
+      return;
+    }
 
-    // const codePattern =
-    //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    // if (!codePattern.test(secretVideoCode)) {
-    //   alert(
-    //     "Secret Video Code must contain at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long"
-    //   );
-    //   return;
-    // }
+    const codePattern =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!codePattern.test(secretVideoCode)) {
+      alert(
+        "Secret Video Code must contain at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long"
+      );
+      return;
+    }
     try {
       setLoading(true);
       // Upload video file
@@ -156,7 +156,7 @@ export default function Channel(props) {
       //Get User Id
       const userId = localStorage.getItem('userId');
       // Send backend API request
-      const response = await axios.post("http://localhost:3001/createStream", {
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_ENDPOINT}/createStream`, {
         name,
         videoUrl,
         thumbnailUrl,
@@ -175,7 +175,7 @@ export default function Channel(props) {
       const newStream = response.data; // Assuming response contains the created stream details
   
       // Send notification to all users about the new stream
-      await axios.post("http://localhost:3001/api/sendStreamNotification", newStream);
+      await axios.post(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/sendStreamNotification`, newStream);
   
       console.log("Stream created and notification sent successfully:", newStream);
   
@@ -208,7 +208,7 @@ export default function Channel(props) {
       const dpUrl = channelDp? await uploadFile("image", channelDp, "channel"): null;
 
       // Send backend API request
-      const response = await axios.post("http://localhost:3001/createChannel", {
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_ENDPOINT}/createChannel`, {
         channelName,
         channelDescription,
         channelDp: dpUrl,
@@ -228,7 +228,7 @@ export default function Channel(props) {
 
   const crystalCountUpdater = () => {
     const newCrystalcount = props.crystalcount + 100;
-    axios.put(`http://localhost:3001/updateCrystalCount/${props.memberID}`, { newCrystalcount })
+    axios.put(`${process.env.REACT_APP_SERVER_ENDPOINT}/updateCrystalCount/${props.memberID}`, { newCrystalcount })
       .then(result => {
           console.log(result);
       })
@@ -243,7 +243,7 @@ export default function Channel(props) {
       const dpUrl = channelDp? await uploadFile("image", channelDp, "channel"): null;
 
       const response = await axios.put(
-        "http://localhost:3001/updateChannelData/" + channelDetails._id,
+        `${process.env.REACT_APP_SERVER_ENDPOINT}/updateChannelData/` + channelDetails._id,
         {
           channelName,
           channelDescription,
@@ -262,7 +262,7 @@ export default function Channel(props) {
   // Delete channel using stream id
   const handleDelete = (id) => {
     axios
-      .delete("http://localhost:3001/deleteChannel/" + id)
+      .delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deleteChannel/` + id)
       .then((res) => {
         console.log(res);
       })

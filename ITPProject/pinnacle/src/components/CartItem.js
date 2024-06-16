@@ -21,7 +21,7 @@ export default function CartItem(props) {
 
   const handleDelete = (id) => {
     axios
-      .delete("http://localhost:3001/deleteCartItem/" + id)
+      .delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deleteCartItem/` + id)
       .then((res) => {
         console.log(res);
         window.location.reload();

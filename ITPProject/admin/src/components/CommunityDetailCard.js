@@ -74,7 +74,7 @@ export default function CommunityDetailCard(props) {
         const postUrl = image ? await uploadFile("image", image) : null;
 
         axios
-            .put("http://localhost:3001/updateCommunityPost/" + props.id, {
+            .put(`${process.env.REACT_APP_SERVER_ENDPOINT}/updateCommunityPost/` + props.id, {
                 postUrl,
                 description,
                 name,
@@ -95,7 +95,7 @@ export default function CommunityDetailCard(props) {
 
 const handleCommunityPostDelete = (id) => {
   axios
-    .delete("http://localhost:3001/deleteCommunityPost/" + props.id)
+    .delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deleteCommunityPost/` + props.id)
     .then((res) => {
       console.log(res);
       // deleteSuccessMessagechecked(true);

@@ -15,14 +15,14 @@ export default function Communitypage() {
   //read community post details
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/${pageid}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${pageid}`)
       .then((result) => setCommunityPosts(result.data))
       .catch((err) => console.log(err));
   }, [pageid]);
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/${"views"}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${"views"}`)
       .then((result) => setAllViews(result.data))
       .catch((err) => console.log(err));
     }, []);
@@ -41,7 +41,7 @@ export default function Communitypage() {
     e.preventDefault();
     try {
       const response = axios.post(
-        "http://localhost:3001/createViewBatle",
+        `${process.env.REACT_APP_SERVER_ENDPOINT}/createViewBatle`,
         {
           userId,
         }

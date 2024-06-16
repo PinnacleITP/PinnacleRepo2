@@ -16,7 +16,7 @@ function UpdateFeedback() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`http://localhost:3001/getFeedback/${id}`);
+                const response = await axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getFeedback/${id}`);
                 setName(response.data.name);
                 setEmail(response.data.email);
                 setFeedback(response.data.feedback);
@@ -34,7 +34,7 @@ function UpdateFeedback() {
 
         try {
             // Send PUT request to update feedback with current state values
-            await axios.put(`http://localhost:3001/updatefeedback/${id}`, { name, email, feedback });
+            await axios.put(`${process.env.REACT_APP_SERVER_ENDPOINT}/updatefeedback/${id}`, { name, email, feedback });
             navigate('/streamdetail');
             // window.location.reload(); // Redirect to feedback list page after successful update
         } catch (error) {

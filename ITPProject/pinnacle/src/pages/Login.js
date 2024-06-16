@@ -25,7 +25,7 @@ export default function Login() {
 
     try {
       const response = await axios.post(
-        'http://localhost:3001/api/login',
+        `${process.env.REACT_APP_SERVER_ENDPOINT}/api/login`,
         formData,
         {
           withCredentials: true,
@@ -34,6 +34,7 @@ export default function Login() {
       console.log('Response:', response.data);
       localStorage.setItem('userEmail', formData.email);
       localStorage.setItem('userId', response.data.user.id);
+      localStorage.setItem('login', response.data.user.id);
       navigate('/'); // Navigate to the account page upon successful login
     } catch (error) {
       alert(error.response?.data?.error || "An error occurred during login.");

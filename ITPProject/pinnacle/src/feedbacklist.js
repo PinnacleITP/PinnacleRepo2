@@ -41,7 +41,7 @@ function UsersFeedback() {
         }
 
         // If no errors, submit the form
-        axios.post("http://localhost:3001/createfeedback", { name, email, feedback })
+        axios.post(`${process.env.REACT_APP_SERVER_ENDPOINT}/createfeedback`, { name, email, feedback })
             .then(result => {
                 console.log(result);
                 Swal.fire({
@@ -58,7 +58,7 @@ function UsersFeedback() {
 
     // Fetch all feedbacks from the server on component mount
     useEffect(() => {
-        axios.get('http://localhost:3001/feedback')
+        axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/feedback`)
             .then(result => setFeedbacks(result.data))
             .catch(err => console.log(err));
     }, []);
@@ -75,7 +75,7 @@ function UsersFeedback() {
             confirmButtonText: "Yes, delete it!"
         }).then((result) => {
             if (result.isConfirmed) {
-                axios.delete(`http://localhost:3001/deleteFeedback/${id}`)
+                axios.delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deleteFeedback/${id}`)
                     .then(res => {
                         Swal.fire({
                             title: "Deleted!",

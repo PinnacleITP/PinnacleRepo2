@@ -29,14 +29,14 @@ export default function StreamDetailsPage() {
    //read all stream details
    useEffect(() => {
     axios
-      .get(`http://localhost:3001/${readstream}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${readstream}`)
       .then((result) => setStreamDetailsCard(result.data))
       .catch((err) => console.log(err));
   }, [readstream]);
 
   // useEffect(() => {
   //   axios
-  //     .get(`http://localhost:3001/getChannelByStreamID/${channel}`)
+  //     .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getChannelByStreamID/${channel}`)
   //     .then((result) => {
   //       console.log(result.channel_ID);
   //       setChannelName(result.data.channelName);
@@ -47,7 +47,7 @@ export default function StreamDetailsPage() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/getChannelbyid/${channel}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getChannelbyid/${channel}`)
       .then((result) => {
         console.log("Stream details:", result.data);
         setChannelDetails(result.data);
@@ -67,7 +67,7 @@ export default function StreamDetailsPage() {
     console.log("Updated view count:", channelviewCount);
     axios
       .put(
-        `http://localhost:3001/updateChannelViewCount/${channelDetails._id}`,
+        `${process.env.REACT_APP_SERVER_ENDPOINT}/updateChannelViewCount/${channelDetails._id}`,
         { channelviewCount }
       )
       .then((result) => {
@@ -80,7 +80,7 @@ export default function StreamDetailsPage() {
 
   // useEffect(() => {
   //   axios
-  //     .get(`http://localhost:3001/getStream/${streamid}`)
+  //     .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getStream/${streamid}`)
   //     .then((result) => {setStreamMoreDetails(result.data);
   //       updateViewCount();})
   //     .catch((err) => console.log(err));
@@ -92,7 +92,7 @@ export default function StreamDetailsPage() {
   //   const viewCount = streamMoreDetails.viewCount + 1;
   //   console.log(streamMoreDetails.viewCount);
   //   console.log(viewCount);
-  // axios.put(`http://localhost:3001/updateViewCount/${streamid}`, { viewCount})
+  // axios.put(`${process.env.REACT_APP_SERVER_ENDPOINT}/updateViewCount/${streamid}`, { viewCount})
   //     .then(result => {
   //         console.log(result);
   //         setNewViewCount(viewCount);
@@ -102,7 +102,7 @@ export default function StreamDetailsPage() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/getStream/${streamid}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getStream/${streamid}`)
       .then((result) => {
         console.log("Stream details:", result.data);
         setStreamMoreDetails(result.data);
@@ -120,7 +120,7 @@ export default function StreamDetailsPage() {
     //Get User Id
     const userId = localStorage.getItem('userId');
     axios
-      .put(`http://localhost:3001/updateViewCount/${streamid}`, { viewCount, userId })
+      .put(`${process.env.REACT_APP_SERVER_ENDPOINT}/updateViewCount/${streamid}`, { viewCount, userId })
       .then((result) => {
         console.log("Update result:", result);
         setNewViewCount(viewCount);
@@ -132,7 +132,7 @@ export default function StreamDetailsPage() {
     const fetchSubscription = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/getSubscribtionByMemberID/${memberID}/${channelDetails._id}`
+          `${process.env.REACT_APP_SERVER_ENDPOINT}/getSubscribtionByMemberID/${memberID}/${channelDetails._id}`
         );
         const matchingSubscription = response.data;
 
@@ -164,7 +164,7 @@ export default function StreamDetailsPage() {
       return;
     }
     axios
-      .post("http://localhost:3001/createSubscription", {
+      .post(`${process.env.REACT_APP_SERVER_ENDPOINT}/createSubscription`, {
         memberID: memberID,
         channelID: channelDetails._id,
       })
@@ -187,7 +187,7 @@ export default function StreamDetailsPage() {
     console.log("Updated subscribers count:", subscriberCount);
     axios
       .put(
-        `http://localhost:3001/updateSubscriberCountofChannel/${channelDetails._id}`,
+        `${process.env.REACT_APP_SERVER_ENDPOINT}/updateSubscriberCountofChannel/${channelDetails._id}`,
         { subscriberCount }
       )
       .then((result) => {
@@ -229,7 +229,7 @@ const handleSubmit = (e) => {
   }
 
   // If no errors, submit the form
-    axios.post("http://localhost:3001/createfeedback", { name, email, feedback, streamid })
+    axios.post(`${process.env.REACT_APP_SERVER_ENDPOINT}/createfeedback`, { name, email, feedback, streamid })
       .then(result => {
           console.log(result);
           Swal.fire({
@@ -246,11 +246,11 @@ const handleSubmit = (e) => {
 
 // Fetch all feedbacks from the server on component mount
 useEffect(() => {
-  axios.get(`http://localhost:3001/${pageid}`)
+  axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${pageid}`)
   .then(result => setFeedbacks(result.data.filter(feedback => feedback.streamid === streamid)))
   .catch(err => console.log(err));
   
-  axios.get(`http://localhost:3001/getmemberbyid/${memberID}`)
+  axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getmemberbyid/${memberID}`)
   .then(result => {setMemberDetails(result.data);
     setName(result.data.username);
     setEmail(result.data.email);
@@ -272,7 +272,7 @@ const handleDelete = (id) => {
       confirmButtonText: "Yes, delete it!"
   }).then((result) => {
       if (result.isConfirmed) {
-          axios.delete(`http://localhost:3001/deleteFeedback/${id}`)
+          axios.delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deleteFeedback/${id}`)
               .then(res => {
                   Swal.fire({
                       title: "Deleted!",

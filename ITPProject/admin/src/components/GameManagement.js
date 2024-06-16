@@ -87,7 +87,7 @@ export default function GameManagement() {
   // it logs the error to the console.
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/${pageid}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${pageid}`)
       .then((response) => {
         console.log("Fetched game details:", response.data);
         setGameDetails(response.data); // Ensure the data format matches expected structure
@@ -133,7 +133,7 @@ export default function GameManagement() {
       const gameImageUrl = image ? await uploadFile("image", image) : null;
 
       // Send backend API request
-      const response = await axios.post("http://localhost:3001/createGame", {
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_ENDPOINT}/createGame`, {
         name,
         gameImageUrl,
         configurations,
@@ -150,7 +150,7 @@ export default function GameManagement() {
      // Send email notification
       const newGame = response.data; // Assuming response contains created game details
       await axios.post(
-        "http://localhost:3001/api/sendGameNotification",
+        `${process.env.REACT_APP_SERVER_ENDPOINT}/api/sendGameNotification`,
         newGame
       );
 
@@ -232,7 +232,7 @@ export default function GameManagement() {
   const gameDeyailcardHandle = (id) => {
     setIsGameDetailCardCheked(true);
     axios
-      .get(`http://localhost:3001/getGamebyID/${id}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getGamebyID/${id}`)
       .then((result) => {
         console.log(result);
         setitemId(result.data._id);
@@ -259,7 +259,7 @@ export default function GameManagement() {
       const itemgameImageUrl = image ? await uploadFile("image", image) : null;
 
       axios
-        .put("http://localhost:3001/updateGame/" + itemId, {
+        .put(`${process.env.REACT_APP_SERVER_ENDPOINT}/updateGame/` + itemId, {
           itemname,
           itemgameImageUrl,
           itemconfigurations,
@@ -308,7 +308,7 @@ export default function GameManagement() {
     if (!itemId) return; // Guard clause if itemId is somehow unset
 
     axios
-      .delete(`http://localhost:3001/deleteGame/${itemId}`)
+      .delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deleteGame/${itemId}`)
       .then((res) => {
         console.log("Game deleted:", res);
         handleDeleteGameinCart(itemId);
@@ -328,7 +328,7 @@ export default function GameManagement() {
   
   const handleDeleteGameinCart = (id) => {
     axios
-      .delete("http://localhost:3001/deleteCartItemWhenGameUnavailable/" + id)
+      .delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deleteCartItemWhenGameUnavailable/` + id)
       .then((res) => {
         console.log(res);
         window.location.reload();

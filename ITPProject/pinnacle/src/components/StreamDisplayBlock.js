@@ -20,7 +20,7 @@ export default function StreamDisplayBlock(props) {
   //read stream details using stream id
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/getStream/${props.id}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getStream/${props.id}`)
       .then((result) => {
         console.log(result);
         setName(result.data.name);
@@ -39,7 +39,7 @@ export default function StreamDisplayBlock(props) {
   // delete stream using stream id
   const handleDelete = (id) => {
     axios
-      .delete("http://localhost:3001/deleteStream/" + id)
+      .delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deleteStream/` + id)
       .then((res) => {
         console.log(res);
         window.location.reload();
@@ -51,7 +51,7 @@ export default function StreamDisplayBlock(props) {
   const streamUpdate = (e) => {
     e.preventDefault();
     axios
-      .put("http://localhost:3001/updateStream/" + props.id, {
+      .put(`${process.env.REACT_APP_SERVER_ENDPOINT}/updateStream/` + props.id, {
         name,
         video,
         thumbnail,

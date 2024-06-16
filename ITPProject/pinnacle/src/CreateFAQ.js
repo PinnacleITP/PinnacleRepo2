@@ -16,7 +16,7 @@ function CreateFAQ() {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Making POST request to the backend server with FAQ data
-    axios.post("http://localhost:3001/createfaq", { question, answer })
+    axios.post(`${process.env.REACT_APP_SERVER_ENDPOINT}/createfaq`, { question, answer })
       .then(result => {
         // Log the result and navigate to '/adminfaq' upon successful submission
         console.log(result);

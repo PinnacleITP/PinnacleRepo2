@@ -7,7 +7,7 @@ export default function SubscriberCard(props) {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/getSubscriptionsByMemberID/${props.memberID}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getSubscriptionsByMemberID/${props.memberID}`)
       .then((result) => setSubscriptionDetails(result.data))
       .catch((err) => console.log(err));
   }, [props.memberID]);

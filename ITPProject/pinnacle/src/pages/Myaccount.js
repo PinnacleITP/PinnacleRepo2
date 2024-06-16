@@ -98,7 +98,7 @@ export default function Myaccount() {
   //     }
   //     try {
   //       const response = await axios.put(
-  //         'http://localhost:3001/api/changeData',
+  //         `${process.env.REACT_APP_SERVER_ENDPOINT}/api/changeData`,
   //         formData,
   //       );
   //       console.log('Response:', response.data);
@@ -135,7 +135,7 @@ export default function Myaccount() {
         }
         try {
             const response = await axios.put(
-                'http://localhost:3001/api/changeData',
+                `${process.env.REACT_APP_SERVER_ENDPOINT}/api/changeData`,
                 formData,
             );
             console.log('Response:', response.data);
@@ -171,7 +171,7 @@ export default function Myaccount() {
   //     }
   //     try {
   //       const response = await axios.put(
-  //         'http://localhost:3001/api/changeData',
+  //         `${process.env.REACT_APP_SERVER_ENDPOINT}/api/changeData`,
   //         formData,
   //       );
   //       console.log('Response:', response.data);
@@ -210,7 +210,7 @@ export default function Myaccount() {
         }
         try {
             const response = await axios.put(
-                'http://localhost:3001/api/changeData',
+                `${process.env.REACT_APP_SERVER_ENDPOINT}/api/changeData`,
                 formData,
             );
             console.log('Response:', response.data);
@@ -227,7 +227,10 @@ export default function Myaccount() {
 
 
   const onClickLogout = () => {
-    navigate('/login');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('login');
+    navigate('/');
   }
 
   const onClickDelete = async () => {
@@ -240,7 +243,7 @@ export default function Myaccount() {
 
       try {
         const response = await axios.delete(
-          'http://localhost:3001/api/deleteAccount',
+          `${process.env.REACT_APP_SERVER_ENDPOINT}/api/deleteAccount`,
           {
             data: {
               username: data?.user.username,
@@ -284,7 +287,7 @@ export default function Myaccount() {
         detail : "updateProfileImage"
       }
 
-      const response = await axios.put('http://localhost:3001/api/changeData', formData);
+      const response = await axios.put(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/changeData`, formData);
 
       alert("User Image Updated Successfully");
       setTimeout(() => {
@@ -360,7 +363,7 @@ export default function Myaccount() {
 
         const fetchData = async () => {
           try {
-            const response = await axios.get('http://localhost:3001/api/getuser?email=' + userEmail);
+            const response = await axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/getuser?email=` + userEmail);
             setUserData(response.data);
           } catch (error) {
             console.error("Error fetching data:", error);
@@ -380,7 +383,7 @@ export default function Myaccount() {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/allUsers');
+        const response = await axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/allUsers`);
         setAllUserData(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -416,7 +419,7 @@ export default function Myaccount() {
       if (userEmail) { 
         const fetchData = async () => {
           try {
-            const response = await axios.get('http://localhost:3001/api/getuser?email=' + userEmail);
+            const response = await axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/getuser?email=` + userEmail);
             setUserData(response.data);
           } catch (error) {
             console.error("Error fetching data:", error);
@@ -480,7 +483,7 @@ export default function Myaccount() {
   useEffect(() => {
     const fetchPaymentData = () => {
       axios
-        .get(`http://localhost:3001/getPaymentRecodsByMemberID/${memberID}`)
+        .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getPaymentRecodsByMemberID/${memberID}`)
         .then((result) => setPurchaseHistory(result.data))
         .catch((err) => console.log(err));
     };
@@ -492,7 +495,7 @@ export default function Myaccount() {
   const handleAllPaymentHistoryDelete = (id) => {
     setLoading(true);
     axios
-      .delete("http://localhost:3001/deletePaymentHistoryRelatedToMember/" + id)
+      .delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deletePaymentHistoryRelatedToMember/` + id)
       .then((res) => {
         console.log(res);
         setLoading(false);
@@ -503,7 +506,7 @@ export default function Myaccount() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/getMemberById/${memberID}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getMemberById/${memberID}`)
       .then((result) => {
         setUserDetails(result.data);
       })
@@ -523,7 +526,7 @@ export default function Myaccount() {
   useEffect(() => {
     const fetchDownloadData = () => {
       axios
-        .get(`http://localhost:3001/getDownloadbyMemberid/${memberID}`)
+        .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getDownloadbyMemberid/${memberID}`)
         .then((result) => {
           const data = result.data;
           if (Array.isArray(data)) {
@@ -547,7 +550,7 @@ export default function Myaccount() {
     ).value;
 
     const requests = downloads.map((item) =>
-      axios.get(`http://localhost:3001/getGamebyID/${item.gameid}`)
+      axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getGamebyID/${item.gameid}`)
     );
 
     Promise.all(requests)
@@ -574,7 +577,7 @@ export default function Myaccount() {
   // //  const pageid='fblist';
   const [feedbacks, setFeedbacks] = useState([]); 
   // useEffect(() => {
-  //   axios.get('http://localhost:3001/getallfeedbacks')
+  //   axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getallfeedbacks`)
   //     .then(feedbacks =>setFeedbacks(feedbacks.data))
   //     .catch(err => console.log(err));
   // }, []);
@@ -582,7 +585,7 @@ export default function Myaccount() {
   useEffect(() => {
     if (selectedDiv === "Reviews") {
       console.log('Fetching feedbacks...');
-      axios.get('http://localhost:3001/getallfeedbacks')
+      axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getallfeedbacks`)
         .then(response => {
           console.log('Feedbacks fetched:', response.data);
           setFeedbacks(response.data);

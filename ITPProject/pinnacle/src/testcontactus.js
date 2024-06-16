@@ -24,7 +24,7 @@ export default function TestContactUs() {
   const [expandedId, setExpandedId] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/faqs')
+    axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/faqs`)
       .then(result => setFaqs(result.data))
       .catch(err => console.log(err));
   }, []);

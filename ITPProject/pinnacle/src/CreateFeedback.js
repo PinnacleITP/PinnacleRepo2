@@ -16,7 +16,7 @@ export default function CreateFeedback() {
     // Function to handle form submission
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post('http://localhost:3001/createfeedback', { name, email, feedback,streamid })
+        axios.post(`${process.env.REACT_APP_SERVER_ENDPOINT}/createfeedback`, { name, email, feedback,streamid })
             .then(result => {
                 console.log(result); // Log the result
                 navigate('/fblist'); // Redirect to feedback list page after successful submission

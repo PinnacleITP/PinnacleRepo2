@@ -55,7 +55,7 @@ const PaymentForm = ({
         return;
       }
 
-      const response = await fetch("http://localhost:3001/api/payment", {
+      const response = await fetch(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/payment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -98,7 +98,7 @@ const PaymentForm = ({
     const date = new Date();
     const paidamount = subtotal;
     axios
-      .post("http://localhost:3001/createPaymnetRecod", {
+      .post(`${process.env.REACT_APP_SERVER_ENDPOINT}/createPaymnetRecod`, {
         description,
         officialprice,
         paidamount,
@@ -121,7 +121,7 @@ const PaymentForm = ({
 
   const downloadCountUpdater = () => {
       axios
-      .get("http://localhost:3001/getGamebyID/" + itemid)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getGamebyID/` + itemid)
       .then((result) => {
         setGameDetails(result.data.downloadCount);
         console.log(result.data.downloadCount);
@@ -130,7 +130,7 @@ const PaymentForm = ({
 
       const newDownloadcount = gamedetails + 1;
     
-      axios.put("http://localhost:3001/updateDownloadCount/"+itemid, { newDownloadcount })
+      axios.put(`${process.env.REACT_APP_SERVER_ENDPOINT}/updateDownloadCount/`+itemid, { newDownloadcount })
       .then(result => {
           console.log(result);
       })
@@ -140,7 +140,7 @@ const PaymentForm = ({
 
   const crystalCountUpdater = () => {
     const newCrystalcount = crystalcount- (crystaldiscount*1000) + officialprice;
-    axios.put(`http://localhost:3001/updateDownloadCount/${memberid}`, { newCrystalcount })
+    axios.put(`${process.env.REACT_APP_SERVER_ENDPOINT}/updateDownloadCount/${memberid}`, { newCrystalcount })
       .then(result => {
           console.log(result);
       })
@@ -154,13 +154,13 @@ const PaymentForm = ({
     const userId = localStorage.getItem('userId');
     setTimeout(() => {
       axios
-      .get(`http://localhost:3001/getlatestPayment/${memberid}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getlatestPayment/${memberid}`)
       .then((result) => {
         const paymentid = result.data[0]._id;
         setpid(paymentid);
 
         axios
-          .post("http://localhost:3001/createdounloadRecod", {
+          .post(`${process.env.REACT_APP_SERVER_ENDPOINT}/createdounloadRecod`, {
             memberid,
             gameid,
             paymentid,
@@ -208,7 +208,7 @@ const sendEmail = async () => {
   
 
   try {
-    const response = await fetch('http://localhost:3001/send-paymentemail', {
+    const response = await fetch(`${process.env.REACT_APP_SERVER_ENDPOINT}/send-paymentemail`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

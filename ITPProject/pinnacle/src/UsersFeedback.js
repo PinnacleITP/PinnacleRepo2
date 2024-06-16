@@ -13,7 +13,7 @@ function UsersFeedback() {
 
     // Fetch feedback data from server on component mount
     useEffect(() => {
-        axios.get('http://localhost:3001/feedback')
+        axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/feedback`)
             .then(result => setFeedbacks(result.data))
             .catch(err => console.log(err));
     }, []);
@@ -32,7 +32,7 @@ function UsersFeedback() {
         }).then((result) => {
             if (result.isConfirmed) {
                 // Send delete request to server
-                axios.delete(`http://localhost:3001/deleteFeedback/${id}`)
+                axios.delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deleteFeedback/${id}`)
                     .then(res => {
                         // Show success message on successful delete
                         Swal.fire({

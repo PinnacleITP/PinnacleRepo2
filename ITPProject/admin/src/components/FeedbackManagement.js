@@ -14,7 +14,7 @@ export default function FeedbackManagement() {
 
       // Fetch feedback data from server on component mount
       useEffect(() => {
-        axios.get(`http://localhost:3001/${pageid}`)
+        axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${pageid}`)
             .then(result => setFeedbacks(result.data))
             .catch(err => console.log(err));
     }, [pageid]);
@@ -35,7 +35,7 @@ export default function FeedbackManagement() {
           }).then((result) => {
               if (result.isConfirmed) {
                   // Send delete request to server
-                  axios.delete(`http://localhost:3001/deleteFeedback/${id}`)
+                  axios.delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deleteFeedback/${id}`)
                       .then(res => {
                           // Show success message on successful delete
                           Swal.fire({
@@ -101,7 +101,7 @@ export default function FeedbackManagement() {
 
         useEffect(() => {
           axios
-            .get(`http://localhost:3001/${'faq'}`)
+            .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${'faq'}`)
             .then((result) => setFaqs(result.data))
             .catch((err) => console.log(err));
         }, []);
@@ -120,7 +120,7 @@ export default function FeedbackManagement() {
             if (result.isConfirmed) {
               // Proceed with deletion upon confirmation
               axios
-                .delete(`http://localhost:3001/deletefaq/${id}`)
+                .delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deletefaq/${id}`)
                 .then((res) => {
                   console.log(res);
                   // Display success message upon successful deletion

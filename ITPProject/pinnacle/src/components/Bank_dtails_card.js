@@ -16,7 +16,7 @@ export default function BankDetailsCard(props) {
     };
 
     const handleCardDelete = (id) =>{
-      axios.delete('http://localhost:3001/deleteCardDeatils/'+id)
+      axios.delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deleteCardDeatils/`+id)
       .then(res => {console.log(res)
           window.location.reload()
       })
@@ -35,7 +35,7 @@ export default function BankDetailsCard(props) {
 
     const Update = (e) => {
       e.preventDefault();
-      axios.put("http://localhost:3001/updateNickName/"+props.id, { cardName })
+      axios.put(`${process.env.REACT_APP_SERVER_ENDPOINT}/updateNickName/`+props.id, { cardName })
       .then(result => {
           console.log(result);
           window.location.reload()

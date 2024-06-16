@@ -68,7 +68,7 @@ export default function Register() {
 
     try {
       const response = await axios.post(
-        'http://localhost:3001/api/signup',
+        `${process.env.REACT_APP_SERVER_ENDPOINT}/api/signup`,
         formData
       );
       console.log('Response:', response.data);

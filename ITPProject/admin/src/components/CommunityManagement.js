@@ -55,7 +55,7 @@ export default function CommunityManagement() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await axios.get(`http://localhost:3001/${pageid}`);
+        const result = await axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${pageid}`);
         setCommunityPosts(result.data);
       } catch (err) {
         console.error(err);
@@ -120,7 +120,7 @@ export default function CommunityManagement() {
 
       // Send backend API request
       const response = await axios.post(
-        "http://localhost:3001/createCommunityPost",
+        `${process.env.REACT_APP_SERVER_ENDPOINT}/createCommunityPost`,
         {
           postUrl,
           description,
@@ -134,7 +134,7 @@ export default function CommunityManagement() {
 
       // Send notification to all users about the new post
       await axios.post(
-        "http://localhost:3001/api/sendCommunityPostNotification",
+        `${process.env.REACT_APP_SERVER_ENDPOINT}/api/sendCommunityPostNotification`,
         newPost
       );
 

@@ -17,24 +17,24 @@ export default function Leaderboardpage() {
 
   // useEffect(() => {
   //   axios
-  //     .get(`http://localhost:3001/getChannelbyViewCount`)
+  //     .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getChannelbyViewCount`)
   //     .then((result) => setLeaderBoardDetails(result.data))
   //     .catch((err) => console.log(err));
   // }, []);
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/${pageid}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${pageid}`)
       .then((result) => setLeaderBoardDetails(result.data))
       .catch((err) => console.log(err));
 
     axios
-      .delete("http://localhost:3001/deleteAllLeaderboardRecords/")
+      .delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deleteAllLeaderboardRecords/`)
       .then((res) => {
         console.log(res);
         leaderBoardDetails.forEach((detail) => {
           axios
-            .post("http://localhost:3001/createLeaderboard", {
+            .post(`${process.env.REACT_APP_SERVER_ENDPOINT}/createLeaderboard`, {
               ChannelID: detail._id,
               viewcount: detail.viewCount,
               channelname: detail.channelName,

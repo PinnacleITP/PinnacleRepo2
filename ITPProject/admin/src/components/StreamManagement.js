@@ -14,7 +14,7 @@ export default function StreamManagement() {
   useEffect(() => {
     const fetchChannels = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/channels');
+        const response = await axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/channels`);
         setChannels(response.data); // Store the fetched data in the channels state
       } catch (error) {
         console.error("Error fetching channels:", error);
@@ -29,7 +29,7 @@ export default function StreamManagement() {
   useEffect(() => {
     const fetchStreams = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/streams');
+        const response = await axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/streams`);
 
         if (response.data) {
           setStreams(response.data);
@@ -109,7 +109,7 @@ export default function StreamManagement() {
   useEffect(() => {
     const fetchStreamCountsByType = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/streams/count-by-type');
+        const response = await axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/streams/count-by-type`);
         if (response.data) {
           setCountsByType(response.data); // Assuming you have a useState to hold this
         }

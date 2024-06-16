@@ -100,7 +100,7 @@ export default function Gamepage() {
   //read all game details
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/${pageid}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${pageid}`)
       .then((result) => setGameDetails(result.data))
       .catch((err) => console.log(err));
   }, [pageid]);

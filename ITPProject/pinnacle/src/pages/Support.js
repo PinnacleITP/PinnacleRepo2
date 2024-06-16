@@ -92,7 +92,7 @@ export default function Support() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/${pageid}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${pageid}`)
       .then((result) => setFaqs(result.data))
       .catch((err) => console.log(err));
   }, [pageid]);

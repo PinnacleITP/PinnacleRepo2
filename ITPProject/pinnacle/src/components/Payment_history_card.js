@@ -17,7 +17,7 @@ export default function Payment_history_card(props) {
 
   const handlePaymentHistoryDelete = (id) =>{
     setLoading(true);
-    axios.delete('http://localhost:3001/deletePaymentHistory/'+id)
+    axios.delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deletePaymentHistory/`+id)
     .then(res => {
       console.log(res);
       setLoading(false);
@@ -52,8 +52,8 @@ export default function Payment_history_card(props) {
 
   //pdf
 const createAndDownloadPdf = () => {
-  axios.post('http://localhost:3001/api/create-pdf/index', { name, email, description, officialpice, crystal, discount, pid, date, subtotal})
-    .then(() => axios.get('http://localhost:3001/api/fetch-pdf', { responseType: 'blob' }))
+  axios.post(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/create-pdf/index`, { name, email, description, officialpice, crystal, discount, pid, date, subtotal})
+    .then(() => axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/fetch-pdf`, { responseType: 'blob' }))
     .then((res) => {
       const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
       saveAs(pdfBlob, 'Payment_' + pid + '_invoice.pdf');

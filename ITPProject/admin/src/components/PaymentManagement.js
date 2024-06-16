@@ -70,7 +70,7 @@ export default function PaymentManagement() {
   useEffect(() => {
     const fetchPaymentData = async () => {
     axios
-      .get(`http://localhost:3001/api/adminAllPayment`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/adminAllPayment`)
       .then((result) => setAllPaymentsHistory(result.data))
       .catch((err) => console.log(err));
     }
@@ -83,7 +83,8 @@ export default function PaymentManagement() {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/allUsers');
+        console.log("Server endpoint:", process.env.REACT_APP_SERVER_ENDPOINT);
+        const response = await axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/allUsers`);
         setAllUserData(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);

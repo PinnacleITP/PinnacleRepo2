@@ -106,7 +106,7 @@ export default function Streampage() {
   //read all stream details
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/${pageid}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${pageid}`)
       .then((result) => setStreamDetailsCard(result.data))
       .catch((err) => console.log(err));
   }, [pageid]);

@@ -22,7 +22,7 @@ export default function LeaderboardManagement() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/api/readSeason/${end}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/readSeason/${end}`)
       .then((result) => {
         setEndDate(result.data);
       })
@@ -50,7 +50,7 @@ export default function LeaderboardManagement() {
 
 const Updatedate = (e) => {
   e.preventDefault();
-  axios.put("http://localhost:3001/updateEndDate/"+end, { newEndDate })
+  axios.put(`${process.env.REACT_APP_SERVER_ENDPOINT}/updateEndDate/`+end, { newEndDate })
   .then(result => {
       console.log(result);
       window.location.reload()
@@ -66,7 +66,7 @@ const Updatedate = (e) => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/${pageid}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${pageid}`)
       .then((result) => {
         setLeaderboardDetails(result.data);
       })
@@ -75,7 +75,7 @@ const Updatedate = (e) => {
 
   const clearLeaderbord = () => {
     axios
-    .delete("http://localhost:3001/deleteAllLeaderboardRecords/")
+    .delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deleteAllLeaderboardRecords/`)
     .then((res) => console.log(res))
     .catch((errr) => console.log(errr));
     setCreateSuccessMessagechecked(true);

@@ -67,7 +67,7 @@ export default function Payment() {
   //read card data from db
   // useEffect(() => {
   //   axios
-  //     .get("http://localhost:3001/getBankCardByUserID/" + userid)
+  //     .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getBankCardByUserID/` + userid)
   //     .then((result) => setCreditCards(result.data))
   //     .catch((err) => console.log(err));
   // }, []);
@@ -76,21 +76,21 @@ export default function Payment() {
   useEffect(() => {
     if (page == "P") {
       axios
-        .get(`http://localhost:3001/getPlanById/${itemId}`)
+        .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getPlanById/${itemId}`)
         .then((result) => {
           setPremiumPlan(result.data);
         })
         .catch((err) => console.log(err));
     } else if (page == "C") {
       axios
-        .get(`http://localhost:3001/getCartItemById/${itemId}`)
+        .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getCartItemById/${itemId}`)
         .then((result) => {
           setCartItem(result.data);
         })
         .catch((err) => console.log(err));
     } else if (page == "G") {
       axios
-        .get(`http://localhost:3001/getGamebyID/${itemId}`)
+        .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getGamebyID/${itemId}`)
         .then((result) => {
           setGameItem(result.data);
         })
@@ -100,7 +100,7 @@ export default function Payment() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/getMemberById/${memberID}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getMemberById/${memberID}`)
       .then((result) => {
         setUserDetails(result.data);
       })
@@ -172,7 +172,7 @@ export default function Payment() {
   //post card data for index.js to create
   // const handleSubmitAndResetForm = () => {
   //   axios
-  //     .post("http://localhost:3001/createBankCard", {
+  //     .post(`${process.env.REACT_APP_SERVER_ENDPOINT}/createBankCard`, {
   //       memberID,
   //       cardNumber,
   //       CardName,
@@ -199,7 +199,7 @@ export default function Payment() {
   const SubmitCard = (e) => {
     e.preventDefault();
     axios
-      .post("http://localhost:3001/createBankCard", {
+      .post(`${process.env.REACT_APP_SERVER_ENDPOINT}/createBankCard`, {
         memberID,
         cardNumber,
         CardName,

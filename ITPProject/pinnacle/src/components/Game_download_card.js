@@ -14,7 +14,7 @@ export default function Game_download_card(props) {
 
   useEffect(() => {
     axios
-        .get(`http://localhost:3001/getGamebyID/${props.gameid}`)
+        .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getGamebyID/${props.gameid}`)
         .then((result) => {
           setGameDetail(result.data);
         })
@@ -23,7 +23,7 @@ export default function Game_download_card(props) {
 
   const handleDownloadGameDelete = (id) =>{
     setLoading(true);
-    axios.delete('http://localhost:3001/deleteDownloadGame/'+id)
+    axios.delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deleteDownloadGame/`+id)
     .then(res => {
       console.log(res);
       setLoading(false);

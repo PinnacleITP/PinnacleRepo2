@@ -16,14 +16,14 @@ export default function Homepage() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/${"game"}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${"game"}`)
       .then((result) => setGameDetails(result.data))
       .catch((err) => console.log(err));
   }, []);
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/${"stream"}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${"stream"}`)
       .then((result) => setStreamDetailsCard(result.data))
       .catch((err) => console.log(err));
   }, []);

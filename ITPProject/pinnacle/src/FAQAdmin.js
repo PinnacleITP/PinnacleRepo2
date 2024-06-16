@@ -11,7 +11,7 @@ function FAQAdmin() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/${pageid}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${pageid}`)
       .then((result) => setFaqs(result.data))
       .catch((err) => console.log(err));
   }, [pageid]);
@@ -30,7 +30,7 @@ function FAQAdmin() {
       if (result.isConfirmed) {
         // Proceed with deletion upon confirmation
         axios
-          .delete(`http://localhost:3001/deletefaq/${id}`)
+          .delete(`${process.env.REACT_APP_SERVER_ENDPOINT}/deletefaq/${id}`)
           .then((res) => {
             console.log(res);
             // Display success message upon successful deletion

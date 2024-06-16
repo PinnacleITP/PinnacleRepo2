@@ -15,7 +15,7 @@ function AdminFeedbackUpdate() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`http://localhost:3001/getFeedback/${id}`);
+                const response = await axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getFeedback/${id}`);
                 setName(response.data.name); // Set the name state with fetched name
                 setEmail(response.data.email); // Set the email state with fetched email
                 setFeedback(response.data.feedback); // Set the feedback state with fetched feedback
@@ -33,7 +33,7 @@ function AdminFeedbackUpdate() {
 
         try {
             // Send updated feedback data to the server
-            await axios.put(`http://localhost:3001/updatefeedback/${id}`, { name, email, feedback });
+            await axios.put(`${process.env.REACT_APP_SERVER_ENDPOINT}/updatefeedback/${id}`, { name, email, feedback });
             navigate('/'); // Navigate back to the home page after successful update
         } catch (error) {
             console.error('Error updating feedback:', error);

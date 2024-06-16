@@ -11,7 +11,7 @@ export default function Stream_Display_Card(props) {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/getChannelByStreamID/${props.channel_ID}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getChannelByStreamID/${props.channel_ID}`)
       .then((result) => {
         console.log(result.channel_ID);
         setChannelName(result.data.channelName);

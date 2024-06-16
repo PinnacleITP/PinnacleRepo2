@@ -9,6 +9,8 @@ import axios from "axios";
 import SuccessPopup from "../components/SuccessPopup";
 
 export default function GameDetailsPage() {
+  var login = false;
+  login = localStorage.getItem('login');
   const userEmail = localStorage.getItem('userEmail');
   const userId = localStorage.getItem('userId');
   var memberID = userId;
@@ -33,7 +35,7 @@ export default function GameDetailsPage() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/getGamebyID/${gameId}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getGamebyID/${gameId}`)
       .then((result) => {
         console.log(result.data);
         setGameDetail(result.data);
@@ -47,7 +49,7 @@ export default function GameDetailsPage() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/${"game"}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/${"game"}`)
       .then((result) => setGameDetails(result.data))
       .catch((err) => console.log(err));
   }, []);
@@ -55,7 +57,7 @@ export default function GameDetailsPage() {
   useEffect(() => {
     const fetchDownloadData = () => {
       axios
-        .get(`http://localhost:3001/getDownloadbyMemberid/${memberID}`)
+        .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getDownloadbyMemberid/${memberID}`)
         .then((result) => {
           const data = result.data;
           if (Array.isArray(data)) {
@@ -94,7 +96,7 @@ export default function GameDetailsPage() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/getCartItemByMemberID/${memberID}`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getCartItemByMemberID/${memberID}`)
       .then((result) => {
         console.log(result.data);
 
@@ -126,7 +128,7 @@ export default function GameDetailsPage() {
     }
 
     axios
-      .post("http://localhost:3001/createCartItem", {
+      .post(`${process.env.REACT_APP_SERVER_ENDPOINT}/createCartItem`, {
         memberID: memberID,
         gameID: gameId,
         game: gameName,
@@ -190,7 +192,13 @@ export default function GameDetailsPage() {
               ? `$${gamedetail.price.toFixed(2)}`
               : ""}
           </p>
-          {cartAvailability && (
+
+          {!login && ( <div className="my-4 mx-auto flex justify-around">
+            <div className=" bg-[#FE7804] py-2 px-10 rounded-md mx-4 w-2/5 text-center font-semibold cursor-pointer"><Link to="/login">Add to Cart</Link></div>
+            <div className=" bg-[#FF451D] py-2 px-10 rounded-md mx-4 w-2/5 text-center font-semibold cursor-pointer"><Link to="/login">Buy now</Link></div>
+          </div>)}
+          
+          {cartAvailability && login && (
             <div className="my-4 mx-auto flex justify-around">
               <div
                 onClick={AddtoCartByID}
@@ -215,7 +223,7 @@ export default function GameDetailsPage() {
             )}
             </div>
           )}
-          {!cartAvailability && (
+          {!cartAvailability && login && (
             <div className="my-4 mx-auto flex justify-around">
               <div
                 onClick={AddtoCartByID}

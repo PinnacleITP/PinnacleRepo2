@@ -15,7 +15,7 @@ export default function ViewBattle() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/views`)
+      .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/views`)
       .then((result) => setAllViews(result.data))
       .catch((err) => console.log(err));
   }, []);
@@ -24,7 +24,7 @@ export default function ViewBattle() {
     // Fetch channel details using localStorage userId
     if (userId) {
       axios
-        .get(`http://localhost:3001/getChannelByMemberID/${userId}`)
+        .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getChannelByMemberID/${userId}`)
         .then((result) => {
           console.log(result);
           const channelData = result.data;
@@ -40,7 +40,7 @@ export default function ViewBattle() {
     // Fetch channel details using userId from the first item in allViews
     if (allViews.length > 0 && allViews[0].userId) {
       axios
-        .get(`http://localhost:3001/getChannelByMemberID/${allViews[0].userId}`)
+        .get(`${process.env.REACT_APP_SERVER_ENDPOINT}/getChannelByMemberID/${allViews[0].userId}`)
         .then((result) => {
           console.log(result);
           const channelData = result.data;
